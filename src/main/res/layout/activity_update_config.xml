@@ -1,0 +1,99 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="450dp"
+    android:layout_height="300dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="客户码"/>
+
+            <EditText
+                android:id="@+id/customer_et"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:textSize="12dp"
+                android:digits="@string/alphabet_and_number"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="工作模式"/>
+
+            <EditText
+                android:id="@+id/pattern_et"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:digits="0123456789"
+                android:textSize="12dp"
+                android:inputType="number"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="传输速率"/>
+
+            <EditText
+                android:id="@+id/bps_et"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:digits="0123456789"
+                android:textSize="12dp"
+                android:inputType="number"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="频段"/>
+
+            <EditText
+                android:id="@+id/channel_et"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:digits="0123456789"
+                android:textSize="12dp"
+                android:inputType="number"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/update_btn"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:text="修改"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

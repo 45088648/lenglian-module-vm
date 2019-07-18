@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.beetech.module"
+    android:versionCode="1"
+    android:versionName="8.6.23"
+    android:sharedUserId="android.uid.system">
+
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.SET_TIME_ZONE" />
+    <uses-permission android:name="android.permission.SET_TIME"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!--唤醒权限-->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <!--解锁权限-->
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+
+    <!--开机启动权限-->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- 在SDCard中创建与删除文件的权限 -->
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <!-- 往SDCard写入数据的权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- 在SDCard读取数据的权限 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+
+    <!-- android:persistent="true" 必须将应用程序的apk包直接放到/system/app目录下 -->
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/logo"
+        android:label="@string/app_name"
+        android:name=".application.MyApplication"
+        android:persistent="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".activity.RealtimeMonitorActivity"
+            android:theme="@style/AppTheme"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/app_name"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".activity.MainActivity"
+            android:theme="@style/AppTheme"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden"
+            android:launchMode="singleTask">
+            <meta-data
+                android:name="update_url"
+                android:value="http://118.190.48.38:9080/apk/update_module.txt" />
+        </activity>
+
+        <activity android:name=".activity.TempLineActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@android:style/Theme.Dialog"
+            android:launchMode="singleTask"/>
+
+        <activity android:name=".activity.UpdateConfigActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@android:style/Theme.Dialog"
+            android:launchMode="singleTask"/>
+
+        <activity android:name=".activity.QueryDataActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@android:style/Theme.Dialog"
+            android:launchMode="singleTask"/>
+
+        <activity
+            android:name=".activity.SinglePixelActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|navigation|keyboard"
+            android:excludeFromRecents="true"
+            android:finishOnTaskLaunch="false"
+            android:launchMode="singleInstance"
+            android:theme="@style/SingleActivityStyle" />
+
+        <activity
+            android:name=".activity.SynthActivity"
+            android:label="离在线语音合成" />
+
+        <service android:enabled="true" android:name=".service.ModuleService" />
+        <service android:enabled="true" android:name=".service.JobProtectService" android:permission="android.permission.BIND_JOB_SERVICE"/>
+
+        <service android:name=".service.ModuleService$GrayInnerService"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":gray" />
+
+        <service android:name=".receiver.WakeReceiver$WakeNotifyService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <service android:name=".receiver.WakeReceiver$WakeGrayInnerService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <service android:name=".service.GuardService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":guard"/>
+
+        <service android:name=".service.RemoteService" android:process=":romote"/>
+        <service android:name=".service.ScreenCheckService" android:process=":screenCheck"/>
+        <service android:name=".service.PlayerMusicService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":music_service" />
+
+        <!-- 开机自启动广播接受 -->
+        <receiver android:name=".receiver.AutoStartBroadcastReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.HOME"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".receiver.WakeReceiver" android:enabled="true" android:exported="false">
+            <intent-filter>
+                <action android:name="com.beetech.module.receiver.Wake" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".receiver.ConnectReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.beetech.module.receiver.CONNECT_SERVICE"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_ADDED"/>
+                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+
+                <data android:scheme="package"/>
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>

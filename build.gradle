@@ -1,0 +1,108 @@
+buildscript {
+    repositories {
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.2.1'//这里是你的AS版本
+        classpath 'org.greenrobot:greendao-gradle-plugin:3.2.2' // add plugin
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        google()//maven仓库地址
+        maven { url 'https://jitpack.io' }
+    }
+
+}
+/*task clean(type: Delete) {
+    delete rootProject.buildDir
+}*/
+
+
+apply plugin: 'com.android.application'
+apply plugin: 'org.greenrobot.greendao' // apply plugin
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion '28.0.3'
+
+    defaultConfig {
+        applicationId "com.beetech.module"
+        minSdkVersion 22
+        targetSdkVersion 26
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath = true
+            }
+        }
+    }
+
+    signingConfigs {
+        release {
+            storeFile file ('D:/Sign/lenglian.jks')
+            storePassword 'aaaaaa'
+            keyAlias 'lenglian'
+            keyPassword 'aaaaaa'
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.release
+        }
+
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+
+    //Add the following configuration
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+}
+
+/*针对greenDao的一些配置*/
+greendao {
+    schemaVersion 1 //数据库版本号
+    daoPackage 'com.beetech.module.greendao.dao'//设置DaoMaster、MyReadDataSendEntityDaoSession、Dao包名
+    targetGenDir 'src/main/java'//设置DaoMaster、MyReadDataSendEntityDaoSession、Dao目录
+}
+
+dependencies {
+    debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
+    implementation 'org.greenrobot:greendao:3.2.2' // add library
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'me.weishu:free_reflection:1.2.0'
+    implementation 'com.qianwen:update-app:3.5.2'
+    implementation 'com.qianwen:okhttp-utils:3.8.0'
+    implementation 'com.lzy.net:okgo:3.0.4'
+
+    implementation 'com.github.anrwatchdog:anrwatchdog:1.3.+'
+    implementation 'com.android.support:appcompat-v7:22.2.1', {
+        exclude module: 'support-v4'
+    }
+
+    implementation 'android.arch.paging:runtime:1.0.0-alpha3'
+    implementation 'com.android.support:recyclerview-v7:22.0.0'
+    implementation 'com.github.lecho:hellocharts-library:1.5.8@aar'
+
+    implementation 'com.alibaba:fastjson:1.1.67.android'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.0'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+//    implementation files('libs/com.baidu.tts_2.3.2.20180713_6101c2a.jar')
+    implementation fileTree(include: ['*.jar','*.aar'], dir: 'libs')
+}
+

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">标签温湿度监测</string>
+    <string name="action_settings">设置</string>
+    <string name="action_about">关于</string>
+
+    <string name="tab_module">串口测试</string>
+    <string name="master_to_module_text">发到</string>
+    <string name="module_to_master_text">接收</string>
+    <string name="module_read_time_text">时间</string>
+    <string name="send_to_module_succ_text">发送成功</string>
+    <string name="send_to_module_fail_text">发送失败</string>
+
+    <string name="str_unconnected">未连接蓝牙打印机!</string>
+    <string name="str_succonnect">连接蓝牙打印机成功，请再次点击打印!</string>
+    <string name="str_faileconnect">连接失败，请确认打印机是否开启!</string>
+    <string name="str_lose">断开蓝牙打印机连接!</string>
+    <string name="str_connected">已连接蓝牙打印机</string>
+    <string name="str_disconnected">没有蓝牙打印机连接</string>
+    <string name="str_connecting">正在连接蓝牙打印机</string>
+    <string name="str_toconnect">连接打印机</string>
+    <string name="str_print">打印</string>
+    <string name="print_shuoming">连接打印机前请先设置开启蓝牙开关,并配对名称为“anquan365”的蓝牙打印机, 配对密码为“1234”</string>
+
+    <string name="alphabet_and_number">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789</string>
+</resources>

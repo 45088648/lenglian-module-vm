@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dip"
+        android:gravity="center"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp">
+
+        <TextView
+            android:id="@+id/stateTv"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+
+            android:focusable="false"
+            android:enabled="false"
+
+            android:paddingLeft="8.0dip"
+            android:paddingRight="8.0dip"
+            android:singleLine="true"
+            android:textColor="@color/deep_gray"
+            android:textCursorDrawable="@null"
+            android:textSize="12.0sp"
+            android:inputType="textMultiLine"
+            android:gravity="left|top"
+            android:minLines="12" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="5dp">
+
+        <Button
+            android:id="@+id/btnRefresh"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="刷新" />
+
+        <Button
+            android:id="@+id/btnSetTime"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="更新时间" />
+
+        <Button
+            android:id="@+id/btnNodeParam"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="更新标签参数" />
+
+        <Button
+            android:id="@+id/btnRefreshNode"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="刷新标签" />
+
+
+        <Button
+            android:id="@+id/btnTruncateLog"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="清空日志" />
+
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dip"
+        android:gravity="center"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp">
+
+        <Button
+            android:id="@+id/btnQueryConfig"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="模块查询本地配置" />
+
+        <Button
+            android:id="@+id/btnUpdateConfig"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="模块修改本地配置" />
+
+
+        <Button
+            android:id="@+id/btnDeleteHistoryData"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="模块删除已存历史数据" />
+
+        <Button
+            android:id="@+id/btnSetDataBeginTime"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="模块设置数据开始时间" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dip"
+        android:gravity="center"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp">
+
+        <Button
+            android:id="@+id/btnTruncateAll"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="清APP数据" />
+        <Button
+            android:id="@+id/btnReboot"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="模块释放" />
+
+        <Button
+            android:id="@+id/btnSynth"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="语音合成" />
+    </TableRow>
+</LinearLayout>
+</ScrollView>
