@@ -6,6 +6,7 @@ import com.beetech.module.code.response.ReadDataResponse;
 import com.beetech.module.code.response.SetDataBeginTimeResponse;
 import com.beetech.module.code.response.SetTimeResponse;
 import com.beetech.module.code.response.UpdateConfigResponse;
+import com.beetech.module.code.response.UpdateSSParamResponse;
 
 public class ResponseFactory {
 
@@ -32,6 +33,9 @@ public class ResponseFactory {
 
 			case 9:
 				return new SetDataBeginTimeResponse(buf);
+
+			case 0x9C:
+				return new UpdateSSParamResponse(buf);
 	
 			default:
 				return null;

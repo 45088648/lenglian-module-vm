@@ -18,6 +18,7 @@ import com.beetech.module.fragment.HistoryModuleBufFragment;
 import com.beetech.module.fragment.HistoryReadDataFragment;
 import com.beetech.module.fragment.HistoryVtSocketLogFragment;
 import com.beetech.module.fragment.RunStateFragment;
+import com.beetech.module.fragment.HistoryGpsDataFragment;
 import com.beetech.module.service.DownloadService;
 
 public class MainActivity extends AppCompatActivity {
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
 		mTabHost.addTab(mTabHost.newTabSpec("identification").setIndicator("运行状态"), RunStateFragment.class, null);
 		mTabHost.addTab(mTabHost.newTabSpec("history").setIndicator("温度数据"), HistoryReadDataFragment.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("gps").setIndicator("gps数据"), HistoryGpsDataFragment.class, null);
 		mTabHost.addTab(mTabHost.newTabSpec("bufHistory").setIndicator("串口通信"), HistoryModuleBufFragment.class, null);
 		mTabHost.addTab(mTabHost.newTabSpec("appHistory").setIndicator("APP日志"), HistoryAppLogFragment.class, null);
 		mTabHost.addTab(mTabHost.newTabSpec("vtSocketHistory").setIndicator("冷链网关通信"), HistoryVtSocketLogFragment.class, null);

@@ -1,16 +1,23 @@
 package com.beetech.module.application;
 
 import android.app.Application;
+import android.app.Service;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.os.Vibrator;
 import android.text.TextUtils;
 import android.util.Log;
+import com.beetech.module.service.LocationService;
+import com.baidu.location.BDAbstractLocationListener;
+import com.baidu.location.BDLocation;
+import com.baidu.mapapi.SDKInitializer;
 import com.beetech.module.bean.QueryConfigRealtime;
 import com.beetech.module.client.ConnectUtils;
 import com.beetech.module.cockroach.Cockroach;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.dao.AppLogSDDao;
+import com.beetech.module.dao.GpsDataSDDao;
 import com.beetech.module.dao.ModuleBufSDDao;
 import com.beetech.module.dao.QueryConfigRealtimeSDDao;
 import com.beetech.module.dao.ReadDataRealtimeSDDao;
@@ -73,6 +80,11 @@ public class MyApplication extends Application {
     public ThreadTimeTask threadTimeTask;
 
     public IoSession session;
+    //定位
+    public LocationService locationService;
+    public BDAbstractLocationListener locationListener;
+    public BDLocation location;
+    public Vibrator mVibrator;
 
     //db操作对象
     public DaoMaster.DevOpenHelper devOpenHelper;
@@ -83,6 +95,7 @@ public class MyApplication extends Application {
     public ReadDataSDDao readDataSDDao;
     public ReadDataRealtimeSDDao readDataRealtimeSDDao;
     public ModuleBufSDDao moduleBufSDDao;
+    public GpsDataSDDao gpsDataSDDao;
     public AppLogSDDao appLogSDDao;
     public QueryConfigRealtimeSDDao queryConfigRealtimeSDDao;
     public VtSocketLogSDDao vtSocketLogSDDao;
@@ -91,6 +104,10 @@ public class MyApplication extends Application {
     public PhoneInfoUtils phoneInfoUtils;
     public ModuleUtils moduleUtils;
     public Timer timer;
+
+    public int monitorState;
+    public Date beginMonitorTime;
+    public Date endMonitorTime;
 
     @Override
     public void onCreate() {
@@ -115,11 +132,20 @@ public class MyApplication extends Application {
         Constant.iccid = phoneInfoUtils.getIccid();
 
 
+        /***
+         * 初始化定位sdk，建议在Application中创建
+         */
+        locationService = new LocationService(getApplicationContext());
+        locationService.setLocationOption(locationService.getDefaultLocationClientOption());
+        mVibrator =(Vibrator)getApplicationContext().getSystemService(Service.VIBRATOR_SERVICE);
+        SDKInitializer.initialize(getApplicationContext());
+
         installDb();
         readDataSDDao = new ReadDataSDDao(this);
         readDataRealtimeSDDao = new ReadDataRealtimeSDDao(this);
         moduleBufSDDao = new ModuleBufSDDao(this);
         appLogSDDao = new AppLogSDDao(this);
+        gpsDataSDDao = new GpsDataSDDao(this);
         queryConfigRealtimeSDDao = new QueryConfigRealtimeSDDao(this);
         vtSocketLogSDDao = new VtSocketLogSDDao(this);
 
@@ -169,6 +195,10 @@ public class MyApplication extends Application {
                 bps = queryConfigRealtime.getBps();
                 channel = queryConfigRealtime.getChannel();
                 Log.d(TAG, "HOST = " + ConnectUtils.HOST +", PORT = " + ConnectUtils.PORT);
+
+                monitorState = queryConfigRealtime.getMonitorState();
+                beginMonitorTime = queryConfigRealtime.getBeginMonitorTime();
+                endMonitorTime = queryConfigRealtime.getEndMonitorTime();
             }
         } catch (Exception e) {
             e.printStackTrace();

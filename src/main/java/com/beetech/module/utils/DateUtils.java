@@ -237,7 +237,6 @@ public class DateUtils {
 	}
 	/*****************************************************
 	 * 比较当前日期和指定日期，如果指定日期晚于当前日期返回true
-	 * @param vdate 指定的日期
 	 * @return 如果指定日期晚于当前日期返回true，指定日期早于当前日期返回false，指定日期为null返回false；
 	 ****************************************************/
 	public static boolean compareDate(Date vDate){
@@ -283,7 +282,6 @@ public class DateUtils {
 	}
 	/********************************************************
 	 * 此处插入方法说明。 创建日期：(2002-7-24 22:29:20)
-	 * @param Date  ：java.lang.Date
 	 * @return java.lang.String
 	 ********************************************************/
 	public static final String nullToKong(Date date) {
@@ -327,7 +325,6 @@ public class DateUtils {
 	
 	/**
 	 * 上个月开始时间
-	 * @param statsTime
 	 * @return
 	 */
 	public static Date getLastMothFirstTime(Date time) {
@@ -394,7 +391,7 @@ public class DateUtils {
 //		Date strDateTo = DateUtils.getLastMonthLastTime(new Date());  
 //		System.out.println(DateUtils.parseDateToString(strDateTo,DateUtils.C_YYYY_MM_DD_HH_MM_SS));
 		
-		Date devTempDatetime = DateUtils.parseStringToDate("20000423101129", DateUtils.C_YYYYMMDDHHMMSS);
+		Date devTempDatetime = parseStringToDate("20000423101129", C_YYYYMMDDHHMMSS);
 		System.out.println(checkYear(devTempDatetime));
 	}
 

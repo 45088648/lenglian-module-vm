@@ -93,14 +93,14 @@
             android:layout_width="0.0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="模块查询本地配置" />
+            android:text="查询本地配置" />
 
         <Button
             android:id="@+id/btnUpdateConfig"
             android:layout_width="0.0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="模块修改本地配置" />
+            android:text="修改本地配置" />
 
 
         <Button
@@ -108,14 +108,14 @@
             android:layout_width="0.0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="模块删除已存历史数据" />
+            android:text="删除已存历史数据" />
 
         <Button
             android:id="@+id/btnSetDataBeginTime"
             android:layout_width="0.0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="模块设置数据开始时间" />
+            android:text="设置数据开始时间" />
 
     </TableRow>
 
@@ -126,6 +126,13 @@
         android:gravity="center"
         android:paddingLeft="5dp"
         android:paddingRight="5dp">
+
+        <Button
+            android:id="@+id/btnUpdateSSParam"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="修改SS时间阈值" />
 
         <Button
             android:id="@+id/btnTruncateAll"

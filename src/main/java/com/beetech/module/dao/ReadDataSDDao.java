@@ -146,6 +146,28 @@ public class ReadDataSDDao {
         return list;
     }
 
+    public List<ReadDataResponse> queryAll(Date sensorDataTimeBegin, Date sensorDataTimeEnd, int count, int startPosition) {
+        long startTimeInMills = System.currentTimeMillis();
+        List<ReadDataResponse> list = null;
+        try{
+            list = myApp.daoSession.getReadDataResponseDao().queryBuilder()
+                    .where(ReadDataResponseDao.Properties.SensorDataTime.gt(sensorDataTimeBegin))
+                    .where(ReadDataResponseDao.Properties.SensorDataTime.lt(sensorDataTimeEnd))
+                    .orderAsc(ReadDataResponseDao.Properties.SensorDataTime)
+                    .limit(count)
+                    .offset(startPosition)
+                    .list();
+        } catch (Exception e){
+            e.printStackTrace();
+            Log.e(TAG, "查询queryBySensorId异常", e);
+            throw e;
+
+        } finally {
+            Log.d(TAG, "查询queryBySensorId耗时：" + (System.currentTimeMillis() - startTimeInMills));
+        }
+        return list;
+    }
+
     public List<ReadDataResponse> queryForSend(int count, int startPosition) {
         long startTimeInMills = System.currentTimeMillis();
         List<ReadDataResponse> list = null;

@@ -3,7 +3,7 @@ package com.beetech.module.utils;
 public class PrintSetVo {
 	private int rhFlag = 1; /* 是否打印湿度 0 打印 1不打印 */
 	private int printStats = 0; /* 打印统计数据最大值、最小值、平均值 0 打印 1 不打印 */
-	private Integer colSize = null; // 单排数据 双排数据
+	private Integer colSize = 1; // 单排数据 双排数据
 
 	public PrintSetVo() {
 

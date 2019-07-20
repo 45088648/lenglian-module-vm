@@ -57,6 +57,12 @@ public class MyHandler extends IoHandlerAdapter {
                         Log.d(TAG, "shtrf, received, id="+id);
                     }
 
+                    if("GPSDATA".equals(cmd) && success){
+                        Long id = vtResponseBean.getId();
+                        myApp.gpsDataSDDao.updateSendFlag(id, 1);
+                        Log.d(TAG, "gpsData, received, id="+id);
+                    }
+
                     if("NODEPARAM".equals(cmd) && success){
                         NodeParamResponseBean nodeParamResponseBean = JSON.parseObject(msg, NodeParamResponseBean.class);
                         myApp.readDataRealtimeSDDao.updateRealtime(nodeParamResponseBean);

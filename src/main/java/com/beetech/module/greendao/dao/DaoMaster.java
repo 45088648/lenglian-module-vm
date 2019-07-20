@@ -27,6 +27,7 @@ public class DaoMaster extends AbstractDaoMaster {
         ReadDataRealtimeDao.createTable(db, ifNotExists);
         VtSocketLogDao.createTable(db, ifNotExists);
         ReadDataResponseDao.createTable(db, ifNotExists);
+        GpsDataBeanDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
@@ -37,6 +38,7 @@ public class DaoMaster extends AbstractDaoMaster {
         ReadDataRealtimeDao.dropTable(db, ifExists);
         VtSocketLogDao.dropTable(db, ifExists);
         ReadDataResponseDao.dropTable(db, ifExists);
+        GpsDataBeanDao.dropTable(db, ifExists);
     }
 
     /**
@@ -61,6 +63,7 @@ public class DaoMaster extends AbstractDaoMaster {
         registerDaoClass(ReadDataRealtimeDao.class);
         registerDaoClass(VtSocketLogDao.class);
         registerDaoClass(ReadDataResponseDao.class);
+        registerDaoClass(GpsDataBeanDao.class);
     }
 
     public DaoSession newSession() {

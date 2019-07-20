@@ -35,6 +35,7 @@ import com.beetech.module.utils.NodeParamUtils;
 import com.beetech.module.utils.QueryConfigUtils;
 import com.beetech.module.utils.SetDataBeginTimeUtils;
 import com.beetech.module.utils.SetTimeUtils;
+import com.beetech.module.utils.UpdateSSParamUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -63,6 +64,9 @@ public class RunStateFragment extends Fragment {
 
     @ViewInject(R.id.btnNodeParam)
     Button btnNodeParam;
+
+    @ViewInject(R.id.btnUpdateSSParam)
+    Button btnUpdateSSParam;
 
     @ViewInject(R.id.btnRefreshNode)
     Button btnRefreshNode;
@@ -177,6 +181,26 @@ public class RunStateFragment extends Fragment {
                     break;
                 case 0:
                     Toast.makeText(mContext, "已发送获取节点参数请求", Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @OnClick(R.id.btnUpdateSSParam)
+    public void btnUpdateSSParam_onClick(View v) {
+        try {
+            int ret = UpdateSSParamUtils.updateSSParam(getContext());
+            switch (ret){
+                case -2:
+                    Toast.makeText(mContext, "串口未初始化或未上电，请稍后再试", Toast.LENGTH_SHORT).show();
+                    break;
+                case -1:
+                    Toast.makeText(mContext, "无监测点", Toast.LENGTH_SHORT).show();
+                    break;
+                case 0:
+                    Toast.makeText(mContext, "已发送修改SS时间阈值指令", Toast.LENGTH_SHORT).show();
                     break;
             }
         } catch (Exception e) {

@@ -1,21 +1,24 @@
 package com.beetech.module.thread;
 
 import android.content.Context;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.code.BaseResponse;
 import com.beetech.module.code.ResponseFactory;
-import com.beetech.module.code.request.SetDataBeginTimeRequest;
 import com.beetech.module.code.response.DeleteHistoryDataResponse;
 import com.beetech.module.code.response.QueryConfigResponse;
 import com.beetech.module.code.response.ReadDataResponse;
 import com.beetech.module.code.response.SetDataBeginTimeResponse;
 import com.beetech.module.code.response.SetTimeResponse;
+import com.beetech.module.code.response.UpdateSSParamResponse;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.utils.ByteUtilities;
 import com.beetech.module.utils.ReadNextUtils;
 import com.rscja.deviceapi.Module;
+import android.widget.Toast;
+import java.util.Calendar;
 
 /**
  * 读取串口模块数据
@@ -90,7 +93,7 @@ public class ThreadModuleReceive extends Thread {
 
     //解析读取到的串口数据
     private void unpackReceiveBuf(byte[] readBuf) {
-        Log.d(TAG, "bufHex="+ ByteUtilities.asHex(readBuf).toUpperCase());
+        Log.d(TAG, "unpackReceiveBuf.bufHex="+ ByteUtilities.asHex(readBuf).toUpperCase());
         int cmd = 0;
         int bufLen = readBuf.length;
         int index = 0;
@@ -138,12 +141,14 @@ public class ThreadModuleReceive extends Thread {
                 myApp.readDataResponseErrorcode = readDataResponse.getErrorcode(); // Errorcode, 记录flash发送错误的次数
 
                 if(myApp.readDataResponseError == 0){
-                    try {
-                        myApp.readDataSDDao.save(readDataResponse);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.e(TAG, "保存温度数据异常", e);
-                        myApp.appLogSDDao.save(e.getMessage());
+                    if(myApp.monitorState == 1) {
+                        try {
+                            myApp.readDataSDDao.save(readDataResponse);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.e(TAG, "保存温度数据异常", e);
+                            myApp.appLogSDDao.save(e.getMessage());
+                        }
                     }
 
                     try {
@@ -155,18 +160,26 @@ public class ThreadModuleReceive extends Thread {
                 }
 
                 //读取下一条
+                Calendar cal = Calendar.getInstance();
+                int second = cal.get(Calendar.SECOND);
                 myApp.gwId = readDataResponse.getGwId();
                 if(myApp.readDataResponseError == 0){
                     myApp.serialNo = readDataResponse.getSerialNo();
-                    myApp.readDataResponseTime = System.currentTimeMillis();
-                    Log.d(TAG, "myApp.readDataResponseTime="+myApp.readDataResponseTime);
-                    Log.d(TAG, "ReadNextUtils.readNext " + myApp.serialNo);
-                    try{
-                        ReadNextUtils.readNext(myApp);
-                    } catch (Exception e){
-                        e.printStackTrace();
-                        Log.e(TAG, "ReadNextUtils.readNext异常", e);
+
+                    if((second >= 35 && second <= 59)){
+                        myApp.readDataResponseTime = System.currentTimeMillis();
+                        Log.d(TAG, "myApp.readDataResponseTime="+myApp.readDataResponseTime);
+                        Log.d(TAG, "ReadNextUtils.readNext " + myApp.serialNo);
+                        try{
+                            ReadNextUtils.readNext(myApp);
+                        } catch (Exception e){
+                            e.printStackTrace();
+                            Log.e(TAG, "ReadNextUtils.readNext异常", e);
+                        }
+                    } else {
+                        myApp.readDataResponseTime = 0;
                     }
+
                 }
 
 
@@ -197,6 +210,12 @@ public class ThreadModuleReceive extends Thread {
 
             if(response instanceof SetTimeResponse){
                 SetTimeResponse setTimeResponse = (SetTimeResponse)response;
+            }
+            if(response instanceof UpdateSSParamResponse){
+                UpdateSSParamResponse updateSSParamResponse = (UpdateSSParamResponse)response;
+                Looper.prepare();
+                Toast.makeText(myApp, "修改SS时间参数反馈："+updateSSParamResponse.getSensorId()+"~"+updateSSParamResponse.getError(), Toast.LENGTH_SHORT).show();
+                Looper.loop();
             }
         }
 

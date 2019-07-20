@@ -48,6 +48,33 @@ public class QueryConfigRealtimeDao extends AbstractDao<QueryConfigRealtime, Lon
         public final static Property DevServerPort = new Property(21, int.class, "devServerPort", false, "DEV_SERVER_PORT");
         public final static Property DevEncryption = new Property(22, String.class, "devEncryption", false, "DEV_ENCRYPTION");
         public final static Property UpdateTime = new Property(23, java.util.Date.class, "updateTime", false, "UPDATE_TIME");
+        public final static Property MonitorState = new Property(24, int.class, "monitorState", false, "MONITOR_STATE");
+        public final static Property BeginMonitorTime = new Property(25, java.util.Date.class, "beginMonitorTime", false, "BEGIN_MONITOR_TIME");
+        public final static Property EndMonitorTime = new Property(26, java.util.Date.class, "endMonitorTime", false, "END_MONITOR_TIME");
+        public final static Property DevName = new Property(27, String.class, "devName", false, "DEV_NAME");
+        public final static Property UserName = new Property(28, String.class, "userName", false, "USER_NAME");
+        public final static Property DevSendCycle = new Property(29, String.class, "devSendCycle", false, "DEV_SEND_CYCLE");
+        public final static Property DevAutosend = new Property(30, String.class, "devAutosend", false, "DEV_AUTOSEND");
+        public final static Property TempLower = new Property(31, String.class, "tempLower", false, "TEMP_LOWER");
+        public final static Property TempHight = new Property(32, String.class, "tempHight", false, "TEMP_HIGHT");
+        public final static Property BatteryLower = new Property(33, String.class, "batteryLower", false, "BATTERY_LOWER");
+        public final static Property SysDatetime = new Property(34, String.class, "sysDatetime", false, "SYS_DATETIME");
+        public final static Property RhLower = new Property(35, String.class, "rhLower", false, "RH_LOWER");
+        public final static Property RhHight = new Property(36, String.class, "rhHight", false, "RH_HIGHT");
+        public final static Property TempAlarmFlag = new Property(37, String.class, "tempAlarmFlag", false, "TEMP_ALARM_FLAG");
+        public final static Property RhAlarmFlag = new Property(38, String.class, "rhAlarmFlag", false, "RH_ALARM_FLAG");
+        public final static Property BatteryAlarmFlag = new Property(39, String.class, "batteryAlarmFlag", false, "BATTERY_ALARM_FLAG");
+        public final static Property ExtPowerAlarmFlag = new Property(40, String.class, "extPowerAlarmFlag", false, "EXT_POWER_ALARM_FLAG");
+        public final static Property UnqualifyRecordFlag = new Property(41, String.class, "unqualifyRecordFlag", false, "UNQUALIFY_RECORD_FLAG");
+        public final static Property NextUpdateFlag = new Property(42, String.class, "nextUpdateFlag", false, "NEXT_UPDATE_FLAG");
+        public final static Property UpdateUrl = new Property(43, String.class, "updateUrl", false, "UPDATE_URL");
+        public final static Property Destination = new Property(44, String.class, "destination", false, "DESTINATION");
+        public final static Property OrderNo = new Property(45, String.class, "orderNo", false, "ORDER_NO");
+        public final static Property Receiver = new Property(46, String.class, "receiver", false, "RECEIVER");
+        public final static Property Company = new Property(47, String.class, "company", false, "COMPANY");
+        public final static Property DevTypeFlag = new Property(48, String.class, "devTypeFlag", false, "DEV_TYPE_FLAG");
+        public final static Property AlarmInterval = new Property(49, String.class, "alarmInterval", false, "ALARM_INTERVAL");
+        public final static Property EquipType = new Property(50, String.class, "equipType", false, "EQUIP_TYPE");
     }
 
 
@@ -86,7 +113,34 @@ public class QueryConfigRealtimeDao extends AbstractDao<QueryConfigRealtime, Lon
                 "\"DEV_NUM\" TEXT," + // 20: devNum
                 "\"DEV_SERVER_PORT\" INTEGER NOT NULL ," + // 21: devServerPort
                 "\"DEV_ENCRYPTION\" TEXT," + // 22: devEncryption
-                "\"UPDATE_TIME\" INTEGER);"); // 23: updateTime
+                "\"UPDATE_TIME\" INTEGER," + // 23: updateTime
+                "\"MONITOR_STATE\" INTEGER NOT NULL ," + // 24: monitorState
+                "\"BEGIN_MONITOR_TIME\" INTEGER," + // 25: beginMonitorTime
+                "\"END_MONITOR_TIME\" INTEGER," + // 26: endMonitorTime
+                "\"DEV_NAME\" TEXT," + // 27: devName
+                "\"USER_NAME\" TEXT," + // 28: userName
+                "\"DEV_SEND_CYCLE\" TEXT," + // 29: devSendCycle
+                "\"DEV_AUTOSEND\" TEXT," + // 30: devAutosend
+                "\"TEMP_LOWER\" TEXT," + // 31: tempLower
+                "\"TEMP_HIGHT\" TEXT," + // 32: tempHight
+                "\"BATTERY_LOWER\" TEXT," + // 33: batteryLower
+                "\"SYS_DATETIME\" TEXT," + // 34: sysDatetime
+                "\"RH_LOWER\" TEXT," + // 35: rhLower
+                "\"RH_HIGHT\" TEXT," + // 36: rhHight
+                "\"TEMP_ALARM_FLAG\" TEXT," + // 37: tempAlarmFlag
+                "\"RH_ALARM_FLAG\" TEXT," + // 38: rhAlarmFlag
+                "\"BATTERY_ALARM_FLAG\" TEXT," + // 39: batteryAlarmFlag
+                "\"EXT_POWER_ALARM_FLAG\" TEXT," + // 40: extPowerAlarmFlag
+                "\"UNQUALIFY_RECORD_FLAG\" TEXT," + // 41: unqualifyRecordFlag
+                "\"NEXT_UPDATE_FLAG\" TEXT," + // 42: nextUpdateFlag
+                "\"UPDATE_URL\" TEXT," + // 43: updateUrl
+                "\"DESTINATION\" TEXT," + // 44: destination
+                "\"ORDER_NO\" TEXT," + // 45: orderNo
+                "\"RECEIVER\" TEXT," + // 46: receiver
+                "\"COMPANY\" TEXT," + // 47: company
+                "\"DEV_TYPE_FLAG\" TEXT," + // 48: devTypeFlag
+                "\"ALARM_INTERVAL\" TEXT," + // 49: alarmInterval
+                "\"EQUIP_TYPE\" TEXT);"); // 50: equipType
     }
 
     /** Drops the underlying database table. */
@@ -166,6 +220,137 @@ public class QueryConfigRealtimeDao extends AbstractDao<QueryConfigRealtime, Lon
         if (updateTime != null) {
             stmt.bindLong(24, updateTime.getTime());
         }
+        stmt.bindLong(25, entity.getMonitorState());
+ 
+        java.util.Date beginMonitorTime = entity.getBeginMonitorTime();
+        if (beginMonitorTime != null) {
+            stmt.bindLong(26, beginMonitorTime.getTime());
+        }
+ 
+        java.util.Date endMonitorTime = entity.getEndMonitorTime();
+        if (endMonitorTime != null) {
+            stmt.bindLong(27, endMonitorTime.getTime());
+        }
+ 
+        String devName = entity.getDevName();
+        if (devName != null) {
+            stmt.bindString(28, devName);
+        }
+ 
+        String userName = entity.getUserName();
+        if (userName != null) {
+            stmt.bindString(29, userName);
+        }
+ 
+        String devSendCycle = entity.getDevSendCycle();
+        if (devSendCycle != null) {
+            stmt.bindString(30, devSendCycle);
+        }
+ 
+        String devAutosend = entity.getDevAutosend();
+        if (devAutosend != null) {
+            stmt.bindString(31, devAutosend);
+        }
+ 
+        String tempLower = entity.getTempLower();
+        if (tempLower != null) {
+            stmt.bindString(32, tempLower);
+        }
+ 
+        String tempHight = entity.getTempHight();
+        if (tempHight != null) {
+            stmt.bindString(33, tempHight);
+        }
+ 
+        String batteryLower = entity.getBatteryLower();
+        if (batteryLower != null) {
+            stmt.bindString(34, batteryLower);
+        }
+ 
+        String sysDatetime = entity.getSysDatetime();
+        if (sysDatetime != null) {
+            stmt.bindString(35, sysDatetime);
+        }
+ 
+        String rhLower = entity.getRhLower();
+        if (rhLower != null) {
+            stmt.bindString(36, rhLower);
+        }
+ 
+        String rhHight = entity.getRhHight();
+        if (rhHight != null) {
+            stmt.bindString(37, rhHight);
+        }
+ 
+        String tempAlarmFlag = entity.getTempAlarmFlag();
+        if (tempAlarmFlag != null) {
+            stmt.bindString(38, tempAlarmFlag);
+        }
+ 
+        String rhAlarmFlag = entity.getRhAlarmFlag();
+        if (rhAlarmFlag != null) {
+            stmt.bindString(39, rhAlarmFlag);
+        }
+ 
+        String batteryAlarmFlag = entity.getBatteryAlarmFlag();
+        if (batteryAlarmFlag != null) {
+            stmt.bindString(40, batteryAlarmFlag);
+        }
+ 
+        String extPowerAlarmFlag = entity.getExtPowerAlarmFlag();
+        if (extPowerAlarmFlag != null) {
+            stmt.bindString(41, extPowerAlarmFlag);
+        }
+ 
+        String unqualifyRecordFlag = entity.getUnqualifyRecordFlag();
+        if (unqualifyRecordFlag != null) {
+            stmt.bindString(42, unqualifyRecordFlag);
+        }
+ 
+        String nextUpdateFlag = entity.getNextUpdateFlag();
+        if (nextUpdateFlag != null) {
+            stmt.bindString(43, nextUpdateFlag);
+        }
+ 
+        String updateUrl = entity.getUpdateUrl();
+        if (updateUrl != null) {
+            stmt.bindString(44, updateUrl);
+        }
+ 
+        String destination = entity.getDestination();
+        if (destination != null) {
+            stmt.bindString(45, destination);
+        }
+ 
+        String orderNo = entity.getOrderNo();
+        if (orderNo != null) {
+            stmt.bindString(46, orderNo);
+        }
+ 
+        String receiver = entity.getReceiver();
+        if (receiver != null) {
+            stmt.bindString(47, receiver);
+        }
+ 
+        String company = entity.getCompany();
+        if (company != null) {
+            stmt.bindString(48, company);
+        }
+ 
+        String devTypeFlag = entity.getDevTypeFlag();
+        if (devTypeFlag != null) {
+            stmt.bindString(49, devTypeFlag);
+        }
+ 
+        String alarmInterval = entity.getAlarmInterval();
+        if (alarmInterval != null) {
+            stmt.bindString(50, alarmInterval);
+        }
+ 
+        String equipType = entity.getEquipType();
+        if (equipType != null) {
+            stmt.bindString(51, equipType);
+        }
     }
 
     @Override
@@ -239,6 +424,137 @@ public class QueryConfigRealtimeDao extends AbstractDao<QueryConfigRealtime, Lon
         if (updateTime != null) {
             stmt.bindLong(24, updateTime.getTime());
         }
+        stmt.bindLong(25, entity.getMonitorState());
+ 
+        java.util.Date beginMonitorTime = entity.getBeginMonitorTime();
+        if (beginMonitorTime != null) {
+            stmt.bindLong(26, beginMonitorTime.getTime());
+        }
+ 
+        java.util.Date endMonitorTime = entity.getEndMonitorTime();
+        if (endMonitorTime != null) {
+            stmt.bindLong(27, endMonitorTime.getTime());
+        }
+ 
+        String devName = entity.getDevName();
+        if (devName != null) {
+            stmt.bindString(28, devName);
+        }
+ 
+        String userName = entity.getUserName();
+        if (userName != null) {
+            stmt.bindString(29, userName);
+        }
+ 
+        String devSendCycle = entity.getDevSendCycle();
+        if (devSendCycle != null) {
+            stmt.bindString(30, devSendCycle);
+        }
+ 
+        String devAutosend = entity.getDevAutosend();
+        if (devAutosend != null) {
+            stmt.bindString(31, devAutosend);
+        }
+ 
+        String tempLower = entity.getTempLower();
+        if (tempLower != null) {
+            stmt.bindString(32, tempLower);
+        }
+ 
+        String tempHight = entity.getTempHight();
+        if (tempHight != null) {
+            stmt.bindString(33, tempHight);
+        }
+ 
+        String batteryLower = entity.getBatteryLower();
+        if (batteryLower != null) {
+            stmt.bindString(34, batteryLower);
+        }
+ 
+        String sysDatetime = entity.getSysDatetime();
+        if (sysDatetime != null) {
+            stmt.bindString(35, sysDatetime);
+        }
+ 
+        String rhLower = entity.getRhLower();
+        if (rhLower != null) {
+            stmt.bindString(36, rhLower);
+        }
+ 
+        String rhHight = entity.getRhHight();
+        if (rhHight != null) {
+            stmt.bindString(37, rhHight);
+        }
+ 
+        String tempAlarmFlag = entity.getTempAlarmFlag();
+        if (tempAlarmFlag != null) {
+            stmt.bindString(38, tempAlarmFlag);
+        }
+ 
+        String rhAlarmFlag = entity.getRhAlarmFlag();
+        if (rhAlarmFlag != null) {
+            stmt.bindString(39, rhAlarmFlag);
+        }
+ 
+        String batteryAlarmFlag = entity.getBatteryAlarmFlag();
+        if (batteryAlarmFlag != null) {
+            stmt.bindString(40, batteryAlarmFlag);
+        }
+ 
+        String extPowerAlarmFlag = entity.getExtPowerAlarmFlag();
+        if (extPowerAlarmFlag != null) {
+            stmt.bindString(41, extPowerAlarmFlag);
+        }
+ 
+        String unqualifyRecordFlag = entity.getUnqualifyRecordFlag();
+        if (unqualifyRecordFlag != null) {
+            stmt.bindString(42, unqualifyRecordFlag);
+        }
+ 
+        String nextUpdateFlag = entity.getNextUpdateFlag();
+        if (nextUpdateFlag != null) {
+            stmt.bindString(43, nextUpdateFlag);
+        }
+ 
+        String updateUrl = entity.getUpdateUrl();
+        if (updateUrl != null) {
+            stmt.bindString(44, updateUrl);
+        }
+ 
+        String destination = entity.getDestination();
+        if (destination != null) {
+            stmt.bindString(45, destination);
+        }
+ 
+        String orderNo = entity.getOrderNo();
+        if (orderNo != null) {
+            stmt.bindString(46, orderNo);
+        }
+ 
+        String receiver = entity.getReceiver();
+        if (receiver != null) {
+            stmt.bindString(47, receiver);
+        }
+ 
+        String company = entity.getCompany();
+        if (company != null) {
+            stmt.bindString(48, company);
+        }
+ 
+        String devTypeFlag = entity.getDevTypeFlag();
+        if (devTypeFlag != null) {
+            stmt.bindString(49, devTypeFlag);
+        }
+ 
+        String alarmInterval = entity.getAlarmInterval();
+        if (alarmInterval != null) {
+            stmt.bindString(50, alarmInterval);
+        }
+ 
+        String equipType = entity.getEquipType();
+        if (equipType != null) {
+            stmt.bindString(51, equipType);
+        }
     }
 
     @Override
@@ -272,7 +588,34 @@ public class QueryConfigRealtimeDao extends AbstractDao<QueryConfigRealtime, Lon
             cursor.isNull(offset + 20) ? null : cursor.getString(offset + 20), // devNum
             cursor.getInt(offset + 21), // devServerPort
             cursor.isNull(offset + 22) ? null : cursor.getString(offset + 22), // devEncryption
-            cursor.isNull(offset + 23) ? null : new java.util.Date(cursor.getLong(offset + 23)) // updateTime
+            cursor.isNull(offset + 23) ? null : new java.util.Date(cursor.getLong(offset + 23)), // updateTime
+            cursor.getInt(offset + 24), // monitorState
+            cursor.isNull(offset + 25) ? null : new java.util.Date(cursor.getLong(offset + 25)), // beginMonitorTime
+            cursor.isNull(offset + 26) ? null : new java.util.Date(cursor.getLong(offset + 26)), // endMonitorTime
+            cursor.isNull(offset + 27) ? null : cursor.getString(offset + 27), // devName
+            cursor.isNull(offset + 28) ? null : cursor.getString(offset + 28), // userName
+            cursor.isNull(offset + 29) ? null : cursor.getString(offset + 29), // devSendCycle
+            cursor.isNull(offset + 30) ? null : cursor.getString(offset + 30), // devAutosend
+            cursor.isNull(offset + 31) ? null : cursor.getString(offset + 31), // tempLower
+            cursor.isNull(offset + 32) ? null : cursor.getString(offset + 32), // tempHight
+            cursor.isNull(offset + 33) ? null : cursor.getString(offset + 33), // batteryLower
+            cursor.isNull(offset + 34) ? null : cursor.getString(offset + 34), // sysDatetime
+            cursor.isNull(offset + 35) ? null : cursor.getString(offset + 35), // rhLower
+            cursor.isNull(offset + 36) ? null : cursor.getString(offset + 36), // rhHight
+            cursor.isNull(offset + 37) ? null : cursor.getString(offset + 37), // tempAlarmFlag
+            cursor.isNull(offset + 38) ? null : cursor.getString(offset + 38), // rhAlarmFlag
+            cursor.isNull(offset + 39) ? null : cursor.getString(offset + 39), // batteryAlarmFlag
+            cursor.isNull(offset + 40) ? null : cursor.getString(offset + 40), // extPowerAlarmFlag
+            cursor.isNull(offset + 41) ? null : cursor.getString(offset + 41), // unqualifyRecordFlag
+            cursor.isNull(offset + 42) ? null : cursor.getString(offset + 42), // nextUpdateFlag
+            cursor.isNull(offset + 43) ? null : cursor.getString(offset + 43), // updateUrl
+            cursor.isNull(offset + 44) ? null : cursor.getString(offset + 44), // destination
+            cursor.isNull(offset + 45) ? null : cursor.getString(offset + 45), // orderNo
+            cursor.isNull(offset + 46) ? null : cursor.getString(offset + 46), // receiver
+            cursor.isNull(offset + 47) ? null : cursor.getString(offset + 47), // company
+            cursor.isNull(offset + 48) ? null : cursor.getString(offset + 48), // devTypeFlag
+            cursor.isNull(offset + 49) ? null : cursor.getString(offset + 49), // alarmInterval
+            cursor.isNull(offset + 50) ? null : cursor.getString(offset + 50) // equipType
         );
         return entity;
     }
@@ -303,6 +646,33 @@ public class QueryConfigRealtimeDao extends AbstractDao<QueryConfigRealtime, Lon
         entity.setDevServerPort(cursor.getInt(offset + 21));
         entity.setDevEncryption(cursor.isNull(offset + 22) ? null : cursor.getString(offset + 22));
         entity.setUpdateTime(cursor.isNull(offset + 23) ? null : new java.util.Date(cursor.getLong(offset + 23)));
+        entity.setMonitorState(cursor.getInt(offset + 24));
+        entity.setBeginMonitorTime(cursor.isNull(offset + 25) ? null : new java.util.Date(cursor.getLong(offset + 25)));
+        entity.setEndMonitorTime(cursor.isNull(offset + 26) ? null : new java.util.Date(cursor.getLong(offset + 26)));
+        entity.setDevName(cursor.isNull(offset + 27) ? null : cursor.getString(offset + 27));
+        entity.setUserName(cursor.isNull(offset + 28) ? null : cursor.getString(offset + 28));
+        entity.setDevSendCycle(cursor.isNull(offset + 29) ? null : cursor.getString(offset + 29));
+        entity.setDevAutosend(cursor.isNull(offset + 30) ? null : cursor.getString(offset + 30));
+        entity.setTempLower(cursor.isNull(offset + 31) ? null : cursor.getString(offset + 31));
+        entity.setTempHight(cursor.isNull(offset + 32) ? null : cursor.getString(offset + 32));
+        entity.setBatteryLower(cursor.isNull(offset + 33) ? null : cursor.getString(offset + 33));
+        entity.setSysDatetime(cursor.isNull(offset + 34) ? null : cursor.getString(offset + 34));
+        entity.setRhLower(cursor.isNull(offset + 35) ? null : cursor.getString(offset + 35));
+        entity.setRhHight(cursor.isNull(offset + 36) ? null : cursor.getString(offset + 36));
+        entity.setTempAlarmFlag(cursor.isNull(offset + 37) ? null : cursor.getString(offset + 37));
+        entity.setRhAlarmFlag(cursor.isNull(offset + 38) ? null : cursor.getString(offset + 38));
+        entity.setBatteryAlarmFlag(cursor.isNull(offset + 39) ? null : cursor.getString(offset + 39));
+        entity.setExtPowerAlarmFlag(cursor.isNull(offset + 40) ? null : cursor.getString(offset + 40));
+        entity.setUnqualifyRecordFlag(cursor.isNull(offset + 41) ? null : cursor.getString(offset + 41));
+        entity.setNextUpdateFlag(cursor.isNull(offset + 42) ? null : cursor.getString(offset + 42));
+        entity.setUpdateUrl(cursor.isNull(offset + 43) ? null : cursor.getString(offset + 43));
+        entity.setDestination(cursor.isNull(offset + 44) ? null : cursor.getString(offset + 44));
+        entity.setOrderNo(cursor.isNull(offset + 45) ? null : cursor.getString(offset + 45));
+        entity.setReceiver(cursor.isNull(offset + 46) ? null : cursor.getString(offset + 46));
+        entity.setCompany(cursor.isNull(offset + 47) ? null : cursor.getString(offset + 47));
+        entity.setDevTypeFlag(cursor.isNull(offset + 48) ? null : cursor.getString(offset + 48));
+        entity.setAlarmInterval(cursor.isNull(offset + 49) ? null : cursor.getString(offset + 49));
+        entity.setEquipType(cursor.isNull(offset + 50) ? null : cursor.getString(offset + 50));
      }
     
     @Override

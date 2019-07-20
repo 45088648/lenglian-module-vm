@@ -1,13 +1,18 @@
 package com.beetech.module.activity;
 
+import android.app.AlertDialog;
 import android.app.KeyguardManager;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,8 +29,22 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.beetech.module.bean.QueryConfigRealtime;
+import com.beetech.module.client.ConnectUtils;
+import com.baidu.location.BDLocation;
+import com.baidu.mapapi.map.BaiduMap;
+import com.baidu.mapapi.map.BitmapDescriptor;
+import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
+import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.MarkerOptions;
+import com.baidu.mapapi.map.OverlayOptions;
+import com.baidu.mapapi.model.LatLng;
 import com.baidu.tts.chainofresponsibility.logger.LoggerProxy;
 import com.baidu.tts.client.SpeechSynthesizer;
 import com.baidu.tts.client.SpeechSynthesizerListener;
@@ -42,6 +61,7 @@ import com.beetech.module.dao.ReadDataRealtimeSDDao;
 import com.beetech.module.fragment.GridSpacingItemDecoration;
 import com.beetech.module.listener.BatteryListener;
 import com.beetech.module.listener.PhoneStatListener;
+import com.beetech.module.listener.MyBDLocationListener;
 import com.beetech.module.listener.UiMessageListener;
 import com.beetech.module.service.JobProtectService;
 import com.beetech.module.service.ModuleService;
@@ -50,19 +70,23 @@ import com.beetech.module.service.RemoteService;
 import com.beetech.module.utils.AutoCheck;
 import com.beetech.module.utils.OfflineResource;
 import com.beetech.module.utils.ServiceAliveUtils;
+import com.beetech.module.utils.NetUtils;
+import com.beetech.module.utils.DevStateUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.rscja.deviceapi.PowerLED;
-
+import com.beetech.module.application.MyApplication;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class RealtimeMonitorActivity extends AppCompatActivity {
     private final static String TAG = RealtimeMonitorActivity.class.getSimpleName();
-    private int refreshInterval = 1000*60*2; //刷新数据间隔
+    private int refreshInterval = 1000*30*1; //刷新数据间隔
 
     private AppLogSDDao appLogSDDao;
     private BatteryListener listener;
@@ -79,11 +103,15 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
     private Integer sensorCount;
 
     private ReadDataRealtimeRvAdapter readDataRealtimeRvAdapter;
-    int spanCount = 4;
-    int spacing = 20;
+    int spanCount = 1;
+    int spacing = 10;
     public ProgressDialog progressDialog;
 
-
+    //定位
+    @ViewInject(R.id.bmapView)
+    private MapView mMapView = null;
+    private BaiduMap mBaiduMap;
+    private MyApplication myApp;
 
     // ================== 初始化参数设置开始 ==========================
     /**
@@ -110,6 +138,32 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
     protected MySyntherizer synthesizer;
     protected Handler mainHandler;
 
+
+    @ViewInject(R.id.tvImei)
+    TextView tvImei;
+
+    @ViewInject(R.id.tvDevNum)
+    TextView tvDevNum;
+    @ViewInject(R.id.tvNetState)
+    TextView tvNetState;
+    @ViewInject(R.id.tvGtwState)
+    TextView tvGtwState;
+    @ViewInject(R.id.tvMonitorState)
+    TextView tvMonitorState;
+    @ViewInject(R.id.tvBeginMonitorTime)
+    TextView tvBeginMonitorTime;
+    @ViewInject(R.id.tvEndMonitorTime)
+    TextView tvEndMonitorTime;
+
+    //按钮
+    @ViewInject(R.id.btn_beginMonitor)
+    private Button btnBeginMonitor;
+
+    @ViewInject(R.id.btn_endMonitor)
+    private Button btnEndMonitor;
+
+    @ViewInject(R.id.btn_print)
+    private Button btnPrint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,6 +193,12 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
         appLogSDDao.save(TAG + " onCreate");
 
         startModuleService();
+
+        myApp = (MyApplication) getApplication();
+        //定位
+        mBaiduMap = mMapView.getMap();
+        mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
+        mBaiduMap.setMapStatus(MapStatusUpdateFactory.zoomTo(15));
 
         //电量和插拔电源状态广播监听
         if(listener == null){
@@ -184,6 +244,28 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             e.printStackTrace();
             Log.e(TAG, "初始化TTS引擎异常");
         }
+
+        initBaiduGps();
+    }
+
+
+    public  void initBaiduGps(){
+        //开启前台定位服务：
+        Notification.Builder builder = new Notification.Builder (getApplicationContext());
+        Intent nfIntent = new Intent(getBaseContext(), MainActivity.class);
+        builder.setContentIntent(PendingIntent.getActivity(getBaseContext(), 0, nfIntent, 0)) // 设置PendingIntent
+                .setContentTitle("正在进行后台定位")
+                .setSmallIcon(R.mipmap.temp)
+                .setContentText("后台定位通知")
+                .setAutoCancel(true)
+                .setWhen(System.currentTimeMillis());
+        Notification notification = builder.build();
+        notification.defaults = Notification.DEFAULT_SOUND;
+        myApp.locationService.getClient().enableLocInForeground(1001, notification);
+
+        myApp.locationListener = new MyBDLocationListener(getBaseContext());
+        myApp.locationService.registerListener(myApp.locationListener);
+//        myApp.locationService.start();
     }
 
     private void speak(String text) {
@@ -394,6 +476,68 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
         rvReadDataRealtime.setAdapter(readDataRealtimeRvAdapter);
         readDataRealtimeRvAdapter.notifyDataSetChanged();
+
+        refreshState();
+    }
+
+    //刷新左侧状态
+    public void refreshState(){
+        tvImei.setText(Constant.imei);
+        tvDevNum.setText(Constant.devNum);
+
+
+        try {
+            int dbm = 0;
+            myApp.netWorkType = NetUtils.getNetworkState(myApp);
+            if (myApp.netWorkType == NetUtils.NETWORK_WIFI) {
+                dbm = DevStateUtils.getWifiRssi(myApp);
+            }else if(myApp.netWorkType == NetUtils.NETWORK_2G || myApp.netWorkType == NetUtils.NETWORK_3G || myApp.netWorkType == NetUtils.NETWORK_4G ){
+                dbm = DevStateUtils.getMobileDbm(myApp);
+            }
+            myApp.signalStrength = dbm;
+            if(myApp.netWorkType == NetUtils.NETWORK_NONE){
+                tvNetState.setText(NetUtils.network_type_name.get(myApp.netWorkType));
+                tvNetState.setTextColor(Color.RED);
+            } else {
+                tvNetState.setText(NetUtils.network_type_name.get(myApp.netWorkType) +"  信号: "+myApp.signalStrength+"dbm");
+                tvNetState.setTextColor(Color.BLUE);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        tvGtwState.setText(ConnectUtils.HOST + ":" +ConnectUtils.PORT);
+        if(myApp.session != null){
+            if(myApp.session.isConnected()){
+                tvGtwState.setTextColor(Color.BLUE);
+            } else {
+                tvGtwState.setTextColor(Color.RED);
+            }
+        } else {
+            tvGtwState.setTextColor(Color.GRAY);
+        }
+
+        if(myApp.monitorState == 0){
+            tvMonitorState.setText("未监控");
+            tvMonitorState.setTextColor(Color.RED);
+        } else {
+            tvMonitorState.setText("监控中");
+            tvMonitorState.setTextColor(Color.BLUE);
+        }
+
+        if(myApp.beginMonitorTime != null){
+            tvBeginMonitorTime.setText(Constant.sdf1.format(myApp.beginMonitorTime));
+            tvBeginMonitorTime.setTextColor(Color.BLUE);
+        }else {
+            tvBeginMonitorTime.setText(null);
+        }
+        if(myApp.endMonitorTime != null){
+            tvEndMonitorTime.setText(Constant.sdf1.format(myApp.endMonitorTime));
+            tvEndMonitorTime.setTextColor(Color.BLUE);
+        } else {
+            tvEndMonitorTime.setText(null);
+        }
     }
 
     @Override
@@ -447,6 +591,12 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             } catch (Exception e){
                 e.printStackTrace();
                 Log.d(TAG, "监测报警异常");
+            }
+            try{
+                locRefresh();
+            } catch (Exception e){
+                e.printStackTrace();
+                Log.d(TAG, "位置刷新异常");
             }
             return 0;
         }
@@ -504,6 +654,170 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
                 e.printStackTrace();
                 Log.e(TAG, "LED 关灯异常",e);
             }
+        }
+    }
+
+    private void locRefresh(){
+        Log.d(TAG, "locRefresh");
+
+        BDLocation location = myApp.location;
+        if (location == null) {
+            return;
+        }
+        LatLng point = new LatLng(location.getLatitude(), location.getLongitude());
+        // 构建Marker图标
+        BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.loc);
+        // 构建MarkerOption，用于在地图上添加Marker
+        OverlayOptions option = new MarkerOptions().position(point).icon(bitmap);
+        // 在地图上添加Marker，并显示
+        mBaiduMap.clear();
+        mBaiduMap.addOverlay(option);
+        mBaiduMap.setMapStatus(MapStatusUpdateFactory.newLatLng(point));
+
+        //画圆
+//                    OverlayOptions ooCircle = new CircleOptions().fillColor(0x384d73b3)
+//                            .center(point).stroke(new Stroke(3, 0x784d73b3))
+//                            .radius(Float.valueOf(location.getRadius()).intValue());
+//                    mBaiduMap.addOverlay(ooCircle);
+    }
+
+    @OnClick(R.id.btn_beginMonitor)
+    public void btn_beginMonitor_onClick(View v) {
+        if(myApp.monitorState == 1){
+            AlertDialog.Builder builder = new  AlertDialog.Builder(RealtimeMonitorActivity.this);
+            builder.setMessage("已开始监控，确定要重新开始监控吗？");
+            builder.setTitle("提示");
+            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    beginMonitor();
+                    dialog.dismiss();
+                }
+            });
+            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            builder.show();
+
+        } else {
+            AlertDialog.Builder builder = new  AlertDialog.Builder(this);
+            builder.setMessage("确定要开始监控吗？");
+            builder.setTitle("提示");
+            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    beginMonitor();
+                    dialog.dismiss();
+                }
+            });
+            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            builder.show();
+        }
+
+    }
+
+    public void beginMonitor(){
+        try{
+            myApp.beginMonitorTime = new Date();
+            myApp.endMonitorTime = null;
+            myApp.monitorState = 1;
+            QueryConfigRealtime queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
+            if(queryConfigRealtime != null){
+                queryConfigRealtime.setMonitorState(myApp.monitorState);
+                queryConfigRealtime.setBeginMonitorTime(myApp.beginMonitorTime);
+                queryConfigRealtime.setEndMonitorTime(myApp.endMonitorTime);
+                myApp.queryConfigRealtimeSDDao.update(queryConfigRealtime);
+            }
+            if(!myApp.locationService.isStart()){
+                myApp.locationService.start();
+            }
+            myApp.appLogSDDao.save("开始监控");
+            Toast.makeText(RealtimeMonitorActivity.this,"开始监控", Toast.LENGTH_SHORT).show();
+            btnBeginMonitor.setTextColor(Color.BLUE);
+            btnEndMonitor.setTextColor(Color.BLACK);
+            refreshState();
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.e(TAG, "开始监控异常", e);
+        }
+    }
+
+    @OnClick(R.id.btn_endMonitor)
+    public void btn_endMonitor_onClick(View v) {
+        if(myApp.monitorState == 0){
+            AlertDialog.Builder builder = new  AlertDialog.Builder(RealtimeMonitorActivity.this);
+            builder.setMessage("未开始监控，要开始监控吗？");
+            builder.setTitle("提示");
+            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    beginMonitor();
+                    dialog.dismiss();
+                }
+            });
+            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            builder.show();
+
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("确定要结束监控吗？");
+            builder.setTitle("提示");
+            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    endMonitor();
+                    dialog.dismiss();
+                }
+            });
+            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            builder.show();
+        }
+    }
+
+    public void endMonitor(){
+        try{
+            myApp.endMonitorTime = new Date();
+            myApp.monitorState = 0;
+            QueryConfigRealtime queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
+            if(queryConfigRealtime != null){
+                queryConfigRealtime.setMonitorState(myApp.monitorState);
+                queryConfigRealtime.setEndMonitorTime(myApp.endMonitorTime);
+            }
+
+            myApp.locationService.stop();
+            myApp.appLogSDDao.save("结束监控");
+            btnBeginMonitor.setTextColor(Color.BLACK);
+            btnEndMonitor.setTextColor(Color.RED);
+            Toast.makeText(RealtimeMonitorActivity.this,"结束监控", Toast.LENGTH_SHORT).show();
+            refreshState();
+        } catch (Exception e){
+            e.printStackTrace();
+            Log.e(TAG, "结束监控异常", e);
+        }
+    }
+
+    @OnClick(R.id.btn_print)
+    public void btn_print_onClick(View v) {
+
+        try{
+            Intent intent = new Intent(RealtimeMonitorActivity.this, QueryDataAllActivity.class);
+            startActivity(intent);
+        }catch (Exception e){
+            e.printStackTrace();
         }
     }
 

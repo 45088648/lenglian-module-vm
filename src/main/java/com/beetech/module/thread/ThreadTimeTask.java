@@ -13,7 +13,8 @@ import com.beetech.module.utils.SendShtrfNoResponseUtils;
 import com.beetech.module.utils.SendShtrfUtils;
 import com.beetech.module.utils.SendVtStateUtils;
 import com.beetech.module.utils.SetTimeUtils;
-
+import com.beetech.module.utils.SendGpsDataUtils;
+import com.beetech.module.utils.LocationServiceUtils;
 import java.util.Calendar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -83,9 +84,8 @@ public class ThreadTimeTask extends Thread {
                     });
                 }
 
-
                 //授时
-                if(num != 0 && num % 55 == 0){
+                if(num != 0 && second == 31){
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {
@@ -100,8 +100,8 @@ public class ThreadTimeTask extends Thread {
                     });
                 }
 
-                //向串口发读数据报文
-                if(num != 0 && num % 5 == 0){
+                //向串口发读数据报文，从第35秒开始读取
+                if(num != 0 && second == 35){
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {
@@ -132,7 +132,6 @@ public class ThreadTimeTask extends Thread {
                     });
                 }
 
-
                 //发温湿度数据
                 if(num % 13 == 0){
                     executor.submit(new Runnable() {
@@ -144,6 +143,39 @@ public class ThreadTimeTask extends Thread {
                             } catch (Exception e){
                                 e.printStackTrace();
                                 Log.e(TAG, "SendShtrfUtils.sendShtrf 异常", e);
+                            }
+                        }
+                    });
+                }
+
+                if (num % 30 == 0) {
+                    if(num == 0 && myApp.monitorState == 1){
+                        myApp.locationService.start();
+                    }
+                    executor.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d(TAG, "LocationServiceUtils.checkLocationService run");
+                            try {
+                                LocationServiceUtils.checkLocationService(myApp);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Log.e(TAG, "LocationServiceUtils.checkLocationService异常", e);
+                            }
+                        }
+                    });
+                }
+
+                if(num % 53 == 0) {
+                    executor.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d(TAG, "SendGpsDataUtils.sendGpsData run");
+                            try {
+                                SendGpsDataUtils.sendGpsData(myApp);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Log.e(TAG, "SendGpsDataUtils.sendGpsData异常", e);
                             }
                         }
                     });

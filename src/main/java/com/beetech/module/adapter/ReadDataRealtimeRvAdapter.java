@@ -1,7 +1,6 @@
 package com.beetech.module.adapter;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,31 +48,10 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
         double rhLower = readDataRealtime.getRhLower();
         double rhHight = readDataRealtime.getRhHight();
 
-        String devGroupName = readDataRealtime.getDevGroupName();
-        if(devGroupName != null && devGroupName.length() > 6){
-            devGroupName = devGroupName.substring(0, 6);
-        }
-
-        String devName = readDataRealtime.getDevName();
-        if(devName != null && devName.length() > 6){
-            devName = devName.substring(0, 6);
-        }
-
-        String tvTempLowerHightText = tempLower+"~"+tempHight+"";
-        String tvRhLowerHightText = rhLower+"~"+rhHight+"";
-        holder.tvDevGroupName.setText(devGroupName);
-        holder.tvDevName.setText(devName);
-
-        holder.tvTempLowerHight.setText(tvTempLowerHightText);
-        holder.tvRhLowerHight.setText(tvRhLowerHightText);
-
         holder.tvSensorId.setText(readDataRealtime.getSensorId());
         holder.tvTemp.setText(temp+"℃");
         holder.tvRh.setText(rh+"%RH");
-        holder.tvSsVoltage.setText(readDataRealtime.getSsVoltage()+"v");
-        holder.tvRssi.setText(readDataRealtime.getRssi()+"dBm");
         holder.tvSensorDataTime.setText(Constant.sdf1.format(readDataRealtime.getSensorDataTime()));
-        holder.tvIndex.setText(new StringBuffer("No.").append(position+1));
         setText(holder, position);
 
         boolean isAlarm = true;
@@ -82,11 +60,11 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
         if(rhLower != 0 && rhHight != 0 && ( rh > rhHight || rh < rhLower)){
             isRhAlarm = true;
         }
-        holder.tvRh.setTextColor((isAlarm && isRhAlarm) ? Constant.COLOR_RED : Constant.COLOR_WHITE);
+        holder.tvRh.setTextColor((isAlarm && isRhAlarm) ? Constant.COLOR_RED : Constant.COLOR_BLACK);
         if(tempHight != 0 && tempHight != 0 && (temp > tempHight || temp < tempLower)){
             isTempAlarm = true;
         }
-        holder.tvTemp.setTextColor((isAlarm && isTempAlarm) ? Constant.COLOR_RED : Constant.COLOR_WHITE);
+        holder.tvTemp.setTextColor((isAlarm && isTempAlarm) ? Constant.COLOR_RED : Constant.COLOR_BLACK);
 
         //判断是否设置了监听器
         if(mOnItemClickListener != null){
@@ -139,34 +117,20 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
     class ViewHolder extends RecyclerView.ViewHolder {
 
         public LinearLayout ll;
-        public TextView tvDevGroupName;
-        public TextView tvDevName;
-        public TextView tvTempLowerHight;
-        public TextView tvRhLowerHight;
 
         public TextView tvSensorId;
         public TextView tvTemp;
         public TextView tvRh;
-        public TextView tvSsVoltage;
-        public TextView tvRssi;
-        public TextView tvIndex;
         public TextView tvSensorDataTime;
 
         public ViewHolder(View convertView) {
             super(convertView);
 
             ll = (LinearLayout) convertView.findViewById(R.id.ll);
-            tvDevGroupName = (TextView) convertView.findViewById(R.id.tvDevGroupName);
-            tvDevName = (TextView) convertView.findViewById(R.id.tvDevName);
-            tvTempLowerHight = (TextView) convertView.findViewById(R.id.tvTempLowerHight);
-            tvRhLowerHight = (TextView) convertView.findViewById(R.id.tvRhLowerHight);
 
             tvSensorId = (TextView) convertView.findViewById(R.id.tvSensorId);
             tvTemp = (TextView) convertView.findViewById(R.id.tvTemp);
             tvRh = (TextView) convertView.findViewById(R.id.tvRh);
-            tvSsVoltage = (TextView) convertView.findViewById(R.id.tvSsVoltage);
-            tvRssi = (TextView) convertView.findViewById(R.id.tvRssi);
-            tvIndex = (TextView) convertView.findViewById(R.id.tvIndex);
             tvSensorDataTime = (TextView) convertView.findViewById(R.id.tvSensorDataTime);
         }
     }

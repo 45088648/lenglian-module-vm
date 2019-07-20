@@ -5,7 +5,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.telephony.TelephonyManager;
 
 import java.util.HashMap;
@@ -19,7 +18,7 @@ public class NetUtils {
     public static final int NETWORK_4G = 4; // 4G
     public static final int NETWORK_MOBILE = 5; // 手机流量
 
-    public static Map network_type_name = new HashMap<Integer, String>(){
+    public static Map<Integer, String> network_type_name = new HashMap<Integer, String>(){
         {
             put(NETWORK_NONE, "无网络");
             put(NETWORK_WIFI, "WIFI");

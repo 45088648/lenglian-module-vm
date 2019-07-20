@@ -14,6 +14,7 @@ public class BaseSDDaoUtils {
 
     public void trancateAll(){
         myApp.readDataSDDao.truncate();
+        myApp.gpsDataSDDao.truncate();
         myApp.moduleBufSDDao.truncate();
         myApp.appLogSDDao.truncate();
         myApp.readDataRealtimeSDDao.truncate();
@@ -23,6 +24,7 @@ public class BaseSDDaoUtils {
 
     public void trancateLog(){
         myApp.readDataSDDao.truncate();
+        myApp.gpsDataSDDao.truncate();
         myApp.moduleBufSDDao.truncate();
         myApp.appLogSDDao.truncate();
         myApp.readDataRealtimeSDDao.truncate();

@@ -39,6 +39,37 @@ public class QueryConfigRealtime {
     private int devServerPort;
     private String devEncryption;
     private Date updateTime;
+    private int monitorState;
+    private Date beginMonitorTime;
+    private Date endMonitorTime;
+
+    //平台参数
+    private String devName;
+    private String userName; // 设备负责人登陆用户名
+    private String devSendCycle; // 采集周期
+    private String devAutosend; // 上报周期
+    private String tempLower; // 低温阀值
+    private String tempHight; // 高温阀值
+    private String batteryLower; // 电量阀值
+    private String sysDatetime; // 系统时间 yyyyMMddHHmmss
+
+    private String rhLower; // 低湿度阀值
+    private String rhHight; // 高湿度阀值
+    private String tempAlarmFlag; // 温度是否报警
+    private String rhAlarmFlag; // 湿度是否报警
+    private String batteryAlarmFlag; // 电量是否报警
+    private String extPowerAlarmFlag; // 外接电源是否报警
+    private String unqualifyRecordFlag; // 温度超温后是否1分钟记录一次
+    private String nextUpdateFlag; // 下次是否自动升级0:否,1:是,2:强制升级
+
+    private String updateUrl; // 升级地址
+    private String destination; // 送至目的地
+    private String orderNo; // 单号
+    private String receiver; // 收件人
+    private String company; // 公司
+    private String devTypeFlag; // 设备类型 0温度 |1温湿度
+    private String alarmInterval; //报警时间间隔： -1 不限制
+    private String equipType;//设备型号
 
     public QueryConfigRealtime(){}
 
@@ -62,13 +93,22 @@ public class QueryConfigRealtime {
         this.gwId = queryConfigResponse.getGwId();
     }
 
-    @Generated(hash = 519633115)
+    @Generated(hash = 1696840765)
     public QueryConfigRealtime(Long _id, String hardVer, String softVer,
             String customer, int debug, int category, int interval, Date calendar,
             int pattern, int bps, int channel, int ramData, int front, int rear,
             int pflashLength, int sendOk, double gwVoltage, String gwId,
             String imei, String devServerIp, String devNum, int devServerPort,
-            String devEncryption, Date updateTime) {
+            String devEncryption, Date updateTime, int monitorState,
+            Date beginMonitorTime, Date endMonitorTime, String devName,
+            String userName, String devSendCycle, String devAutosend,
+            String tempLower, String tempHight, String batteryLower,
+            String sysDatetime, String rhLower, String rhHight,
+            String tempAlarmFlag, String rhAlarmFlag, String batteryAlarmFlag,
+            String extPowerAlarmFlag, String unqualifyRecordFlag,
+            String nextUpdateFlag, String updateUrl, String destination,
+            String orderNo, String receiver, String company, String devTypeFlag,
+            String alarmInterval, String equipType) {
         this._id = _id;
         this.hardVer = hardVer;
         this.softVer = softVer;
@@ -93,6 +133,33 @@ public class QueryConfigRealtime {
         this.devServerPort = devServerPort;
         this.devEncryption = devEncryption;
         this.updateTime = updateTime;
+        this.monitorState = monitorState;
+        this.beginMonitorTime = beginMonitorTime;
+        this.endMonitorTime = endMonitorTime;
+        this.devName = devName;
+        this.userName = userName;
+        this.devSendCycle = devSendCycle;
+        this.devAutosend = devAutosend;
+        this.tempLower = tempLower;
+        this.tempHight = tempHight;
+        this.batteryLower = batteryLower;
+        this.sysDatetime = sysDatetime;
+        this.rhLower = rhLower;
+        this.rhHight = rhHight;
+        this.tempAlarmFlag = tempAlarmFlag;
+        this.rhAlarmFlag = rhAlarmFlag;
+        this.batteryAlarmFlag = batteryAlarmFlag;
+        this.extPowerAlarmFlag = extPowerAlarmFlag;
+        this.unqualifyRecordFlag = unqualifyRecordFlag;
+        this.nextUpdateFlag = nextUpdateFlag;
+        this.updateUrl = updateUrl;
+        this.destination = destination;
+        this.orderNo = orderNo;
+        this.receiver = receiver;
+        this.company = company;
+        this.devTypeFlag = devTypeFlag;
+        this.alarmInterval = alarmInterval;
+        this.equipType = equipType;
     }
 
     public Long get_id() {
@@ -316,5 +383,221 @@ public class QueryConfigRealtime {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public int getMonitorState() {
+        return monitorState;
+    }
+
+    public void setMonitorState(int monitorState) {
+        this.monitorState = monitorState;
+    }
+
+    public Date getBeginMonitorTime() {
+        return beginMonitorTime;
+    }
+
+    public void setBeginMonitorTime(Date beginMonitorTime) {
+        this.beginMonitorTime = beginMonitorTime;
+    }
+
+    public Date getEndMonitorTime() {
+        return endMonitorTime;
+    }
+
+    public void setEndMonitorTime(Date endMonitorTime) {
+        this.endMonitorTime = endMonitorTime;
+    }
+
+    public String getDevName() {
+        return devName;
+    }
+
+    public void setDevName(String devName) {
+        this.devName = devName;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getDevSendCycle() {
+        return devSendCycle;
+    }
+
+    public void setDevSendCycle(String devSendCycle) {
+        this.devSendCycle = devSendCycle;
+    }
+
+    public String getDevAutosend() {
+        return devAutosend;
+    }
+
+    public void setDevAutosend(String devAutosend) {
+        this.devAutosend = devAutosend;
+    }
+
+    public String getTempLower() {
+        return tempLower;
+    }
+
+    public void setTempLower(String tempLower) {
+        this.tempLower = tempLower;
+    }
+
+    public String getTempHight() {
+        return tempHight;
+    }
+
+    public void setTempHight(String tempHight) {
+        this.tempHight = tempHight;
+    }
+
+    public String getBatteryLower() {
+        return batteryLower;
+    }
+
+    public void setBatteryLower(String batteryLower) {
+        this.batteryLower = batteryLower;
+    }
+
+    public String getSysDatetime() {
+        return sysDatetime;
+    }
+
+    public void setSysDatetime(String sysDatetime) {
+        this.sysDatetime = sysDatetime;
+    }
+
+    public String getRhLower() {
+        return rhLower;
+    }
+
+    public void setRhLower(String rhLower) {
+        this.rhLower = rhLower;
+    }
+
+    public String getRhHight() {
+        return rhHight;
+    }
+
+    public void setRhHight(String rhHight) {
+        this.rhHight = rhHight;
+    }
+
+    public String getTempAlarmFlag() {
+        return tempAlarmFlag;
+    }
+
+    public void setTempAlarmFlag(String tempAlarmFlag) {
+        this.tempAlarmFlag = tempAlarmFlag;
+    }
+
+    public String getRhAlarmFlag() {
+        return rhAlarmFlag;
+    }
+
+    public void setRhAlarmFlag(String rhAlarmFlag) {
+        this.rhAlarmFlag = rhAlarmFlag;
+    }
+
+    public String getBatteryAlarmFlag() {
+        return batteryAlarmFlag;
+    }
+
+    public void setBatteryAlarmFlag(String batteryAlarmFlag) {
+        this.batteryAlarmFlag = batteryAlarmFlag;
+    }
+
+    public String getExtPowerAlarmFlag() {
+        return extPowerAlarmFlag;
+    }
+
+    public void setExtPowerAlarmFlag(String extPowerAlarmFlag) {
+        this.extPowerAlarmFlag = extPowerAlarmFlag;
+    }
+
+    public String getUnqualifyRecordFlag() {
+        return unqualifyRecordFlag;
+    }
+
+    public void setUnqualifyRecordFlag(String unqualifyRecordFlag) {
+        this.unqualifyRecordFlag = unqualifyRecordFlag;
+    }
+
+    public String getNextUpdateFlag() {
+        return nextUpdateFlag;
+    }
+
+    public void setNextUpdateFlag(String nextUpdateFlag) {
+        this.nextUpdateFlag = nextUpdateFlag;
+    }
+
+    public String getUpdateUrl() {
+        return updateUrl;
+    }
+
+    public void setUpdateUrl(String updateUrl) {
+        this.updateUrl = updateUrl;
+    }
+
+    public String getDestination() {
+        return destination;
+    }
+
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
+    public String getOrderNo() {
+        return orderNo;
+    }
+
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+    }
+
+    public String getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(String receiver) {
+        this.receiver = receiver;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
+    public String getDevTypeFlag() {
+        return devTypeFlag;
+    }
+
+    public void setDevTypeFlag(String devTypeFlag) {
+        this.devTypeFlag = devTypeFlag;
+    }
+
+    public String getAlarmInterval() {
+        return alarmInterval;
+    }
+
+    public void setAlarmInterval(String alarmInterval) {
+        this.alarmInterval = alarmInterval;
+    }
+
+    public String getEquipType() {
+        return equipType;
+    }
+
+    public void setEquipType(String equipType) {
+        this.equipType = equipType;
     }
 }
