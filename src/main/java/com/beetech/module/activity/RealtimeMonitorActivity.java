@@ -33,7 +33,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.beetech.module.bean.QueryConfigRealtime;
 import com.beetech.module.client.ConnectUtils;
 import com.baidu.location.BDLocation;
@@ -57,6 +56,7 @@ import com.beetech.module.control.InitConfig;
 import com.beetech.module.control.MySyntherizer;
 import com.beetech.module.control.NonBlockSyntherizer;
 import com.beetech.module.dao.AppLogSDDao;
+import com.beetech.module.dao.BaseSDDaoUtils;
 import com.beetech.module.dao.ReadDataRealtimeSDDao;
 import com.beetech.module.fragment.GridSpacingItemDecoration;
 import com.beetech.module.listener.BatteryListener;
@@ -72,6 +72,7 @@ import com.beetech.module.utils.OfflineResource;
 import com.beetech.module.utils.ServiceAliveUtils;
 import com.beetech.module.utils.NetUtils;
 import com.beetech.module.utils.DevStateUtils;
+import com.beetech.module.utils.SetDataBeginTimeUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -79,6 +80,7 @@ import com.rscja.deviceapi.PowerLED;
 import com.beetech.module.application.MyApplication;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -165,6 +167,9 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
     @ViewInject(R.id.btn_print)
     private Button btnPrint;
 
+
+    private BaseSDDaoUtils baseSDDaoUtils;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -191,10 +196,10 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
         }
 
         appLogSDDao.save(TAG + " onCreate");
-
         startModuleService();
 
         myApp = (MyApplication) getApplication();
+        baseSDDaoUtils = new BaseSDDaoUtils(myApp);
         //定位
         mBaiduMap = mMapView.getMap();
         mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
@@ -527,13 +532,13 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
         }
 
         if(myApp.beginMonitorTime != null){
-            tvBeginMonitorTime.setText(Constant.sdf1.format(myApp.beginMonitorTime));
+            tvBeginMonitorTime.setText(Constant.sdf.format(myApp.beginMonitorTime));
             tvBeginMonitorTime.setTextColor(Color.BLUE);
         }else {
             tvBeginMonitorTime.setText(null);
         }
         if(myApp.endMonitorTime != null){
-            tvEndMonitorTime.setText(Constant.sdf1.format(myApp.endMonitorTime));
+            tvEndMonitorTime.setText(Constant.sdf.format(myApp.endMonitorTime));
             tvEndMonitorTime.setTextColor(Color.BLUE);
         } else {
             tvEndMonitorTime.setText(null);
@@ -724,7 +729,14 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
     public void beginMonitor(){
         try{
-            myApp.beginMonitorTime = new Date();
+            //删除历史数据
+            baseSDDaoUtils.trancateLog();
+
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.MINUTE, 1); // 延迟一分钟启动时间
+            cal.set(Calendar.SECOND, 0); //秒和毫秒取0
+            cal.set(Calendar.MILLISECOND, 0);
+            myApp.beginMonitorTime = cal.getTime();
             myApp.endMonitorTime = null;
             myApp.monitorState = 1;
             QueryConfigRealtime queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
@@ -742,6 +754,29 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             btnBeginMonitor.setTextColor(Color.BLUE);
             btnEndMonitor.setTextColor(Color.BLACK);
             refreshState();
+
+            //设置数据开始时间
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "SetDataBeginTimeUtils.setDataBeginTime");
+                    try {
+                        SetDataBeginTimeUtils.setDataBeginTime(myApp);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(RealtimeMonitorActivity.this, "设置数据开始时间完成", Toast.LENGTH_SHORT).show();
+                                SystemClock.sleep(1000);
+                                refreshState();
+                            }
+                        });
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "SetDataBeginTimeUtils.setDataBeginTime 异常", e);
+                    }
+                }
+            }).start();
         }catch (Exception e){
             e.printStackTrace();
             Log.e(TAG, "开始监控异常", e);
@@ -790,7 +825,11 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
     public void endMonitor(){
         try{
-            myApp.endMonitorTime = new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.MINUTE, -1); // 提前一分钟结束监控时间
+            cal.set(Calendar.SECOND, 0); //秒和毫秒取0
+            cal.set(Calendar.MILLISECOND, 0);
+            myApp.endMonitorTime = cal.getTime();
             myApp.monitorState = 0;
             QueryConfigRealtime queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
             if(queryConfigRealtime != null){

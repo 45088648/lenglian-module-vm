@@ -19,6 +19,7 @@ import com.beetech.module.utils.ReadNextUtils;
 import com.rscja.deviceapi.Module;
 import android.widget.Toast;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * 读取串口模块数据
@@ -141,7 +142,7 @@ public class ThreadModuleReceive extends Thread {
                 myApp.readDataResponseErrorcode = readDataResponse.getErrorcode(); // Errorcode, 记录flash发送错误的次数
 
                 if(myApp.readDataResponseError == 0){
-                    if(myApp.monitorState == 1) {
+                    if(isMontorData(readDataResponse)) {
                         try {
                             myApp.readDataSDDao.save(readDataResponse);
                         } catch (Exception e) {
@@ -206,6 +207,9 @@ public class ThreadModuleReceive extends Thread {
             if(response instanceof SetDataBeginTimeResponse){
                 SetDataBeginTimeResponse setDataBeginTimeResponse = (SetDataBeginTimeResponse)response;
                 myApp.setDataBeginTime = setDataBeginTimeResponse.getDataBeginTime();
+                Looper.prepare();
+                Toast.makeText(myApp.getApplicationContext(), "设置数据开始时间反馈："+Constant.sdf.format(myApp.setDataBeginTime), Toast.LENGTH_SHORT).show();
+                Looper.loop();
             }
 
             if(response instanceof SetTimeResponse){
@@ -214,7 +218,7 @@ public class ThreadModuleReceive extends Thread {
             if(response instanceof UpdateSSParamResponse){
                 UpdateSSParamResponse updateSSParamResponse = (UpdateSSParamResponse)response;
                 Looper.prepare();
-                Toast.makeText(myApp, "修改SS时间参数反馈："+updateSSParamResponse.getSensorId()+"~"+updateSSParamResponse.getError(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(myApp.getApplicationContext(), "修改SS时间参数反馈："+updateSSParamResponse.getSensorId()+"~"+updateSSParamResponse.getError(), Toast.LENGTH_SHORT).show();
                 Looper.loop();
             }
         }
@@ -229,5 +233,27 @@ public class ThreadModuleReceive extends Thread {
         }
 
 
+    }
+
+    /**
+     * 监控中或未监控，但采集时间是监控期间的数据
+     */
+    public boolean isMontorData(ReadDataResponse readDataResponse){
+        Date sensorDataTime = readDataResponse.getSensorDataTime();
+        if(myApp.monitorState == 1){
+            return true;
+
+        }else if(myApp.monitorState == 0){
+            if(sensorDataTime.equals(myApp.endMonitorTime) ){
+                return true;
+
+            }else if(sensorDataTime.after(myApp.endMonitorTime) && sensorDataTime.before(myApp.endMonitorTime)) {
+                return true;
+
+            }else if(sensorDataTime.equals(myApp.endMonitorTime)){
+                return true;
+            }
+        }
+        return false;
     }
 }

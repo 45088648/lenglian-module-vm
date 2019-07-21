@@ -27,7 +27,6 @@ public class BaseSDDaoUtils {
         myApp.gpsDataSDDao.truncate();
         myApp.moduleBufSDDao.truncate();
         myApp.appLogSDDao.truncate();
-        myApp.readDataRealtimeSDDao.truncate();
         myApp.vtSocketLogSDDao.truncate();
     }
 }
