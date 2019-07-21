@@ -5,8 +5,6 @@ import java.util.List;
 
 public class NodeParamRequestBean extends VtRequestBean {
 
-	private static final long serialVersionUID = 5888934478699815699L;
-
 	private NodeParamRequestBody body;
 
 	public NodeParamRequestBean() {

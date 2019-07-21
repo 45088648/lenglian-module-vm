@@ -73,6 +73,8 @@ import com.beetech.module.utils.ServiceAliveUtils;
 import com.beetech.module.utils.NetUtils;
 import com.beetech.module.utils.DevStateUtils;
 import com.beetech.module.utils.SetDataBeginTimeUtils;
+import com.beetech.module.utils.SysRequestUtils;
+import com.beetech.module.utils.ShutdownRequestUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -777,6 +779,27 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
                     }
                 }
             }).start();
+
+            //发送SYS报文
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "SysRequestUtils.requestSys");
+                    try {
+                        SysRequestUtils.requestSys(myApp);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(RealtimeMonitorActivity.this, "发送SYS报文完成", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "SysRequestUtils.requestSys 异常", e);
+                    }
+                }
+            }).start();
         }catch (Exception e){
             e.printStackTrace();
             Log.e(TAG, "开始监控异常", e);
@@ -843,6 +866,28 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             btnEndMonitor.setTextColor(Color.RED);
             Toast.makeText(RealtimeMonitorActivity.this,"结束监控", Toast.LENGTH_SHORT).show();
             refreshState();
+
+            //发送SHUTDOWN报文
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "ShutdownRequestUtils.requestShutdown");
+                    try {
+                        ShutdownRequestUtils.requestShutdown(myApp);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(RealtimeMonitorActivity.this, "发送SHUTDOWN报文完成", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "ShutdownRequestUtils.requestShutdown 异常", e);
+                    }
+                }
+            }).start();
+
         } catch (Exception e){
             e.printStackTrace();
             Log.e(TAG, "结束监控异常", e);
