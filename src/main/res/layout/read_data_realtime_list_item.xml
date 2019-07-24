@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ll"
-    android:layout_width="260dp"
-    android:minWidth="260dp"
+    android:layout_width="180dp"
+    android:minWidth="180dp"
     android:layout_height="wrap_content"
-    android:background="@drawable/corners_shape"
+    android:background="@drawable/corners_shape3"
     android:orientation="vertical">
 
     <TableRow
@@ -35,22 +35,11 @@
             android:text="TextView" />
 
         <TextView
-            android:id="@+id/tvRh"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:gravity="left"
-            android:textColor="@color/black"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            android:text="TextView" />
-
-        <TextView
             android:id="@+id/tvSensorDataTime"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:gravity="center"
+            android:layout_weight="4"
+            android:gravity="left"
             android:textColor="@color/black"
             android:textSize="10sp"
             android:textStyle="bold"

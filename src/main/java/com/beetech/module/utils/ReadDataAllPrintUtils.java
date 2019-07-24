@@ -5,6 +5,7 @@ import com.beetech.module.bean.QueryConfigRealtime;;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -82,12 +83,12 @@ public class ReadDataAllPrintUtils {
                 String titleStr = "时间 ";
                 String titleTStr = "";
                 for (int i = 0; i < dataListAll.size(); i++) {
-                    titleTStr += space + "T" + (i+1);
+                    titleTStr += space + " T" + (i+1);
                 }
                 titleStr += titleTStr;
 
                 for (int i = 0; i < colSize - 1; i++) {
-                    titleStr += space + titleStr;
+                    titleStr += space+space+space + titleStr;
                 }
                 lineList.add(titleStr);
                 dateStrSet.add(dateStr);
@@ -106,6 +107,7 @@ public class ReadDataAllPrintUtils {
                 lineStringBuffer = new StringBuffer();
                 col = 1;
             } else {
+                lineStringBuffer.append(" ");
                 col++;
             }
         }
@@ -141,6 +143,29 @@ public class ReadDataAllPrintUtils {
         sb.append("\n\n\n\n");
         //=========================
         return sb.toString();
+    }
+
+    public static List<ReadDataResponse> filterDataList(List<ReadDataResponse> dataList, int timeInterval){
+        List<ReadDataResponse> retList = new LinkedList<>();
+        if(timeInterval <= 0){
+            retList = dataList;
+
+        } else {
+            int dataListSize = dataList.size();
+            for (int i = 0; i< dataListSize; i++){
+                ReadDataResponse readDataResponse = dataList.get(i);
+                Date sensorDataTime = readDataResponse.getSensorDataTime();
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(sensorDataTime);
+
+                int min = cal.get(Calendar.MINUTE);
+                if(min % timeInterval == 0){
+                    retList.add(readDataResponse);
+                }
+            }
+        }
+
+        return retList;
     }
 
     public static void main(String[] args) {

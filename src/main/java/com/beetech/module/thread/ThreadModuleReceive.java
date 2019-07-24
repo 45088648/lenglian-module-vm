@@ -3,6 +3,7 @@ package com.beetech.module.thread;
 import android.content.Context;
 import android.os.Looper;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.Log;
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.code.BaseResponse;
@@ -95,6 +96,8 @@ public class ThreadModuleReceive extends Thread {
     //解析读取到的串口数据
     private void unpackReceiveBuf(byte[] readBuf) {
         Log.d(TAG, "unpackReceiveBuf.bufHex="+ ByteUtilities.asHex(readBuf).toUpperCase());
+
+        String toastMsg = "";
         int cmd = 0;
         int bufLen = readBuf.length;
         int index = 0;
@@ -182,20 +185,16 @@ public class ThreadModuleReceive extends Thread {
                     }
 
                 }
-
-
             }
-
 
             if (response instanceof QueryConfigResponse){
                 QueryConfigResponse queryConfigResponse = (QueryConfigResponse)response;
-
                 try {
                     myApp.queryConfigRealtimeSDDao.update(queryConfigResponse);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
+                toastMsg = "查询本地配置反馈："+Constant.sdf.format(queryConfigResponse.getCalendar());
             }
 
             if(response instanceof DeleteHistoryDataResponse){
@@ -207,22 +206,18 @@ public class ThreadModuleReceive extends Thread {
             if(response instanceof SetDataBeginTimeResponse){
                 SetDataBeginTimeResponse setDataBeginTimeResponse = (SetDataBeginTimeResponse)response;
                 myApp.setDataBeginTime = setDataBeginTimeResponse.getDataBeginTime();
-                Looper.prepare();
-                Toast.makeText(myApp.getApplicationContext(), "设置数据开始时间反馈："+Constant.sdf.format(myApp.setDataBeginTime), Toast.LENGTH_SHORT).show();
-                Looper.loop();
+                toastMsg = "设置数据开始时间反馈："+Constant.sdf.format(myApp.setDataBeginTime)+"~"+setDataBeginTimeResponse.getError();
             }
 
             if(response instanceof SetTimeResponse){
                 SetTimeResponse setTimeResponse = (SetTimeResponse)response;
             }
+
             if(response instanceof UpdateSSParamResponse){
                 UpdateSSParamResponse updateSSParamResponse = (UpdateSSParamResponse)response;
-                Looper.prepare();
-                Toast.makeText(myApp.getApplicationContext(), "修改SS时间参数反馈："+updateSSParamResponse.getSensorId()+"~"+updateSSParamResponse.getError(), Toast.LENGTH_SHORT).show();
-                Looper.loop();
+                toastMsg = "修改SS时间参数反馈："+updateSSParamResponse.getSensorId()+"~"+updateSSParamResponse.getError();
             }
         }
-
 
         if(Constant.IS_SAVE_MODULE_LOG){
             try{
@@ -232,7 +227,11 @@ public class ThreadModuleReceive extends Thread {
             }
         }
 
-
+        if(!TextUtils.isEmpty(toastMsg)){
+            Looper.prepare();
+            Toast.makeText(myApp.getApplicationContext(), toastMsg, Toast.LENGTH_SHORT).show();
+            Looper.loop();
+        }
     }
 
     /**

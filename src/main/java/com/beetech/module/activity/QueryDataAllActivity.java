@@ -1,6 +1,5 @@
 package com.beetech.module.activity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -16,6 +15,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.beetech.module.R;
@@ -31,16 +31,17 @@ import com.beetech.module.utils.ReadDataAllPrintUtils;
 import com.beetech.module.widget.time.OnDateEditClickListener;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import android.widget.ArrayAdapter;
+import com.beetech.module.constant.Constant;
 
-public class QueryDataAllActivity extends Activity {
+public class QueryDataAllActivity extends PrintActivity {
     private static final String TAG = QueryDataAllActivity.class.getSimpleName();
-
-    @ViewInject(R.id.tvTitle)
-    private TextView tvTitle;
+    private static final SimpleDateFormat dateFromat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     @ViewInject(R.id.tv_status)
     private TextView tvStatus;
@@ -61,6 +62,9 @@ public class QueryDataAllActivity extends Activity {
     @ViewInject(R.id.print_str_tv)
     private TextView printStrTv;
 
+    @ViewInject(R.id.printTimeIntval)
+    private Spinner printTimeIntvalSpin;
+
     private MyApplication myApp;
 
     public BlueToothService blueToothService;// 蓝牙打印服务对象
@@ -76,17 +80,19 @@ public class QueryDataAllActivity extends Activity {
     private PrintHandler printHandler;
     private Handler mToastHandler;
 
+    //打印参数
+    public int printTimeInterval = 5; // 打印间隔，单位：分钟
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        setContentView(R.layout.activity_query_data);
+        setContentView(R.layout.activity_query_data_all);
         ViewUtils.inject(this);
 
         myApp = (MyApplication) getApplicationContext();
-        tvTitle.setText("数据查询打印");
 
         if(blueToothService == null){
             blueToothService = new BlueToothService(this);
@@ -103,22 +109,24 @@ public class QueryDataAllActivity extends Activity {
 
         //默认最近1个小时范围
         Calendar cal = Calendar.getInstance();
+        Date endTime = null;
         if(myApp.endMonitorTime == null) {
-            timeEndEt.setText(DateUtils.parseDateToString(cal.getTime(), DateUtils.C_YYYY_MM_DD_HH_MM));
+            endTime = cal.getTime();
         } else {
             Calendar cal_endMonitor = Calendar.getInstance();
             cal_endMonitor.setTime(myApp.endMonitorTime);
-            cal_endMonitor.add(Calendar.MINUTE, 1);
-            timeEndEt.setText(DateUtils.parseDateToString(cal_endMonitor.getTime(), DateUtils.C_YYYY_MM_DD_HH_MM));
+            endTime = cal_endMonitor.getTime();
         }
+        timeEndEt.setText(dateFromat.format(endTime));
 
+        Date beginTime = null;
         if(myApp.beginMonitorTime == null){
             cal.add(Calendar.HOUR_OF_DAY, -1);
-            timeBeginEt.setText(DateUtils.parseDateToString(cal.getTime(), DateUtils.C_YYYY_MM_DD_HH_MM));
+            beginTime = cal.getTime();
         } else {
-
-            timeBeginEt.setText(DateUtils.parseDateToString(myApp.beginMonitorTime, DateUtils.C_YYYY_MM_DD_HH_MM));
+            beginTime = myApp.beginMonitorTime;
         }
+        timeBeginEt.setText(dateFromat.format(beginTime));
 
         queryBtn.setOnClickListener(new QueryBtnOnClickListener());
         printBtn.setOnClickListener(new PrintBtnOnClickListener());
@@ -128,6 +136,33 @@ public class QueryDataAllActivity extends Activity {
         tv_update.start();
 
         mToastHandler = new ToastHandler();
+
+        ArrayAdapter<String> printTimeIntvalAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, Constant.printTimeIntvalItems);
+        printTimeIntvalAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        printTimeIntvalSpin.setAdapter(printTimeIntvalAdapter);
+    }
+
+    private void getPrintSet() {
+        switch (printTimeIntvalSpin.getSelectedItemPosition()) {
+            case 0:
+                printTimeInterval = 5;
+                break;
+            case 1:
+                printTimeInterval = 10;
+                break;
+            case 2:
+                printTimeInterval = 15;
+                break;
+            case 3:
+                printTimeInterval = 30;
+                break;
+            case 4:
+                printTimeInterval = 0;
+                break;
+            default:
+                printTimeInterval = 0;
+                break;
+        }
     }
 
     class TvUpdateThread extends Thread {
@@ -199,20 +234,28 @@ public class QueryDataAllActivity extends Activity {
                 Toast.makeText(getBaseContext(), "设备信息不存在", Toast.LENGTH_SHORT).show();
                 return;
             }
+            getPrintSet();
+            Log.d(TAG, "printTimeInterval=" + printTimeInterval);
 
             List<ReadDataRealtime> readDataRealtimeList = myApp.readDataRealtimeSDDao.queryAll();
             List<List<ReadDataResponse>> dataListAll = new LinkedList<>();
             PrintSetVo printSetVo = new PrintSetVo();
+            if(readDataRealtimeList.size() >= 2){
+                printSetVo.setColSize(2);
+            }
+
             for (ReadDataRealtime readDataRealtime : readDataRealtimeList){
                 String sensorId = readDataRealtime.getSensorId();
                 List<ReadDataResponse> dataList = myApp.readDataSDDao.queryBySensorId(sensorId, timeBegin, timeEnd, Integer.MAX_VALUE, 0);
-                dataListAll.add(dataList);
+                List<ReadDataResponse> filterDataList = ReadDataAllPrintUtils.filterDataList(dataList, printTimeInterval);
+                dataListAll.add(filterDataList);
             }
             printStr = ReadDataAllPrintUtils.toPrintStr(dataListAll, printSetVo, queryConfigRealtime);
             printStrTv.setText(printStr);
             printBtn.setVisibility(View.VISIBLE);
         }
     }
+
 
     class PrintBtnOnClickListener implements View.OnClickListener {
 

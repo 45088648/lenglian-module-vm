@@ -29,4 +29,11 @@ public class BaseSDDaoUtils {
         myApp.appLogSDDao.truncate();
         myApp.vtSocketLogSDDao.truncate();
     }
+
+    public void deleteLog(){
+        myApp.readDataSDDao.deleteSent();
+        myApp.gpsDataSDDao.deleteSent();
+        myApp.moduleBufSDDao.truncate();
+        myApp.vtSocketLogSDDao.truncate();
+    }
 }

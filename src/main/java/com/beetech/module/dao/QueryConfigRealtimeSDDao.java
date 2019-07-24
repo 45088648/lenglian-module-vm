@@ -5,10 +5,11 @@ import android.text.TextUtils;
 import android.util.Log;
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.bean.QueryConfigRealtime;
+import com.beetech.module.bean.vt.SysResponseBean;
+import com.beetech.module.bean.vt.SysResponseBody;
 import com.beetech.module.client.ConnectUtils;
 import com.beetech.module.code.response.QueryConfigResponse;
 import com.beetech.module.constant.Constant;
-
 import java.util.Date;
 import java.util.List;
 
@@ -64,13 +65,52 @@ public class QueryConfigRealtimeSDDao {
 
             QueryConfigRealtime queryConfigRealtime = myApp.daoSession.getQueryConfigRealtimeDao().queryBuilder().unique();
             if(queryConfigRealtime == null){
+                queryConfigRealtime = new QueryConfigRealtime();
+                queryConfigRealtime.update(queryConfigResponse);
+                queryConfigRealtime.setImei(Constant.imei);
+                queryConfigRealtime.setDevServerIp(ConnectUtils.HOST);
+                queryConfigRealtime.setDevServerPort(ConnectUtils.PORT);
+                myApp.daoSession.getQueryConfigRealtimeDao().save(queryConfigRealtime);
                 return;
             }
+
             queryConfigRealtime.update(queryConfigResponse);
             myApp.customer = queryConfigResponse.getCustomer();
             myApp.pattern = queryConfigResponse.getPattern();
             myApp.bps = queryConfigResponse.getBps();
             myApp.channel = queryConfigResponse.getChannel();
+            myApp.daoSession.getQueryConfigRealtimeDao().updateInTx(queryConfigRealtime);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.e(TAG, "update 异常", e);
+            throw e;
+
+        } finally {
+            Log.d(TAG, "update 耗时：" + (System.currentTimeMillis() - startTimeInMills));
+        }
+    }
+
+    public void update(SysResponseBean sysResponseBean) {
+        long startTimeInMills = System.currentTimeMillis();
+        try {
+            if (sysResponseBean == null) {
+                return;
+            }
+
+            QueryConfigRealtime queryConfigRealtime = myApp.daoSession.getQueryConfigRealtimeDao().queryBuilder().unique();
+            if(queryConfigRealtime == null){
+                return;
+            }
+            SysResponseBody sysResponseBody = sysResponseBean.getData();
+            Constant.devNum = sysResponseBody.getNum();
+            ConnectUtils.HOST = sysResponseBody.getIp1();
+            ConnectUtils.PORT = sysResponseBody.getPort1();
+
+            queryConfigRealtime.setDevNum(Constant.devNum);
+            queryConfigRealtime.setDevServerIp(ConnectUtils.HOST);
+            queryConfigRealtime.setDevServerPort(ConnectUtils.PORT);
+            queryConfigRealtime.setUpdateTime(new Date());
             myApp.daoSession.getQueryConfigRealtimeDao().updateInTx(queryConfigRealtime);
 
         } catch (Exception e) {

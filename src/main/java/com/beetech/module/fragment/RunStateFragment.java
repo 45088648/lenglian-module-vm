@@ -80,8 +80,11 @@ public class RunStateFragment extends Fragment {
     @ViewInject(R.id.btnDeleteHistoryData)
     Button btnDeleteHistoryData;
 
-    @ViewInject(R.id.btnReboot)
-    private Button btnReboot;
+    @ViewInject(R.id.btnModuleFree)
+    private Button btnModuleFree;
+
+    @ViewInject(R.id.btnModuleInit)
+    private Button btnModuleInit;
 
     @ViewInject(R.id.btnSetTime)
     private Button btnSetTime;
@@ -118,10 +121,6 @@ public class RunStateFragment extends Fragment {
         // 启动刷新运行状态
         handlerRefresh.removeCallbacks(runnableRefresh);
         handlerRefresh.postDelayed(runnableRefresh, 0);
-
-        handlerRefreshRight.removeCallbacks(runnableRefreshRight);
-        handlerRefreshRight.postDelayed(runnableRefreshRight, 1000);
-
     }
 
     @OnClick(R.id.btnRefresh)
@@ -364,24 +363,37 @@ public class RunStateFragment extends Fragment {
         }
     }
 
-    @OnClick(R.id.btnReboot)
-    public void btnReboot_OnClick(View v) {
-        String bootMsg = btnReboot.getText().toString();
+    @OnClick(R.id.btnModuleFree)
+    public void btnModuleFree_OnClick(View v) {
         AlertDialog.Builder builder = new  AlertDialog.Builder(mContext);
-        builder.setMessage("确定要 "+bootMsg+" 吗？");
+        builder.setMessage("确定要 模块释放 吗？");
         builder.setTitle("提示");
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {
-                if(myApp.initResult){
-                    moduleUtils.free();
-                    btnReboot.setText("模块上电");
-                    myApp.manualStopModuleFlag = 1;
-                } else {
-                    moduleUtils.init();
-                    btnReboot.setText("模块释放");
-                    myApp.manualStopModuleFlag = 0;
-                }
+                moduleUtils.free();
+                myApp.manualStopModuleFlag = 1;
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+    @OnClick(R.id.btnModuleInit)
+    public void btnModuleInit_OnClick(View v) {
+        AlertDialog.Builder builder = new  AlertDialog.Builder(mContext);
+        builder.setMessage("确定要 模块上电 吗？");
+        builder.setTitle("提示");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                moduleUtils.init();
+                myApp.manualStopModuleFlag = 0;
 
                 dialog.dismiss();
             }
@@ -490,23 +502,5 @@ public class RunStateFragment extends Fragment {
             e.printStackTrace();
         }
     }
-
-
-    private Handler handlerRefreshRight = new Handler(){};
-    Runnable runnableRefreshRight = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                if(myApp.initResult){
-                    btnReboot.setText("模块释放");
-                } else {
-                    btnReboot.setText("模块上电");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            handlerRefreshRight.postDelayed(this, 3000);
-        }
-    };
 
 }

@@ -305,7 +305,6 @@ public class ReadDataSDDao {
         }
     }
 
-
     /**
      * 删除inputTimeEndInMills前数据
      * @param sensorDataTimeEndInMills 录入时间前
@@ -318,11 +317,30 @@ public class ReadDataSDDao {
 
         } catch (Exception e){
             e.printStackTrace();
-            Log.e(TAG, "删除deleteReadDataOld异常", e);
+            Log.e(TAG, "deleteReadDataOld 异常", e);
             throw e;
 
         } finally {
-            Log.d(TAG, "删除deleteReadDataOld耗时：" + (System.currentTimeMillis() - startTimeInMills));
+            Log.d(TAG, "deleteReadDataOld 耗时：" + (System.currentTimeMillis() - startTimeInMills));
+        }
+    }
+
+    /**
+     * 删除已发送数据
+     */
+    public void deleteSent() {
+
+        long startTimeInMills = System.currentTimeMillis();
+        try{
+            myApp.database.execSQL("DELETE FROM READ_DATA_RESPONSE where RESPONSE_FLAG > 0 ");
+
+        } catch (Exception e){
+            e.printStackTrace();
+            Log.e(TAG, "deleteSent 异常", e);
+            throw e;
+
+        } finally {
+            Log.d(TAG, "deleteSent 耗时：" + (System.currentTimeMillis() - startTimeInMills));
         }
     }
 

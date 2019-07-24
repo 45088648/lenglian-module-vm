@@ -65,4 +65,8 @@ public class Constant {
     public final static String className_moduleService = "com.beetech.module.service.ModuleService";
     public final static String className_guardService = "com.beetech.module.service.GuardService";
     public final static String className_screenCheckService = "com.beetech.module.service.ScreenCheckService";
+
+    public final static String[] printTimeIntvalItems = { "5分钟", "10分钟", "15分钟", "30分钟", "全部"};
+    public final static String[] colSizeSpinItems = { "两组", "一组", "三组"};
+
 }

@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
 import com.beetech.module.R;
+import com.beetech.module.activity.PrintActivity;
 import com.beetech.module.service.BlueToothService;
 
 
@@ -15,10 +16,10 @@ import com.beetech.module.service.BlueToothService;
  * 
  */
 public class MHandler extends Handler {
-	private Context mContext;
+	private PrintActivity printActivity;
 
-	public MHandler(Context mContext) {
-		this.mContext = mContext;
+	public MHandler(PrintActivity printActivity) {
+		this.printActivity = printActivity;
 	}
 
 	@Override
@@ -30,19 +31,20 @@ public class MHandler extends Handler {
 			case BlueToothService.STATE_CONNECTED:// 已经连接
 				break;
 			case BlueToothService.STATE_CONNECTING:// 正在连接
-				Toast.makeText(mContext, "正在连接蓝牙打印机", Toast.LENGTH_SHORT).show();
+				Toast.makeText(printActivity, "正在连接蓝牙打印机", Toast.LENGTH_SHORT).show();
 				break;
 			case BlueToothService.STATE_LISTEN:
 			case BlueToothService.STATE_NONE:
 				break;
 			case BlueToothService.SUCCESS_CONNECT:
-				Toast.makeText(mContext, mContext.getResources().getString(R.string.str_succonnect), Toast.LENGTH_SHORT).show();
+				Toast.makeText(printActivity, printActivity.getResources().getString(R.string.str_succonnect), Toast.LENGTH_SHORT).show();
+				printActivity.print();
 				break;
 			case BlueToothService.FAILED_CONNECT:
-				Toast.makeText(mContext, mContext.getResources().getString(R.string.str_faileconnect), Toast.LENGTH_SHORT).show();
+				Toast.makeText(printActivity, printActivity.getResources().getString(R.string.str_faileconnect), Toast.LENGTH_SHORT).show();
 				break;
 			case BlueToothService.LOSE_CONNECT:
-				Toast.makeText(mContext, mContext.getResources().getString(R.string.str_lose), Toast.LENGTH_SHORT).show();
+				Toast.makeText(printActivity, printActivity.getResources().getString(R.string.str_lose), Toast.LENGTH_SHORT).show();
 				break;
 			}
 			break;

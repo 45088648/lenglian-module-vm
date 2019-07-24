@@ -15,6 +15,7 @@ import com.beetech.module.handler.MHandler;
 import com.beetech.module.utils.ClsUtils;
 import com.beetech.module.utils.ConvertUtil;
 import com.beetech.module.utils.EncryStrUtils;
+import com.beetech.module.activity.PrintActivity;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -129,11 +130,11 @@ public class BlueToothService {
 		ConnectToDevice(address);// 连接蓝牙
 	}
 
-	public BlueToothService(Context context) {
+	public BlueToothService(PrintActivity printActivity) {
 		this.context = context;
 		mState = STATE_NONE;
 		adapter = BluetoothAdapter.getDefaultAdapter();
-		mHandler = new MHandler(context);
+		mHandler = new MHandler(printActivity);
 	}
 
 	public boolean HasDevice() {

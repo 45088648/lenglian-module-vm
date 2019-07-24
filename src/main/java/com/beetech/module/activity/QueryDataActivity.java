@@ -1,6 +1,5 @@
 package com.beetech.module.activity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -34,7 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class QueryDataActivity extends Activity {
+public class QueryDataActivity extends PrintActivity {
     private static final String TAG = QueryDataActivity.class.getSimpleName();
 
     @ViewInject(R.id.tvTitle)

@@ -26,6 +26,7 @@ import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
+import java.util.Timer;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -87,6 +88,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimerTask;
 
 public class RealtimeMonitorActivity extends AppCompatActivity {
     private final static String TAG = RealtimeMonitorActivity.class.getSimpleName();
@@ -108,7 +110,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
     private ReadDataRealtimeRvAdapter readDataRealtimeRvAdapter;
     int spanCount = 1;
-    int spacing = 10;
+    int spacing = 5;
     public ProgressDialog progressDialog;
 
     //定位
@@ -171,6 +173,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
 
     private BaseSDDaoUtils baseSDDaoUtils;
+    private Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,6 +205,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
         myApp = (MyApplication) getApplication();
         baseSDDaoUtils = new BaseSDDaoUtils(myApp);
+        timer = new Timer();
         //定位
         mBaiduMap = mMapView.getMap();
         mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
@@ -692,12 +696,12 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
     public void btn_beginMonitor_onClick(View v) {
         if(myApp.monitorState == 1){
             AlertDialog.Builder builder = new  AlertDialog.Builder(RealtimeMonitorActivity.this);
-            builder.setMessage("已开始监控，确定要重新开始监控吗？");
+            builder.setMessage("已 开始监控，要先 结束监控 吗？");
             builder.setTitle("提示");
             builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
                 public void onClick(DialogInterface dialog, int which) {
-                    beginMonitor();
+                    endMonitor();
                     dialog.dismiss();
                 }
             });
@@ -710,7 +714,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
         } else {
             AlertDialog.Builder builder = new  AlertDialog.Builder(this);
-            builder.setMessage("确定要开始监控吗？");
+            builder.setMessage("确定要 开始监控 吗？");
             builder.setTitle("提示");
             builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
@@ -732,12 +736,37 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
     public void beginMonitor(){
         try{
             //删除历史数据
-            baseSDDaoUtils.trancateLog();
+            baseSDDaoUtils.deleteLog();
 
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.MINUTE, 1); // 延迟一分钟启动时间
             cal.set(Calendar.SECOND, 0); //秒和毫秒取0
             cal.set(Calendar.MILLISECOND, 0);
+
+//            timer.schedule(new TimerTask() {
+//                @Override
+//                public void run() {
+//
+//                }
+//            }, cal.getTime());
+
+//            Log.d(TAG, "SetDataBeginTimeUtils.setDataBeginTime");
+//            try {
+//                SetDataBeginTimeUtils.setDataBeginTime(myApp);
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(RealtimeMonitorActivity.this, "设置数据开始时间完成", Toast.LENGTH_SHORT).show();
+//                        SystemClock.sleep(1000);
+//                        refreshState();
+//                    }
+//                });
+//
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                Log.e(TAG, "SetDataBeginTimeUtils.setDataBeginTime 异常", e);
+//            };
+
             myApp.beginMonitorTime = cal.getTime();
             myApp.endMonitorTime = null;
             myApp.monitorState = 1;
@@ -756,29 +785,6 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             btnBeginMonitor.setTextColor(Color.BLUE);
             btnEndMonitor.setTextColor(Color.BLACK);
             refreshState();
-
-            //设置数据开始时间
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(TAG, "SetDataBeginTimeUtils.setDataBeginTime");
-                    try {
-                        SetDataBeginTimeUtils.setDataBeginTime(myApp);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(RealtimeMonitorActivity.this, "设置数据开始时间完成", Toast.LENGTH_SHORT).show();
-                                SystemClock.sleep(1000);
-                                refreshState();
-                            }
-                        });
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.e(TAG, "SetDataBeginTimeUtils.setDataBeginTime 异常", e);
-                    }
-                }
-            }).start();
 
             //发送SYS报文
             new Thread(new Runnable() {
@@ -810,7 +816,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
     public void btn_endMonitor_onClick(View v) {
         if(myApp.monitorState == 0){
             AlertDialog.Builder builder = new  AlertDialog.Builder(RealtimeMonitorActivity.this);
-            builder.setMessage("未开始监控，要开始监控吗？");
+            builder.setMessage("未 开始监控，要 开始监控 吗？");
             builder.setTitle("提示");
             builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
@@ -828,7 +834,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
         } else {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("确定要结束监控吗？");
+            builder.setMessage("确定要 结束监控 吗？");
             builder.setTitle("提示");
             builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 

@@ -5,6 +5,7 @@ import android.util.Log;
 import com.alibaba.fastjson.JSON;
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.bean.vt.NodeParamResponseBean;
+import com.beetech.module.bean.vt.SysResponseBean;
 import com.beetech.module.bean.vt.VtResponseBean;
 import com.beetech.module.constant.Constant;
 import org.apache.mina.core.service.IoHandlerAdapter;
@@ -66,6 +67,11 @@ public class MyHandler extends IoHandlerAdapter {
                     if("NODEPARAM".equals(cmd) && success){
                         NodeParamResponseBean nodeParamResponseBean = JSON.parseObject(msg, NodeParamResponseBean.class);
                         myApp.readDataRealtimeSDDao.updateRealtime(nodeParamResponseBean);
+                    }
+
+                    if("SYS".equals(cmd) && success){
+                        SysResponseBean sysResponseBean = JSON.parseObject(msg, SysResponseBean.class);
+                        myApp.queryConfigRealtimeSDDao.update(sysResponseBean);
                     }
                 }
             } catch (Exception e) {

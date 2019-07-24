@@ -44,23 +44,14 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
         double tempLower = readDataRealtime.getTempLower();
         double tempHight = readDataRealtime.getTempHight();
 
-        double rh = readDataRealtime.getRh();
-        double rhLower = readDataRealtime.getRhLower();
-        double rhHight = readDataRealtime.getRhHight();
-
         holder.tvSensorId.setText(readDataRealtime.getSensorId());
         holder.tvTemp.setText(temp+"℃");
-        holder.tvRh.setText(rh+"%RH");
         holder.tvSensorDataTime.setText(Constant.sdf1.format(readDataRealtime.getSensorDataTime()));
         setText(holder, position);
 
         boolean isAlarm = true;
-        boolean isRhAlarm = false;
         boolean isTempAlarm = false;
-        if(rhLower != 0 && rhHight != 0 && ( rh > rhHight || rh < rhLower)){
-            isRhAlarm = true;
-        }
-        holder.tvRh.setTextColor((isAlarm && isRhAlarm) ? Constant.COLOR_RED : Constant.COLOR_BLACK);
+
         if(tempHight != 0 && tempHight != 0 && (temp > tempHight || temp < tempLower)){
             isTempAlarm = true;
         }
@@ -120,7 +111,6 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
 
         public TextView tvSensorId;
         public TextView tvTemp;
-        public TextView tvRh;
         public TextView tvSensorDataTime;
 
         public ViewHolder(View convertView) {
@@ -130,7 +120,6 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
 
             tvSensorId = (TextView) convertView.findViewById(R.id.tvSensorId);
             tvTemp = (TextView) convertView.findViewById(R.id.tvTemp);
-            tvRh = (TextView) convertView.findViewById(R.id.tvRh);
             tvSensorDataTime = (TextView) convertView.findViewById(R.id.tvSensorDataTime);
         }
     }

@@ -158,4 +158,25 @@ public class GpsDataSDDao {
             Log.d(TAG, "deleteOld耗时：" + (System.currentTimeMillis() - startTimeInMills));
         }
     }
+
+    /**
+     * 删除已发送数据
+     */
+    public void deleteSent() {
+
+        long startTimeInMills = System.currentTimeMillis();
+        try{
+            String sql = "DELETE FROM GPS_DATA_BEAN where SEND_FLAG > 0 ";
+            Log.d(TAG, "SQL = "+sql);
+            myApp.getDatabase().execSQL(sql);
+
+        } catch (Exception e){
+            e.printStackTrace();
+            Log.e(TAG, "deleteSent异常", e);
+            throw e;
+
+        } finally {
+            Log.d(TAG, "deleteSent耗时：" + (System.currentTimeMillis() - startTimeInMills));
+        }
+    }
 }

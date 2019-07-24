@@ -41,7 +41,7 @@ public class SendGpsDataUtils {
                     e.printStackTrace();
                 }
 
-//                WriteFuture writeResult= mSession.write(inText);
+                mSession.write(inText);
             }
         } catch (Exception e) {
             e.printStackTrace();

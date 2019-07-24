@@ -10,36 +10,10 @@
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dip"
         android:gravity="center"
+        android:layout_marginTop="0dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp">
-
-        <TextView
-            android:id="@+id/stateTv"
-            android:layout_width="0.0dip"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-
-            android:focusable="false"
-            android:enabled="false"
-
-            android:paddingLeft="8.0dip"
-            android:paddingRight="8.0dip"
-            android:singleLine="true"
-            android:textColor="@color/deep_gray"
-            android:textCursorDrawable="@null"
-            android:textSize="12.0sp"
-            android:inputType="textMultiLine"
-            android:gravity="left|top"
-            android:minLines="12" />
-    </TableRow>
-
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="5dp">
 
         <Button
             android:id="@+id/btnRefresh"
@@ -77,14 +51,14 @@
             android:layout_weight="1"
             android:text="清空日志" />
 
-
     </TableRow>
 
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dip"
+        android:layout_marginBottom="0dp"
         android:gravity="center"
+        android:layout_marginTop="0dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp">
 
@@ -122,8 +96,9 @@
     <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dip"
         android:gravity="center"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
         android:paddingLeft="5dp"
         android:paddingRight="5dp">
 
@@ -140,12 +115,20 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="清APP数据" />
+
         <Button
-            android:id="@+id/btnReboot"
+            android:id="@+id/btnModuleFree"
             android:layout_width="0.0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="模块释放" />
+
+        <Button
+            android:id="@+id/btnModuleInit"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="模块上电" />
 
         <Button
             android:id="@+id/btnSynth"
@@ -154,5 +137,35 @@
             android:layout_weight="1"
             android:text="语音合成" />
     </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dip"
+        android:gravity="center"
+        android:layout_marginTop="0dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp">
+
+        <TextView
+            android:id="@+id/stateTv"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+
+            android:focusable="false"
+            android:enabled="false"
+
+            android:paddingLeft="8.0dip"
+            android:paddingRight="8.0dip"
+            android:singleLine="true"
+            android:textColor="@color/deep_gray"
+            android:textCursorDrawable="@null"
+            android:textSize="12.0sp"
+            android:inputType="textMultiLine"
+            android:gravity="left|top"
+            android:minLines="12" />
+    </TableRow>
+
 </LinearLayout>
 </ScrollView>
