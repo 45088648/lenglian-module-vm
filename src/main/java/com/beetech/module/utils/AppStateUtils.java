@@ -3,7 +3,8 @@ package com.beetech.module.utils;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-
+import com.beetech.module.service.LocationService;
+import com.baidu.location.BDLocation;
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.bean.QueryConfigRealtime;
 import com.beetech.module.client.ConnectUtils;
@@ -55,6 +56,7 @@ public class AppStateUtils {
 
             QueryConfigRealtime queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
             if(queryConfigRealtime != null){
+                stateSb.append("GWID：").append(queryConfigRealtime.getGwId()).append(" ");
                 stateSb.append("客户码：").append(myApp.customer).append(" ");
                 stateSb.append("工作模式：").append(myApp.pattern).append(" ");
                 stateSb.append("传输速率：").append(myApp.bps).append(" ");
@@ -71,6 +73,21 @@ public class AppStateUtils {
                 stateSb.append("pflashLength：").append(myApp.pflashLengthDeleteResponse).append(" ");
                 stateSb.append(")\n");
             }
+
+            LocationService locationService = myApp.locationService;
+            String locationServiceName = locationService+"";
+
+            locationServiceName = locationServiceName.substring(locationServiceName.lastIndexOf(".")+1);
+
+            stateSb.append("定位：").append(locationServiceName).append(" ");
+            if(locationService != null){
+                stateSb.append(locationService.isStart() ? "启动" : "关闭").append(" ");
+            }
+            BDLocation location = myApp.location;
+            if(location != null){
+                stateSb.append(location.getLongitude()).append(",").append(location.getLatitude()).append(" ").append(location.getAddrStr());
+            }
+            stateSb.append("\n");
 
             IoSession mSession = myApp.session;
             stateSb.append("会话：").append(mSession).append("\n");
@@ -97,8 +114,6 @@ public class AppStateUtils {
                 stateSb.append(" ").append(Constant.NUM_RECEIVE.longValue());
             }
             stateSb.append("\n");
-
-
 
         } catch (Exception e) {
             e.printStackTrace();
