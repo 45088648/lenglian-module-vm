@@ -40,13 +40,13 @@ public class UpdateSSParamRequest extends BaseRequest {
 
 	private int preAlarmTempHight = 8; // 温度预警上限
 	private int preAlarmTempLower = 2; // 温度预警下限
-	private int preAlarmRhHight = 8; // 湿度预警上限
-	private int preAlarmRhLower = 2; // 湿度预警下限
+	private int preAlarmRhHight = 75; // 湿度预警上限
+	private int preAlarmRhLower = 35; // 湿度预警下限
 
 	private int tempHight = 8; // 温度阈值上限
 	private int tempLower = 2; // 温度阈值下限
-	private int rhHight = 8; // 湿度阈值上限
-	private int rhLower = 2; // 湿度阈值下限
+	private int rhHight = 75; // 湿度阈值上限
+	private int rhLower = 35; // 湿度阈值下限
 
 	private byte[] protocalReserved = new byte[]{0, 0};
 

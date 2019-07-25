@@ -43,7 +43,6 @@
             android:layout_weight="1"
             android:text="刷新标签" />
 
-
         <Button
             android:id="@+id/btnTruncateLog"
             android:layout_width="0.0dip"

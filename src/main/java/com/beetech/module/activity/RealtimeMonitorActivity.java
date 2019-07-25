@@ -17,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
 import android.os.SystemClock;
@@ -170,6 +171,8 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
     @ViewInject(R.id.btn_print)
     private Button btnPrint;
+    @ViewInject(R.id.btn_refreshNode)
+    private Button btnRefreshNode;
 
 
     private BaseSDDaoUtils baseSDDaoUtils;
@@ -303,7 +306,8 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             case MainHandlerConstant.PRINT:
 //                print(msg);
                 String message = (String) msg.obj;
-                if (message != null && Constant.IS_DEBUGGABLE) {
+                Log.d(TAG, message);
+                if (message != null && Constant.IS_TTSS_TOAST) {
                     Toast.makeText(RealtimeMonitorActivity.this, message, Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -596,13 +600,22 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
         @Override
         protected Integer doInBackground(String... params) {
-            queryData();
             try{
-                checkAlarm();
+                queryData();
             } catch (Exception e){
                 e.printStackTrace();
-                Log.d(TAG, "监测报警异常");
+                Log.d(TAG, "刷新数据异常");
             }
+
+            if(Constant.alarmFlag){
+                try{
+                    checkAlarm();
+                } catch (Exception e){
+                    e.printStackTrace();
+                    Log.d(TAG, "监测报警异常");
+                }
+            }
+
             try{
                 locRefresh();
             } catch (Exception e){
@@ -650,20 +663,27 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
                 speakText.append(speakTextLong);
             }
             Log.d(TAG, "speakText = "+speakText.toString());
-            speak(speakText.toString());
-
-            try {
-                PowerLED.getInstance().on();
-            }catch (Exception e){
-                e.printStackTrace();
-                Log.e(TAG, "LED 开灯异常",e);
+            if(Constant.alarmVoiceFlag){
+                speak(speakText.toString());
             }
+
+            if(Constant.alarmLightFlag){
+                try {
+                    PowerLED.getInstance().on();
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(TAG, "LED 开灯异常",e);
+                }
+            }
+
         } else {
-            try {
-                PowerLED.getInstance().off();
-            }catch (Exception e){
-                e.printStackTrace();
-                Log.e(TAG, "LED 关灯异常",e);
+            if(Constant.alarmLightFlag) {
+                try {
+                    PowerLED.getInstance().off();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e(TAG, "LED 关灯异常", e);
+                }
             }
         }
     }
@@ -911,6 +931,39 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
         }
     }
 
+    @OnClick(R.id.btn_refreshNode)
+    public void btn_refreshNode_onClick(View v) {
+        AlertDialog.Builder builder = new  AlertDialog.Builder(this);
+        builder.setMessage("确定要清空标签节点吗？");
+        builder.setTitle("提示");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    myApp.readDataRealtimeSDDao.truncate();
+
+                    Message msg = new Message();
+                    msg.obj = "清空标签监测节点";
+                    handlerToast.sendMessage(msg);
+
+                    handlerRefresh.removeCallbacks(runnableRefresh);
+                    handlerRefresh.postDelayed(runnableRefresh, 0);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e(TAG, "刷新标签异常", e);
+                } finally {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event){
         if(keyCode == KeyEvent.KEYCODE_BACK){
@@ -930,4 +983,15 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
     public void onBackPressed() {
         moveTaskToBack(true);
     }
+
+    private Handler handlerToast = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            Object toastMsg = msg.obj;
+            if(toastMsg != null){
+                Toast.makeText(RealtimeMonitorActivity.this, toastMsg.toString(), Toast.LENGTH_SHORT).show();
+            }
+            super.handleMessage(msg);
+        }
+    };
 }

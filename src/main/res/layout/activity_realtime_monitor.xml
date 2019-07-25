@@ -265,5 +265,18 @@
                 />
         </TableRow>
 
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+            <Button
+                android:id="@+id/btn_refreshNode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="刷新标签"
+                />
+        </TableRow>
+
     </LinearLayout>
 </RelativeLayout>

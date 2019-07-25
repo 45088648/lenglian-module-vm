@@ -97,7 +97,7 @@ public class ThreadModuleReceive extends Thread {
     private void unpackReceiveBuf(byte[] readBuf) {
         Log.d(TAG, "unpackReceiveBuf.bufHex="+ ByteUtilities.asHex(readBuf).toUpperCase());
 
-        String toastMsg = "";
+        StringBuffer toastMsg = new StringBuffer();
         int cmd = 0;
         int bufLen = readBuf.length;
         int index = 0;
@@ -194,7 +194,7 @@ public class ThreadModuleReceive extends Thread {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                toastMsg = "查询本地配置反馈："+Constant.sdf.format(queryConfigResponse.getCalendar());
+                toastMsg.append("查询本地配置反馈：").append(Constant.sdf.format(queryConfigResponse.getCalendar()));
             }
 
             if(response instanceof DeleteHistoryDataResponse){
@@ -206,7 +206,7 @@ public class ThreadModuleReceive extends Thread {
             if(response instanceof SetDataBeginTimeResponse){
                 SetDataBeginTimeResponse setDataBeginTimeResponse = (SetDataBeginTimeResponse)response;
                 myApp.setDataBeginTime = setDataBeginTimeResponse.getDataBeginTime();
-                toastMsg = "设置数据开始时间反馈："+Constant.sdf.format(myApp.setDataBeginTime)+"~"+setDataBeginTimeResponse.getError();
+                toastMsg.append("设置数据开始时间反馈：").append(Constant.sdf.format(myApp.setDataBeginTime)+"~"+setDataBeginTimeResponse.getError());
             }
 
             if(response instanceof SetTimeResponse){
@@ -215,7 +215,10 @@ public class ThreadModuleReceive extends Thread {
 
             if(response instanceof UpdateSSParamResponse){
                 UpdateSSParamResponse updateSSParamResponse = (UpdateSSParamResponse)response;
-                toastMsg = "修改SS时间参数反馈："+updateSSParamResponse.getSensorId()+"~"+updateSSParamResponse.getError();
+                if(toastMsg.length()==0){
+                    toastMsg.append("修改SS时间参数反馈：");
+                }
+                toastMsg.append(updateSSParamResponse.getSensorId()).append("~").append(updateSSParamResponse.getError()).append(" ");
             }
         }
 
@@ -227,9 +230,9 @@ public class ThreadModuleReceive extends Thread {
             }
         }
 
-        if(!TextUtils.isEmpty(toastMsg)){
+        if(!TextUtils.isEmpty(toastMsg.toString())){
             Looper.prepare();
-            Toast.makeText(myApp.getApplicationContext(), toastMsg, Toast.LENGTH_SHORT).show();
+            Toast.makeText(myApp.getApplicationContext(), toastMsg.toString(), Toast.LENGTH_SHORT).show();
             Looper.loop();
         }
     }
@@ -243,6 +246,10 @@ public class ThreadModuleReceive extends Thread {
             return true;
 
         }else if(myApp.monitorState == 0){
+
+            if(myApp.endMonitorTime == null){
+                return false;
+            }
             if(sensorDataTime.equals(myApp.endMonitorTime) ){
                 return true;
 

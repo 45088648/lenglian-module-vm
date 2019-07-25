@@ -128,7 +128,7 @@ public class MyApplication extends Application {
         //Android Pad VT VM
         Constant.verName = "APVV"+APKVersionCodeUtils.getVerName(this);
         Constant.imei = MobileInfoUtil.getIMEI(this);
-        Constant.devNum = phoneInfoUtils.getNativePhoneNumber();
+//        Constant.devNum = phoneInfoUtils.getNativePhoneNumber();
         Constant.iccid = phoneInfoUtils.getIccid();
 
 
@@ -171,7 +171,7 @@ public class MyApplication extends Application {
             Log.d(TAG, "imei = " + imei);
 
             Constant.imei = imei;
-            Constant.phoneNumber = phoneInfoUtils.getNativePhoneNumber();
+//            Constant.phoneNumber = phoneInfoUtils.getNativePhoneNumber();
             Constant.iccid = phoneInfoUtils.getIccid();
 
             QueryConfigRealtime queryConfigRealtime = queryConfigRealtimeSDDao.queryLast();
@@ -199,6 +199,7 @@ public class MyApplication extends Application {
                 monitorState = queryConfigRealtime.getMonitorState();
                 beginMonitorTime = queryConfigRealtime.getBeginMonitorTime();
                 endMonitorTime = queryConfigRealtime.getEndMonitorTime();
+                Constant.devNum = queryConfigRealtime.getDevNum();
             }
         } catch (Exception e) {
             e.printStackTrace();

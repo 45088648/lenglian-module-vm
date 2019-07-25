@@ -7,8 +7,11 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -189,39 +192,76 @@ public class RunStateFragment extends Fragment {
 
     @OnClick(R.id.btnUpdateSSParam)
     public void btnUpdateSSParam_onClick(View v) {
-        try {
-            int ret = UpdateSSParamUtils.updateSSParam(getContext());
-            switch (ret){
-                case -2:
-                    Toast.makeText(mContext, "串口未初始化或未上电，请稍后再试", Toast.LENGTH_SHORT).show();
-                    break;
-                case -1:
-                    Toast.makeText(mContext, "无监测点", Toast.LENGTH_SHORT).show();
-                    break;
-                case 0:
-                    Toast.makeText(mContext, "已发送修改SS时间阈值指令", Toast.LENGTH_SHORT).show();
-                    break;
+        AlertDialog.Builder builder = new  AlertDialog.Builder(mContext);
+        builder.setMessage("确定要修改SS时间阈值吗？");
+        builder.setTitle("提示");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    int ret = UpdateSSParamUtils.updateSSParam(getContext());
+                    String msgContent = "";
+                    switch (ret){
+                        case -2:
+                            msgContent = "串口未初始化或未上电，请稍后再试";
+                            break;
+                        case -1:
+                            msgContent = "无监测点";
+                            break;
+                        case 0:
+                            msgContent ="已发送修改SS时间阈值指令";
+                            break;
+                    }
+                    if(!TextUtils.isEmpty(msgContent)){
+                        Message msg = new Message();
+                        msg.obj = msgContent;
+                        handlerToast.sendMessage(msg);
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    dialog.dismiss();
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+
     }
 
     @OnClick(R.id.btnRefreshNode)
     public void btnRefreshNode_onClick(View v) {
-        try {
-            int minute = 60;
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.MINUTE, -1*minute);
-            Date updateTimeEnd = cal.getTime();
-            myApp.readDataRealtimeSDDao.deleteByUpdateTime(updateTimeEnd);
+        AlertDialog.Builder builder = new  AlertDialog.Builder(mContext);
+        builder.setMessage("确定要刷新标签节点吗？");
+        builder.setTitle("提示");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
-            Toast.makeText(mContext, "删除 "+updateTimeEnd+"后未上报数据监测节点", Toast.LENGTH_SHORT).show();
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    myApp.readDataRealtimeSDDao.truncate();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, "刷新标签异常", e);
-        }
+                    Message msg = new Message();
+                    msg.obj = "清空标签监测节点";
+                    handlerToast.sendMessage(msg);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e(TAG, "刷新标签异常", e);
+                } finally {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     @OnClick(R.id.btnTruncateLog)
@@ -502,5 +542,16 @@ public class RunStateFragment extends Fragment {
             e.printStackTrace();
         }
     }
+
+    private Handler handlerToast = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            Object toastMsg = msg.obj;
+            if(toastMsg != null){
+                Toast.makeText(mContext.getApplicationContext(), toastMsg.toString(), Toast.LENGTH_SHORT).show();
+            }
+            super.handleMessage(msg);
+        }
+    };
 
 }

@@ -31,13 +31,12 @@ public class ModuleUtils {
     }
 
     public Module getInstance(){
-        Module module = myApp.module;
+        Module module = null;
         try {
-            if(module == null){
-                module = Module.getInstance();
-                myApp.module = module;
-                myApp.createTime = System.currentTimeMillis();
-            }
+            module = Module.getInstance();
+            Log.d(TAG, "module getInstance = "+module);
+            myApp.module = module;
+            myApp.createTime = System.currentTimeMillis();
         } catch (ConfigurationException e) {
             e.printStackTrace();
         }
@@ -55,6 +54,7 @@ public class ModuleUtils {
             Thread.sleep(1000);
             Log.d(TAG, "init前free， freeResult = "+freeResult);
             result = module.init(Constant.module, Constant.baudrate); // 设备上电
+            Log.d(TAG, "模块上电，module = " + Constant.module + ", baudrate=" + Constant.baudrate + ", init result="+result);
 
             myApp.initTime = System.currentTimeMillis();
             myApp.initResult = result;
