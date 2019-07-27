@@ -113,31 +113,6 @@
                 android:textColor="@color/black"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:text="网关:" />
-            <TextView
-                android:id="@+id/tvGtwState"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="4"
-                android:gravity="center"
-                android:textColor="@color/black"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:text="" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center">
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:textColor="@color/black"
-                android:textSize="12sp"
-                android:textStyle="bold"
                 android:text="监控:" />
             <TextView
                 android:id="@+id/tvMonitorState"
@@ -202,12 +177,12 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvReadDataRealtimeData"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="140dp"
         android:layout_marginLeft="10dp"
         android:padding="0dp"
         android:layout_width="185dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/corners_shape"
+        android:background="@drawable/corners_shape4"
         android:orientation="vertical"
 
         android:divider="@drawable/bg_list_selector"

@@ -3,18 +3,20 @@ package com.beetech.module.application;
 import android.app.Application;
 import android.app.Service;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.text.TextUtils;
 import android.util.Log;
-import com.beetech.module.service.LocationService;
+
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.mapapi.SDKInitializer;
 import com.beetech.module.bean.QueryConfigRealtime;
 import com.beetech.module.client.ConnectUtils;
 import com.beetech.module.cockroach.Cockroach;
+import com.beetech.module.cockroach.ExceptionHandler;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.dao.AppLogSDDao;
 import com.beetech.module.dao.GpsDataSDDao;
@@ -26,6 +28,8 @@ import com.beetech.module.dao.VtSocketLogSDDao;
 import com.beetech.module.greendao.dao.DaoMaster;
 import com.beetech.module.greendao.dao.DaoSession;
 import com.beetech.module.handler.CrashHandler;
+import com.beetech.module.handler.ModuleHandler;
+import com.beetech.module.service.LocationService;
 import com.beetech.module.thread.ThreadModuleReceive;
 import com.beetech.module.thread.ThreadTimeTask;
 import com.beetech.module.utils.APKVersionCodeUtils;
@@ -36,10 +40,11 @@ import com.beetech.module.utils.PhoneInfoUtils;
 import com.github.anrwatchdog.ANRError;
 import com.github.anrwatchdog.ANRWatchDog;
 import com.rscja.deviceapi.Module;
+
 import org.apache.mina.core.session.IoSession;
 import org.greenrobot.greendao.query.QueryBuilder;
+
 import java.util.Date;
-import com.beetech.module.cockroach.ExceptionHandler;
 import java.util.Timer;
 
 public class MyApplication extends Application {
@@ -61,16 +66,17 @@ public class MyApplication extends Application {
     public int signalStrength = 0;// 信号强度
 
     public String gwId = "00000000";
-    public String customer;
-    public int pattern; //工作模式
-    public int bps; // 传输速率
-    public int channel; // 频段
+    public static String customer;
+    public static int pattern; //工作模式
+    public static int bps; // 传输速率
+    public static int channel; // 频段
     public int serialNo = 0;
     public int readDataResponseError = 0;
     public int readDataResponseWaitSentSize1; // 待发1, Sensor RAM队列中待发数据的数量为26条。
     public int readDataResponseWaitSentSize2; // 待发2, Sensor Flash队列中待发数据的数量为0条。
     public int readDataResponseErrorcode; // Errorcode, 记录flash发送错误的次数
     public long readDataResponseTime;
+    public long moduleReceiveDataTime;
     public Date setDataBeginTime;
     public Integer frontDeleteResponse;
     public Integer rearDeleteResponse;
@@ -78,6 +84,8 @@ public class MyApplication extends Application {
 
     public ThreadModuleReceive threadModuleReceive;
     public ThreadTimeTask threadTimeTask;
+    public HandlerThread moduleHandlerThread;
+    public ModuleHandler moduleHandler;
 
     public IoSession session;
     //定位
@@ -156,8 +164,8 @@ public class MyApplication extends Application {
         install();
 
         Constant.IS_DEBUGGABLE = AppStateUtils.isDebuggable(this);
-        Constant.IS_SAVE_MODULE_LOG = AppStateUtils.isDebuggable(this);
-        Constant.IS_SAVE_SOCKET_LOG = AppStateUtils.isDebuggable(this);
+//        Constant.IS_SAVE_MODULE_LOG = AppStateUtils.isDebuggable(this);
+//        Constant.IS_SAVE_SOCKET_LOG = AppStateUtils.isDebuggable(this);
     }
 
     private void initConfig(){

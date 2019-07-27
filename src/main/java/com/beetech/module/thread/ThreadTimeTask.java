@@ -1,25 +1,24 @@
 package com.beetech.module.thread;
 
 import android.content.Context;
+import android.os.HandlerThread;
 import android.os.SystemClock;
 import android.util.Log;
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.utils.CheckSessionUtils;
 import com.beetech.module.utils.DeleteReadDataOldUtils;
-import com.beetech.module.utils.ModuleInitUtils;
-import com.beetech.module.utils.ReadDataUtils;
+import com.beetech.module.utils.LocationServiceUtils;
+import com.beetech.module.utils.SendGpsDataUtils;
 import com.beetech.module.utils.SendShtrfNoResponseUtils;
 import com.beetech.module.utils.SendShtrfUtils;
 import com.beetech.module.utils.SendVtStateUtils;
-import com.beetech.module.utils.SetTimeUtils;
-import com.beetech.module.utils.SendGpsDataUtils;
-import com.beetech.module.utils.LocationServiceUtils;
+import com.beetech.module.utils.SetSysTimeUtils;
 import java.util.Calendar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ThreadTimeTask extends Thread {
+public class ThreadTimeTask extends HandlerThread {
     private final static String TAG = ThreadTimeTask.class.getSimpleName();
 
     public final static int INTERVAL = 1000*1;
@@ -27,6 +26,9 @@ public class ThreadTimeTask extends Thread {
     public static long runTime;
     public ExecutorService executor;
     private static ThreadTimeTask instance;
+    private ThreadTimeTask() {
+        super(TAG, android.os.Process.THREAD_PRIORITY_DEFAULT);
+    }
 
     public synchronized static ThreadTimeTask getInstance() {
         if (null == instance) {
@@ -69,17 +71,11 @@ public class ThreadTimeTask extends Thread {
             try{
 
                 //模块上电
-                if(num % (60*5) == 0){
+                if(num % (60*1) == 0){
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {
-                            Log.d(TAG, "ModuleInitUtils.moduleInit");
-                            try{
-                                ModuleInitUtils.moduleInit(myApp);
-                            } catch (Exception e){
-                                e.printStackTrace();
-                                Log.e(TAG, "ModuleInitUtils.moduleInit 异常", e);
-                            }
+                            myApp.moduleHandler.sendEmptyMessage(0);
                         }
                     });
                 }
@@ -89,13 +85,14 @@ public class ThreadTimeTask extends Thread {
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {
-                            Log.d(TAG, "SetTimeUtils.setTime");
-                            try{
-                                SetTimeUtils.setTime(myApp);
-                            } catch (Exception e){
+                            Log.e(TAG, "SetSysTimeUtils.setSysTime");
+                            try {
+                                SetSysTimeUtils.setSysTime(myApp);
+                            }catch (Exception e){
                                 e.printStackTrace();
-                                Log.e(TAG, "SetTimeUtils.setTime 异常", e);
+                                Log.e(TAG, "SetSysTimeUtils.setSysTime 异常", e);
                             }
+                            myApp.moduleHandler.sendEmptyMessage(4);
                         }
                     });
                 }
@@ -105,13 +102,7 @@ public class ThreadTimeTask extends Thread {
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {
-                            Log.d(TAG, "ReadDataUtils.readData");
-                            try{
-                                ReadDataUtils.readData(myApp);
-                            } catch (Exception e){
-                                e.printStackTrace();
-                                Log.e(TAG, "ReadDataUtils.readData 异常", e);
-                            }
+                            myApp.moduleHandler.sendEmptyMessage(7);
                         }
                     });
                 }

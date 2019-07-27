@@ -3,7 +3,6 @@ package com.beetech.module.code.request;
 import com.beetech.module.bean.QueryConfigRealtime;
 import com.beetech.module.code.BaseRequest;
 import com.beetech.module.utils.ByteUtilities;
-
 import java.util.Arrays;
 
 public class UpdateConfigRequest extends BaseRequest {

@@ -1,18 +1,20 @@
 package com.beetech.module.utils;
 
+import com.beetech.module.bean.QueryConfigRealtime;
+import com.beetech.module.bean.ReadDataRealtime;
 import com.beetech.module.code.response.ReadDataResponse;
-import com.beetech.module.bean.QueryConfigRealtime;;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Date;
+import java.util.TreeMap;
 
 public class ReadDataAllPrintUtils {
 
@@ -20,7 +22,7 @@ public class ReadDataAllPrintUtils {
     public static SimpleDateFormat dateFromat = new SimpleDateFormat(DateUtils.C_YYYY_MM_DD_HH_MM_SS);
     public static SimpleDateFormat dateFromat_mm = new SimpleDateFormat(DateUtils.C_YYYY_MM_DD_HH_MM);
 
-    public static String toPrintStr(List<List<ReadDataResponse>> dataListAll, PrintSetVo printSetVo, QueryConfigRealtime queryConfigRealtime) {
+    public static String toPrintStr(List<ReadDataRealtime> readDataRealtimeList, List<List<ReadDataResponse>> dataListAll, PrintSetVo printSetVo, QueryConfigRealtime queryConfigRealtime) {
         String space = " ";
         int colSize = printSetVo.getColSize();
         int rhFlag = printSetVo.getRhFlag();
@@ -36,21 +38,19 @@ public class ReadDataAllPrintUtils {
             return null;
         }
         List<String> timeStrList = new LinkedList<>();
-        List<Map<String, Double>> timeTempDataMapList = new LinkedList<>();
+        Map<String, ReadDataResponse> timeReadDataResponseMap = new TreeMap<>();
 
         for (int i = 0; i< dataListAll.size();i++) {
             List<ReadDataResponse> dataList = dataListAll.get(i);
-            Map<String, Double> timeTempDataMap = new HashMap<>();
             for (ReadDataResponse readDataResponse : dataList) {
-                Double temp = readDataResponse.getTemp();
+                String sensorId = readDataResponse.getSensorId();
                 Date sensorDataTime = readDataResponse.getSensorDataTime();
                 String timeInMin = DateUtils.parseDateToString(sensorDataTime, DateUtils.C_YYYY_MM_DD_HH_MM);
-                timeTempDataMap.put(timeInMin, temp);
+                timeReadDataResponseMap.put(sensorId+timeInMin, readDataResponse);
                 if(!timeStrList.contains(timeInMin)){
                     timeStrList.add(timeInMin);
                 }
             }
-            timeTempDataMapList.add(timeTempDataMap);
         }
 
         List<ReadDataResponse> firstDataList = dataListAll.get(0);
@@ -64,6 +64,8 @@ public class ReadDataAllPrintUtils {
         Set<String> dateStrSet = new HashSet<>();
         int col = 1;
         StringBuffer lineStringBuffer = new StringBuffer();
+
+        Map<String, ReadDataResponse> lastReadDataResponseMap = new HashMap<>();
         for (String timeStr : timeStrList) {
 
             String dateStr = timeStr.substring(0, 10);
@@ -95,8 +97,21 @@ public class ReadDataAllPrintUtils {
             }
 
             lineStringBuffer.append(timeStr.substring(11));
-            for (Map<String, Double> timeTempDataMap : timeTempDataMapList) {
-                lineStringBuffer.append(space).append(timeTempDataMap.get(timeStr));
+
+            for (ReadDataRealtime readDataRealtime : readDataRealtimeList){
+                String sensorId = readDataRealtime.getSensorId();
+                ReadDataResponse readDataResponse = timeReadDataResponseMap.get(sensorId + timeStr);
+                if(readDataResponse == null){
+                    ReadDataResponse lastReadDataResponse = lastReadDataResponseMap.get(sensorId);
+                    if(lastReadDataResponse != null){
+                        lineStringBuffer.append(space).append(lastReadDataResponse.getTemp());
+                    } else {
+                        lineStringBuffer.append(space).append(" - ");
+                    }
+                } else {
+                    lineStringBuffer.append(space).append(readDataResponse.getTemp());
+                    lastReadDataResponseMap.put(sensorId, readDataResponse);
+                }
             }
 
             if (col == colSize) {
@@ -169,39 +184,39 @@ public class ReadDataAllPrintUtils {
     }
 
     public static void main(String[] args) {
-        List<List<ReadDataResponse>> dataListAll = new ArrayList<>();
-        List<ReadDataResponse> dataList = new ArrayList<>();
-        ReadDataResponse data1 = new ReadDataResponse();
-        data1.setTemp(25.6);
-        data1.setRh(39.6);
-        data1.setSensorDataTime(DateUtils.parseStringToDate("2019-5-17 10:05:00", DateUtils.C_YYYY_MM_DD_HH_MM_SS));
-        dataList.add(data1);
-
-        List<ReadDataResponse> dataList1 = new ArrayList<>();
-        ReadDataResponse data2 = new ReadDataResponse();
-        data2.setTemp(15.6);
-        data2.setRh(37.6);
-        data2.setSensorDataTime(DateUtils.parseStringToDate("2019-5-17 10:05:00", DateUtils.C_YYYY_MM_DD_HH_MM_SS));
-        dataList1.add(data2);
-
-        List<ReadDataResponse> dataList2 = new ArrayList<>();
-        ReadDataResponse data3 = new ReadDataResponse();
-        data3.setTemp(21.6);
-        data3.setRh(38.6);
-        data3.setSensorDataTime(DateUtils.parseStringToDate("2019-5-17 10:05:00", DateUtils.C_YYYY_MM_DD_HH_MM_SS));
-        dataList2.add(data3);
-
-        dataListAll.add(dataList);
-        dataListAll.add(dataList1);
-        dataListAll.add(dataList2);
-
-        PrintSetVo printSetVo = new PrintSetVo();
-        printSetVo.setRhFlag(0);
-        QueryConfigRealtime queryConfigRealtime = new QueryConfigRealtime();
-        queryConfigRealtime.setDevNum("19030001");
-        queryConfigRealtime.setDevName("公司大节点测试");
-        String printStr = toPrintStr(dataListAll, printSetVo, queryConfigRealtime);
-        System.out.println(printStr);
+//        List<List<ReadDataResponse>> dataListAll = new ArrayList<>();
+//        List<ReadDataResponse> dataList = new ArrayList<>();
+//        ReadDataResponse data1 = new ReadDataResponse();
+//        data1.setTemp(25.6);
+//        data1.setRh(39.6);
+//        data1.setSensorDataTime(DateUtils.parseStringToDate("2019-5-17 10:05:00", DateUtils.C_YYYY_MM_DD_HH_MM_SS));
+//        dataList.add(data1);
+//
+//        List<ReadDataResponse> dataList1 = new ArrayList<>();
+//        ReadDataResponse data2 = new ReadDataResponse();
+//        data2.setTemp(15.6);
+//        data2.setRh(37.6);
+//        data2.setSensorDataTime(DateUtils.parseStringToDate("2019-5-17 10:05:00", DateUtils.C_YYYY_MM_DD_HH_MM_SS));
+//        dataList1.add(data2);
+//
+//        List<ReadDataResponse> dataList2 = new ArrayList<>();
+//        ReadDataResponse data3 = new ReadDataResponse();
+//        data3.setTemp(21.6);
+//        data3.setRh(38.6);
+//        data3.setSensorDataTime(DateUtils.parseStringToDate("2019-5-17 10:05:00", DateUtils.C_YYYY_MM_DD_HH_MM_SS));
+//        dataList2.add(data3);
+//
+//        dataListAll.add(dataList);
+//        dataListAll.add(dataList1);
+//        dataListAll.add(dataList2);
+//
+//        PrintSetVo printSetVo = new PrintSetVo();
+//        printSetVo.setRhFlag(0);
+//        QueryConfigRealtime queryConfigRealtime = new QueryConfigRealtime();
+//        queryConfigRealtime.setDevNum("19030001");
+//        queryConfigRealtime.setDevName("公司大节点测试");
+//        String printStr = toPrintStr(dataListAll, printSetVo, queryConfigRealtime);
+//        System.out.println(printStr);
     }
 
 }

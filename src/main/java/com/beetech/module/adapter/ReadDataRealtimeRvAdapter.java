@@ -46,7 +46,7 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
 
         holder.tvSensorId.setText(readDataRealtime.getSensorId());
         holder.tvTemp.setText(temp+"℃");
-        holder.tvSensorDataTime.setText(Constant.sdf1.format(readDataRealtime.getSensorDataTime()));
+        holder.tvSensorDataTime.setText(Constant.sdf2.format(readDataRealtime.getSensorDataTime()));
         setText(holder, position);
 
         boolean isAlarm = true;

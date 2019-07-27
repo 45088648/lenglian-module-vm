@@ -9,13 +9,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.os.Handler;
 import android.util.Log;
-import com.beetech.module.handler.MHandler;
+
+import com.beetech.module.activity.PrintActivity;
+import com.beetech.module.handler.BlueToothHandler;
 import com.beetech.module.utils.ClsUtils;
 import com.beetech.module.utils.ConvertUtil;
 import com.beetech.module.utils.EncryStrUtils;
-import com.beetech.module.activity.PrintActivity;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -73,7 +74,7 @@ public class BlueToothService {
 	private static final String NAME = "BTPrinter";
 
 	// 蓝牙打印机状态handler
-	public Handler mHandler;
+	public BlueToothHandler blueToothHandler;
 
 	private Set<BluetoothDevice> devices;
 	public static String address = "00:13:EF:F1:94:A3"; // 默认的打印机-非加密的
@@ -134,7 +135,7 @@ public class BlueToothService {
 		this.context = context;
 		mState = STATE_NONE;
 		adapter = BluetoothAdapter.getDefaultAdapter();
-		mHandler = new MHandler(printActivity);
+		blueToothHandler = new BlueToothHandler(printActivity);
 	}
 
 	public boolean HasDevice() {
@@ -390,7 +391,7 @@ public class BlueToothService {
 	private void connectionSuccess() {
 		setState(STATE_CONNECTED);
 		SetPrinterInf();
-		mHandler.obtainMessage(MESSAGE_STATE_CHANGE, SUCCESS_CONNECT, -1).sendToTarget();
+		blueToothHandler.obtainMessage(MESSAGE_STATE_CHANGE, SUCCESS_CONNECT, -1).sendToTarget();
 	}
 
 	private void SetPrinterInf() {
@@ -410,7 +411,7 @@ public class BlueToothService {
 
 	private void connectionFailed() {
 		setState(STATE_LISTEN);
-		mHandler.obtainMessage(MESSAGE_STATE_CHANGE, FAILED_CONNECT, -1).sendToTarget();
+		blueToothHandler.obtainMessage(MESSAGE_STATE_CHANGE, FAILED_CONNECT, -1).sendToTarget();
 	}
 
 	/**
@@ -418,8 +419,7 @@ public class BlueToothService {
 	 */
 	private void connectionLost() {
 		setState(STATE_LISTEN);
-		mHandler.obtainMessage(MESSAGE_STATE_CHANGE, LOSE_CONNECT, -1).sendToTarget();
-
+		blueToothHandler.obtainMessage(MESSAGE_STATE_CHANGE, LOSE_CONNECT, -1).sendToTarget();
 	}
 
 	/**
@@ -649,7 +649,7 @@ public class BlueToothService {
 				mmOutStream.write(buffer);
 				Log.i("BTPWRITE", new String(buffer, "GBK"));
 				// Share the sent message back to the UI Activity
-				mHandler.obtainMessage(MESSAGE_WRITE, -1, -1, buffer).sendToTarget();
+				blueToothHandler.obtainMessage(MESSAGE_WRITE, -1, -1, buffer).sendToTarget();
 			} catch (IOException e) {
 
 			}

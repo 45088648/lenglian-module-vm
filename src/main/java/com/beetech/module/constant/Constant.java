@@ -9,6 +9,7 @@ public class Constant {
 
     public final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public final static SimpleDateFormat sdf1 = new SimpleDateFormat("yy/MM/dd HH:mm");
+    public final static SimpleDateFormat sdf2 = new SimpleDateFormat("MM/dd HH:mm");
     public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
     public static SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     public static SimpleDateFormat dateFormat2 = new SimpleDateFormat("HH:mm:ss");
@@ -54,12 +55,12 @@ public class Constant {
     public static AtomicLong NUM_RECEIVE = new AtomicLong();
     public static AtomicLong NUM = new AtomicLong();
     public static AtomicInteger readFlag = new AtomicInteger();
-    public static long readDataResponseTimeOutForReInit = 1000*60*30; // 接收传感器数据长时间超时，模块重新上电初始化依据
-    public static long readDataResponseTimeOut = 1000*5; // 接收传感器数据超时
+    public static long moduleReceiveTimeOutForReInit = 1000*60*30; // 接收网关模块数据超时，模块重新上电初始化依据
+    public static long readDataResponseTimeOut = 1000*5; // 接收网关模块温度数据超时
 
     //记录日志标志位
-    public static boolean IS_SAVE_MODULE_LOG = true; //是否记录串口日志
-    public static boolean IS_SAVE_SOCKET_LOG = true; //是否记录SOCKET日志
+    public static boolean IS_SAVE_MODULE_LOG = false; //是否记录串口日志
+    public static boolean IS_SAVE_SOCKET_LOG = false; //是否记录SOCKET日志
     public static boolean IS_DEBUGGABLE = false; //是否调试模式
     public static boolean IS_TTSS_TOAST = false; //百度语音是否toast
 
@@ -71,7 +72,7 @@ public class Constant {
     public final static String className_guardService = "com.beetech.module.service.GuardService";
     public final static String className_screenCheckService = "com.beetech.module.service.ScreenCheckService";
 
-    public final static String[] printTimeIntvalItems = { "5分钟", "10分钟", "15分钟", "30分钟", "全部"};
-    public final static String[] colSizeSpinItems = { "两组", "一组", "三组"};
+//    public final static String[] printTimeIntvalItems = { "5分钟", "4分钟", "3分钟", "2分钟", "1分钟"};
+//    public final static String[] colSizeSpinItems = { "两组", "一组", "三组"};
 
 }

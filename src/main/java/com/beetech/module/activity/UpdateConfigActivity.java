@@ -17,13 +17,8 @@ import android.widget.Toast;
 import com.beetech.module.R;
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.bean.QueryConfigRealtime;
-import com.beetech.module.code.request.UpdateConfigRequest;
-import com.beetech.module.constant.Constant;
-import com.beetech.module.utils.ByteUtilities;
-import com.beetech.module.utils.DeleteHistoryDataUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import com.rscja.deviceapi.Module;
 
 public class UpdateConfigActivity extends Activity {
     private static final String TAG = UpdateConfigActivity.class.getSimpleName();
@@ -100,12 +95,21 @@ public class UpdateConfigActivity extends Activity {
                     new Thread(){
                         @Override
                         public void run() {
-                           final boolean sendResult = updateConfig();
+                            try {
+                                myApp.customer = customerEt.getText().toString();
+                                myApp.pattern = Integer.valueOf(patternEt.getText().toString());
+                                myApp.bps = Integer.valueOf(bpsEt.getText().toString());
+                                myApp.channel = Integer.valueOf(channelEt.getText().toString());
 
+                                myApp.moduleHandler.sendEmptyMessage(84);
+                            } catch (Exception e){
+                                e.printStackTrace();
+                                Log.e(TAG, "修改模块参数异常", e);
+                            }
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(UpdateConfigActivity.this, "修改模块配置指令发送"+(sendResult ? "成功" : "失败, 先查询配置后再试"), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(UpdateConfigActivity.this, "发送修改模块配置指令完成", Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }
@@ -124,58 +128,6 @@ public class UpdateConfigActivity extends Activity {
 
         }
     }
-
-    public boolean updateConfig(){
-        boolean sendResult = false;
-        try {
-            String customer = customerEt.getText().toString();
-            String pattern = patternEt.getText().toString();
-            String bps = bpsEt.getText().toString();
-            String channel = channelEt.getText().toString();
-
-            if (queryConfigRealtime == null) {
-                return sendResult;
-            }
-
-            UpdateConfigRequest updateConfigRequest = new UpdateConfigRequest(queryConfigRealtime);
-            if (!TextUtils.isEmpty(customer)) {
-                updateConfigRequest.setCustomer(customer);
-            }
-            if (!TextUtils.isEmpty(pattern)) {
-                updateConfigRequest.setPattern(Integer.valueOf(pattern));
-            }
-            if (!TextUtils.isEmpty(bps)) {
-                updateConfigRequest.setBps(Integer.valueOf(bps));
-            }
-
-            if (!TextUtils.isEmpty(channel)) {
-                updateConfigRequest.setChannel(Integer.valueOf(channel));
-            }
-            updateConfigRequest.pack();
-            byte[] buf = updateConfigRequest.getBuf();
-            Log.d(TAG, "updateConfigRequest.buf="+ ByteUtilities.asHex(buf).toUpperCase());
-
-            Module module = myApp.module;
-            if (module != null && myApp.initResult) {
-                sendResult = module.send(buf);
-                myApp.lastWriteTime = System.currentTimeMillis();
-
-                if (Constant.IS_SAVE_MODULE_LOG) {
-                    try {
-                        myApp.moduleBufSDDao.save(buf, 0, updateConfigRequest.getCmd(), sendResult); // 保存串口通信数据
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-            Log.e(TAG, "修改模块参数异常", e);
-        }
-
-        return sendResult;
-    }
-
 
     @Override
     protected void onDestroy() {

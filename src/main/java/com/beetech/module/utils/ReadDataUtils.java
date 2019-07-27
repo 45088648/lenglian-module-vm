@@ -23,7 +23,7 @@ public class ReadDataUtils {
             if(myApp.readDataResponseTime == 0 || responseTimeInterval > Constant.readDataResponseTimeOut){
                 ReadDataRequest readDataRequest = new ReadDataRequest(myApp.gwId, 0, myApp.serialNo);
                 byte[] buf = readDataRequest.getBuf();
-                Log.d(TAG, "readDataRequest.buf="+ ByteUtilities.asHex(buf).toUpperCase()+", myApp.serialNo="+myApp.serialNo+", responseTimeInterval="+responseTimeInterval);
+                Log.d(TAG, Thread.currentThread().getName() + ", readDataRequest.buf="+ ByteUtilities.asHex(buf).toUpperCase()+", myApp.serialNo="+myApp.serialNo+", responseTimeInterval="+responseTimeInterval);
 
                 Module module = myApp.module;
                 if (module != null && myApp.initResult) {

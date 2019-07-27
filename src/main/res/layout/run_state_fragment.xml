@@ -16,6 +16,13 @@
         android:paddingRight="5dp">
 
         <Button
+            android:id="@+id/btnRet"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="返回监测" />
+
+        <Button
             android:id="@+id/btnRefresh"
             android:layout_width="0.0dip"
             android:layout_height="wrap_content"
@@ -34,7 +41,7 @@
             android:layout_width="0.0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="更新标签参数" />
+            android:text="更新标签" />
 
         <Button
             android:id="@+id/btnRefreshNode"
@@ -49,6 +56,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="清空日志" />
+
+        <Button
+            android:id="@+id/btnRebootApp"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="gone"
+            android:text="重启APP" />
 
     </TableRow>
 

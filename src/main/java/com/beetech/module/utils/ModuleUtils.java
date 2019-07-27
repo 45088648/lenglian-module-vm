@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 import com.beetech.module.application.MyApplication;
@@ -32,14 +33,20 @@ public class ModuleUtils {
 
     public Module getInstance(){
         Module module = null;
-        try {
-            module = Module.getInstance();
-            Log.d(TAG, "module getInstance = "+module);
-            myApp.module = module;
-            myApp.createTime = System.currentTimeMillis();
-        } catch (ConfigurationException e) {
-            e.printStackTrace();
-        }
+        do{
+            try {
+                module = Module.getInstance();
+                Log.d(TAG, "module getInstance = "+module);
+                myApp.module = module;
+                myApp.createTime = System.currentTimeMillis();
+            } catch (ConfigurationException e) {
+                e.printStackTrace();
+            }
+            if(myApp.module == null){
+                Log.d(TAG, "myApp.module is null");
+                SystemClock.sleep(1000);
+            }
+        } while(myApp.module == null);
         return module;
     }
 
@@ -50,9 +57,9 @@ public class ModuleUtils {
             Module module = getInstance();
             int deviceType = DeviceInfo.getDeviceType();
             Log.d(TAG, "deviceType = "+deviceType);
-            boolean freeResult = module.free();
-            Thread.sleep(1000);
-            Log.d(TAG, "init前free， freeResult = "+freeResult);
+//            boolean freeResult = module.free();
+//            Thread.sleep(1000);
+//            Log.d(TAG, "init前free， freeResult = "+freeResult);
             result = module.init(Constant.module, Constant.baudrate); // 设备上电
             Log.d(TAG, "模块上电，module = " + Constant.module + ", baudrate=" + Constant.baudrate + ", init result="+result);
 
@@ -63,7 +70,7 @@ public class ModuleUtils {
             if(result){
                 SetTimeRequest setTimeRequest = new SetTimeRequest(myApp.gwId);
                 byte[] buf = setTimeRequest.getBuf();
-                Log.d(TAG, "setTimeRequest.buf="+ ByteUtilities.asHex(buf).toUpperCase());
+                Log.d(TAG, Thread.currentThread().getName() + ", setTimeRequest.buf="+ ByteUtilities.asHex(buf).toUpperCase());
                 boolean sendResult = module.send(buf);
                 if(Constant.IS_SAVE_MODULE_LOG){
                     moduleBufSDDao.save(buf, 0, setTimeRequest.getCmd(), sendResult);

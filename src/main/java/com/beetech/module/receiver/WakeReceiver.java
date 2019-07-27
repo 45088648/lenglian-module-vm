@@ -6,10 +6,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.util.Log;
+
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.dao.AppLogSDDao;
+import com.beetech.module.handler.ModuleHandler;
 import com.beetech.module.thread.ThreadModuleReceive;
 import com.beetech.module.thread.ThreadTimeTask;
 
@@ -37,6 +40,11 @@ public class WakeReceiver extends BroadcastReceiver {
             myApp = (MyApplication)context.getApplicationContext();
 
             // 监测进程状态
+            if(myApp.moduleHandlerThread == null){
+                myApp.moduleHandlerThread = new HandlerThread("moduleHandlerThread");
+                myApp.moduleHandlerThread.start();
+                myApp.moduleHandler = new ModuleHandler(myApp, myApp.moduleHandlerThread.getLooper());
+            }
 
             //定时任务
             if(myApp.threadTimeTask == null){ // 如果线程为空，重新创建初始化启动

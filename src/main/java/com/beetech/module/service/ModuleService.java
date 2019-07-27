@@ -15,6 +15,7 @@ import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
@@ -22,10 +23,12 @@ import android.support.annotation.Nullable;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
+
 import com.beetech.module.KeepAliveConnection;
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.dao.AppLogSDDao;
+import com.beetech.module.handler.ModuleHandler;
 import com.beetech.module.listener.BatteryListener;
 import com.beetech.module.listener.PhoneStatListener;
 import com.beetech.module.receiver.ConnectReceiver;
@@ -90,6 +93,11 @@ public class ModuleService extends Service {
 
         myApp = (MyApplication)getApplicationContext();
 
+        if(myApp.moduleHandlerThread == null){
+            myApp.moduleHandlerThread = new HandlerThread("moduleHandlerThread");
+            myApp.moduleHandlerThread.start();
+            myApp.moduleHandler = new ModuleHandler(myApp, myApp.moduleHandlerThread.getLooper());
+        }
         //定时任务
         if(myApp.threadTimeTask == null){
             myApp.threadTimeTask = ThreadTimeTask.getInstance();

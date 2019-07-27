@@ -11,7 +11,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,33 +18,23 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.alibaba.fastjson.JSON;
+
 import com.beetech.module.R;
 import com.beetech.module.activity.MainActivity;
+import com.beetech.module.activity.RealtimeMonitorActivity;
 import com.beetech.module.activity.SynthActivity;
 import com.beetech.module.activity.UpdateConfigActivity;
 import com.beetech.module.application.MyApplication;
-import com.beetech.module.bean.ReadDataRealtime;
-import com.beetech.module.bean.vt.NodeParamRequestBean;
-import com.beetech.module.constant.Constant;
 import com.beetech.module.dao.BaseSDDaoUtils;
 import com.beetech.module.dao.ReadDataRealtimeSDDao;
 import com.beetech.module.dao.VtSocketLogSDDao;
 import com.beetech.module.utils.AppStateUtils;
 import com.beetech.module.utils.DeleteHistoryDataUtils;
-import com.beetech.module.utils.ModuleUtils;
 import com.beetech.module.utils.NodeParamUtils;
-import com.beetech.module.utils.QueryConfigUtils;
-import com.beetech.module.utils.SetDataBeginTimeUtils;
-import com.beetech.module.utils.SetTimeUtils;
-import com.beetech.module.utils.UpdateSSParamUtils;
+import com.beetech.module.utils.RestartUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import org.apache.mina.core.session.IoSession;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 public class RunStateFragment extends Fragment {
     private static final String TAG = RunStateFragment.class.getSimpleName();
@@ -96,8 +85,11 @@ public class RunStateFragment extends Fragment {
 
     @ViewInject(R.id.btnSynth)
     private Button btnSynth;
+    @ViewInject(R.id.btnRebootApp)
+    private Button btnRebootApp;
+    @ViewInject(R.id.btnRet)
+    private Button btnRet;
 
-    private ModuleUtils moduleUtils;
     private ReadDataRealtimeSDDao readDataRealtimeSDDao;
     private VtSocketLogSDDao vtSocketLogSDDao;
     private int refreshInterval = 1000*10; //刷新数据线程启动间隔
@@ -117,7 +109,6 @@ public class RunStateFragment extends Fragment {
         mContext = (MainActivity) getActivity();
         myApp = (MyApplication)mContext.getApplicationContext();
         baseSDDaoUtils = new BaseSDDaoUtils(mContext);
-        moduleUtils = new ModuleUtils(mContext);
         readDataRealtimeSDDao = new ReadDataRealtimeSDDao(mContext);
         vtSocketLogSDDao = new VtSocketLogSDDao(mContext);
 
@@ -134,30 +125,32 @@ public class RunStateFragment extends Fragment {
 
     @OnClick(R.id.btnQueryConfig)
     public void btnQueryConfig_onClick(View v) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "QueryConfigUtils.queryConfig");
-                try{
-                    final boolean sendResult = QueryConfigUtils.queryConfig(getContext());
-
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(mContext, "发送查询本地配置指令"+(sendResult ? "成功" : "失败"), Toast.LENGTH_SHORT).show();
-                            SystemClock.sleep(1000);
-                            refreshState();
-                        }
-                    });
-
-                } catch (Exception e){
-                    e.printStackTrace();
-                    Log.e(TAG, "QueryConfigUtils.queryConfig 异常", e);
-                }
-
-            }
-
-        }).start();
+        myApp.moduleHandler.sendEmptyMessage(1);
+//        final boolean sendResult = QueryConfigUtils.queryConfig(getContext());
+//
+//        getActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Toast.makeText(mContext, "发送查询本地配置指令"+(sendResult ? "成功" : "失败"), Toast.LENGTH_SHORT).show();
+//                SystemClock.sleep(1000);
+//                refreshState();
+//            }
+//        });
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Log.d(TAG, "QueryConfigUtils.queryConfig");
+//                try{
+//
+//
+//                } catch (Exception e){
+//                    e.printStackTrace();
+//                    Log.e(TAG, "QueryConfigUtils.queryConfig 异常", e);
+//                }
+//
+//            }
+//
+//        }).start();
     }
 
     @OnClick(R.id.btnUpdateConfig)
@@ -199,25 +192,7 @@ public class RunStateFragment extends Fragment {
 
             public void onClick(DialogInterface dialog, int which) {
                 try {
-                    int ret = UpdateSSParamUtils.updateSSParam(getContext());
-                    String msgContent = "";
-                    switch (ret){
-                        case -2:
-                            msgContent = "串口未初始化或未上电，请稍后再试";
-                            break;
-                        case -1:
-                            msgContent = "无监测点";
-                            break;
-                        case 0:
-                            msgContent ="已发送修改SS时间阈值指令";
-                            break;
-                    }
-                    if(!TextUtils.isEmpty(msgContent)){
-                        Message msg = new Message();
-                        msg.obj = msgContent;
-                        handlerToast.sendMessage(msg);
-                    }
-
+                    myApp.moduleHandler.sendEmptyMessage(0x9c);
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -411,8 +386,9 @@ public class RunStateFragment extends Fragment {
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {
-                moduleUtils.free();
+                myApp.moduleHandler.sendEmptyMessage(-1);
                 myApp.manualStopModuleFlag = 1;
+                myApp.appLogSDDao.save("模块释放手动");
                 dialog.dismiss();
             }
         });
@@ -432,9 +408,9 @@ public class RunStateFragment extends Fragment {
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {
-                moduleUtils.init();
+                myApp.moduleHandler.sendEmptyMessage(0);
                 myApp.manualStopModuleFlag = 0;
-
+                myApp.appLogSDDao.save("模块上电手动");
                 dialog.dismiss();
             }
         });
@@ -448,32 +424,71 @@ public class RunStateFragment extends Fragment {
 
     @OnClick(R.id.btnSetTime)
     public void btnSetTime_OnClick(View v) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "SetTimeUtils.setTime");
-                try {
-                    SetTimeUtils.setTime(myApp);
-                    mContext.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(mContext, "更新时间完成", Toast.LENGTH_SHORT).show();
-                            SystemClock.sleep(1000);
-                            refreshState();
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.e(TAG, "SetTimeUtils.setTime 异常", e);
-                }
-            }
-        }).start();
+        myApp.moduleHandler.sendEmptyMessage(4);
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Log.d(TAG, "SetTimeUtils.setTime");
+//                try {
+//                    SetTimeUtils.setTime(myApp);
+//                    mContext.runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            Toast.makeText(mContext, "更新时间完成", Toast.LENGTH_SHORT).show();
+//                            SystemClock.sleep(1000);
+//                            refreshState();
+//                        }
+//                    });
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    Log.e(TAG, "SetTimeUtils.setTime 异常", e);
+//                }
+//            }
+//        }).start();
     }
 
     @OnClick(R.id.btnSetDataBeginTime)
     public void btnSetDataBeginTime_OnClick(View v) {
+
+        myApp.moduleHandler.sendEmptyMessage(9);
+
+//        AlertDialog.Builder builder = new  AlertDialog.Builder(mContext);
+//        builder.setMessage("确定要设置模块数据开始时间吗？");
+//        builder.setTitle("提示");
+//        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//
+//            public void onClick(DialogInterface dialog, int which) {
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//                    }
+//                }).start();
+//                dialog.dismiss();
+//            }
+//        });
+//        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int which) {
+//                dialog.dismiss();
+//            }
+//        });
+//        builder.show();
+    }
+
+    @OnClick(R.id.btnSynth)
+    public void btnSynth_OnClick(View v) {
+        startActivity(new Intent(mContext, SynthActivity.class));
+    }
+
+    @OnClick(R.id.btnRet)
+    public void btnRet_OnClick(View v) {
+        startActivity(new Intent(mContext, RealtimeMonitorActivity.class));
+    }
+
+    @OnClick(R.id.btnRebootApp)
+    public void btnRebootApp_OnClick(View v) {
         AlertDialog.Builder builder = new  AlertDialog.Builder(mContext);
-        builder.setMessage("确定要设置模块数据开始时间吗？");
+        builder.setMessage("确定要重启应用吗？");
         builder.setTitle("提示");
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
@@ -481,21 +496,12 @@ public class RunStateFragment extends Fragment {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d(TAG, "SetDataBeginTimeUtils.setDataBeginTime");
+                        Log.d(TAG, "RestartUtils.restartApplication");
                         try {
-                            SetDataBeginTimeUtils.setDataBeginTime(myApp);
-                            mContext.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(mContext, "设置数据开始时间完成", Toast.LENGTH_SHORT).show();
-                                    SystemClock.sleep(1000);
-                                    refreshState();
-                                }
-                            });
-
+                            RestartUtils.restartApplication(mContext);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            Log.e(TAG, "SetDataBeginTimeUtils.setDataBeginTime 异常", e);
+                            Log.e(TAG, "RestartUtils.restartApplication 异常", e);
                         }
                     }
                 }).start();
@@ -508,11 +514,6 @@ public class RunStateFragment extends Fragment {
             }
         });
         builder.show();
-    }
-
-    @OnClick(R.id.btnSynth)
-    public void btnSynth_OnClick(View v) {
-        startActivity(new Intent(mContext, SynthActivity.class));
     }
 
     @Override

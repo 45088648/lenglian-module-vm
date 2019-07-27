@@ -99,6 +99,12 @@ public class AppStateUtils {
             }
             stateSb.append("\n");
 
+            stateSb.append("模块操作：").append(myApp.moduleHandlerThread);
+            if(myApp.moduleHandlerThread != null){
+                stateSb.append(" ").append(myApp.moduleHandlerThread.isAlive() ? "alive" : "");
+            }
+            stateSb.append("\n");
+
             stateSb.append("定时任务：").append(myApp.threadTimeTask);
             if(myApp.threadTimeTask != null){
                 stateSb.append(" ").append(myApp.threadTimeTask.isAlive() ? "alive" : "");

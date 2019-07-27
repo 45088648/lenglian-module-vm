@@ -27,7 +27,6 @@ import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
-import java.util.Timer;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -35,8 +34,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.beetech.module.bean.QueryConfigRealtime;
-import com.beetech.module.client.ConnectUtils;
+
 import com.baidu.location.BDLocation;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
@@ -52,6 +50,8 @@ import com.baidu.tts.client.SpeechSynthesizerListener;
 import com.baidu.tts.client.TtsMode;
 import com.beetech.module.R;
 import com.beetech.module.adapter.ReadDataRealtimeRvAdapter;
+import com.beetech.module.application.MyApplication;
+import com.beetech.module.bean.QueryConfigRealtime;
 import com.beetech.module.bean.ReadDataRealtime;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.control.InitConfig;
@@ -62,34 +62,32 @@ import com.beetech.module.dao.BaseSDDaoUtils;
 import com.beetech.module.dao.ReadDataRealtimeSDDao;
 import com.beetech.module.fragment.GridSpacingItemDecoration;
 import com.beetech.module.listener.BatteryListener;
-import com.beetech.module.listener.PhoneStatListener;
 import com.beetech.module.listener.MyBDLocationListener;
+import com.beetech.module.listener.PhoneStatListener;
 import com.beetech.module.listener.UiMessageListener;
 import com.beetech.module.service.JobProtectService;
 import com.beetech.module.service.ModuleService;
 import com.beetech.module.service.PlayerMusicService;
 import com.beetech.module.service.RemoteService;
 import com.beetech.module.utils.AutoCheck;
+import com.beetech.module.utils.DevStateUtils;
+import com.beetech.module.utils.NetUtils;
 import com.beetech.module.utils.OfflineResource;
 import com.beetech.module.utils.ServiceAliveUtils;
-import com.beetech.module.utils.NetUtils;
-import com.beetech.module.utils.DevStateUtils;
-import com.beetech.module.utils.SetDataBeginTimeUtils;
-import com.beetech.module.utils.SysRequestUtils;
 import com.beetech.module.utils.ShutdownRequestUtils;
+import com.beetech.module.utils.SysRequestUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 import com.rscja.deviceapi.PowerLED;
-import com.beetech.module.application.MyApplication;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimerTask;
+import java.util.Timer;
 
 public class RealtimeMonitorActivity extends AppCompatActivity {
     private final static String TAG = RealtimeMonitorActivity.class.getSimpleName();
@@ -153,8 +151,6 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
     TextView tvDevNum;
     @ViewInject(R.id.tvNetState)
     TextView tvNetState;
-    @ViewInject(R.id.tvGtwState)
-    TextView tvGtwState;
     @ViewInject(R.id.tvMonitorState)
     TextView tvMonitorState;
     @ViewInject(R.id.tvBeginMonitorTime)
@@ -522,16 +518,16 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        tvGtwState.setText(ConnectUtils.HOST + ":" +ConnectUtils.PORT);
-        if(myApp.session != null){
-            if(myApp.session.isConnected()){
-                tvGtwState.setTextColor(Color.BLUE);
-            } else {
-                tvGtwState.setTextColor(Color.RED);
-            }
-        } else {
-            tvGtwState.setTextColor(Color.GRAY);
-        }
+//        tvGtwState.setText(ConnectUtils.HOST + ":" +ConnectUtils.PORT);
+//        if(myApp.session != null){
+//            if(myApp.session.isConnected()){
+//                tvGtwState.setTextColor(Color.BLUE);
+//            } else {
+//                tvGtwState.setTextColor(Color.RED);
+//            }
+//        } else {
+//            tvGtwState.setTextColor(Color.GRAY);
+//        }
 
         if(myApp.monitorState == 0){
             tvMonitorState.setText("未监控");
@@ -755,6 +751,9 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
     public void beginMonitor(){
         try{
+            //设置数据开始时间
+            myApp.moduleHandler.sendEmptyMessage(9);
+
             //删除历史数据
             baseSDDaoUtils.deleteLog();
 
@@ -800,8 +799,8 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             if(!myApp.locationService.isStart()){
                 myApp.locationService.start();
             }
-            myApp.appLogSDDao.save("开始监控");
-            Toast.makeText(RealtimeMonitorActivity.this,"开始监控", Toast.LENGTH_SHORT).show();
+            myApp.appLogSDDao.save("开始监控"+Constant.sdf.format(myApp.beginMonitorTime));
+            Toast.makeText(RealtimeMonitorActivity.this, "开始监控, "+Constant.sdf.format(myApp.beginMonitorTime), Toast.LENGTH_SHORT).show();
             btnBeginMonitor.setTextColor(Color.BLUE);
             btnEndMonitor.setTextColor(Color.BLACK);
             refreshState();
@@ -875,22 +874,33 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
     public void endMonitor(){
         try{
             Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.MINUTE, -1); // 提前一分钟结束监控时间
+            cal.add(Calendar.MINUTE, -2); // 提前2分钟结束监控时间
             cal.set(Calendar.SECOND, 0); //秒和毫秒取0
             cal.set(Calendar.MILLISECOND, 0);
+            if(myApp.beginMonitorTime != null && (cal.getTime().getTime() == myApp.beginMonitorTime.getTime() || cal.getTime().before(myApp.beginMonitorTime))){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(RealtimeMonitorActivity.this, "监控时间过短，请稍后再试", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return;
+            }
             myApp.endMonitorTime = cal.getTime();
             myApp.monitorState = 0;
             QueryConfigRealtime queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
             if(queryConfigRealtime != null){
                 queryConfigRealtime.setMonitorState(myApp.monitorState);
                 queryConfigRealtime.setEndMonitorTime(myApp.endMonitorTime);
+                myApp.queryConfigRealtimeSDDao.update(queryConfigRealtime);
             }
 
             myApp.locationService.stop();
-            myApp.appLogSDDao.save("结束监控");
+            myApp.appLogSDDao.save("结束监控, "+ Constant.sdf.format(myApp.endMonitorTime));
             btnBeginMonitor.setTextColor(Color.BLACK);
             btnEndMonitor.setTextColor(Color.RED);
-            Toast.makeText(RealtimeMonitorActivity.this,"结束监控", Toast.LENGTH_SHORT).show();
+            Toast.makeText(RealtimeMonitorActivity.this,"结束监控"+ Constant.sdf.format(myApp.endMonitorTime), Toast.LENGTH_SHORT).show();
+
             refreshState();
 
             //发送SHUTDOWN报文

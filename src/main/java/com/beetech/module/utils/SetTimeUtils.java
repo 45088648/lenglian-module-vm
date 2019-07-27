@@ -1,8 +1,8 @@
 package com.beetech.module.utils;
 
 import android.content.Context;
-import android.os.SystemClock;
 import android.util.Log;
+
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.code.request.SetTimeRequest;
 import com.beetech.module.constant.Constant;
@@ -16,20 +16,18 @@ public class SetTimeUtils {
 
         try {
             MyApplication myApp = (MyApplication)context.getApplicationContext();
-            long ntpTimeInMills = NtpUtils.getTimeInMills();
+            long ntpTimeInMills = System.currentTimeMillis();
             if(ntpTimeInMills < 1559318400000L){
-                Log.e(TAG, "ntpTimeInMills < 2019-6-1");
+                Log.e(TAG, "ntpTimeInMills < 2019-6-1, ntpTimeInMills="+ntpTimeInMills);
                 return;
             }
-            boolean setCurrentTimeMillisRet = SystemClock.setCurrentTimeMillis(ntpTimeInMills);
             Log.d(TAG, "ntpTimeInMills = "+ntpTimeInMills);
-            Log.d(TAG, "setCurrentTimeMillisRet = " + setCurrentTimeMillisRet);
 
             Module module = myApp.module;
             if (module != null && myApp.initResult) {
                 SetTimeRequest setTimeRequest = new SetTimeRequest(myApp.gwId, ntpTimeInMills);
                 byte[] buf = setTimeRequest.getBuf();
-                Log.d(TAG, "setTimeRequest.buf="+ ByteUtilities.asHex(buf).toUpperCase());
+                Log.d(TAG, Thread.currentThread().getName() + ", setTimeRequest.buf="+ ByteUtilities.asHex(buf).toUpperCase());
                 boolean sendResult = module.send(buf);
                 myApp.lastWriteTime = System.currentTimeMillis();
                 if(Constant.IS_SAVE_MODULE_LOG) {

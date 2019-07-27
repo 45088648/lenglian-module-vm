@@ -1,9 +1,9 @@
 package com.beetech.module.handler;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
+
 import com.beetech.module.R;
 import com.beetech.module.activity.PrintActivity;
 import com.beetech.module.service.BlueToothService;
@@ -15,10 +15,10 @@ import com.beetech.module.service.BlueToothService;
  * @author zcs
  * 
  */
-public class MHandler extends Handler {
+public class BlueToothHandler extends Handler {
 	private PrintActivity printActivity;
 
-	public MHandler(PrintActivity printActivity) {
+	public BlueToothHandler(PrintActivity printActivity) {
 		this.printActivity = printActivity;
 	}
 

@@ -3,10 +3,11 @@ package com.beetech.module.dao;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.code.response.ReadDataResponse;
-import com.beetech.module.greendao.dao.ReadDataRealtimeDao;
 import com.beetech.module.greendao.dao.ReadDataResponseDao;
+
 import java.util.Date;
 import java.util.List;
 
@@ -105,7 +106,7 @@ public class ReadDataSDDao {
             list = myApp.daoSession.getReadDataResponseDao().queryBuilder()
                     .where(ReadDataResponseDao.Properties.SensorId.eq(sensorId))
                     .where(ReadDataResponseDao.Properties.SensorDataTime.lt(sensorDataTimeEnd))
-                    .orderDesc(ReadDataResponseDao.Properties._id)
+                    .orderDesc(ReadDataResponseDao.Properties.SensorDataTime)
                     .limit(count)
                     .offset(startPosition)
                     .list();
@@ -128,8 +129,8 @@ public class ReadDataSDDao {
             if(!TextUtils.isEmpty(sensorId)){
                 list = myApp.daoSession.getReadDataResponseDao().queryBuilder()
                         .where(ReadDataResponseDao.Properties.SensorId.eq(sensorId))
-                        .where(ReadDataResponseDao.Properties.SensorDataTime.gt(sensorDataTimeBegin))
-                        .where(ReadDataResponseDao.Properties.SensorDataTime.lt(sensorDataTimeEnd))
+                        .where(ReadDataResponseDao.Properties.SensorDataTime.ge(sensorDataTimeBegin))
+                        .where(ReadDataResponseDao.Properties.SensorDataTime.le(sensorDataTimeEnd))
                         .orderAsc(ReadDataResponseDao.Properties.SensorDataTime)
                         .limit(count)
                         .offset(startPosition)

@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -35,10 +36,10 @@ import com.lidroid.xutils.view.annotation.ViewInject;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import android.widget.ArrayAdapter;
-import com.beetech.module.constant.Constant;
+import java.util.Map;
 
 public class QueryDataAllActivity extends PrintActivity {
     private static final String TAG = QueryDataAllActivity.class.getSimpleName();
@@ -63,8 +64,8 @@ public class QueryDataAllActivity extends PrintActivity {
     @ViewInject(R.id.print_str_tv)
     private TextView printStrTv;
 
-    @ViewInject(R.id.printTimeIntval)
-    private Spinner printTimeIntvalSpin;
+    @ViewInject(R.id.printTimeInterval)
+    private Spinner printTimeIntervalSpin;
 
     private MyApplication myApp;
 
@@ -82,7 +83,9 @@ public class QueryDataAllActivity extends PrintActivity {
     private Handler mToastHandler;
 
     //打印参数
-    public int printTimeInterval = 5; // 打印间隔，单位：分钟
+    private int printTimeInterval = 5; // 打印间隔，单位：分钟
+    private List<String> printTimeIntervalList = new LinkedList<>();
+    private Map<Integer, Integer> printTimeIntervalMap = new HashMap<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -138,32 +141,20 @@ public class QueryDataAllActivity extends PrintActivity {
 
         mToastHandler = new ToastHandler();
 
-        ArrayAdapter<String> printTimeIntvalAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, Constant.printTimeIntvalItems);
-        printTimeIntvalAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        printTimeIntvalSpin.setAdapter(printTimeIntvalAdapter);
+        int index = 0;
+        printTimeIntervalList.clear();
+        printTimeIntervalMap.clear();
+        for (int i = 5; i > 0; i--){
+            printTimeIntervalList.add(i+"");
+            printTimeIntervalMap.put(index++, i);
+        }
+        ArrayAdapter<String> printTimeIntervalAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, printTimeIntervalList);
+        printTimeIntervalAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        printTimeIntervalSpin.setAdapter(printTimeIntervalAdapter);
     }
 
     private void getPrintSet() {
-        switch (printTimeIntvalSpin.getSelectedItemPosition()) {
-            case 0:
-                printTimeInterval = 5;
-                break;
-            case 1:
-                printTimeInterval = 10;
-                break;
-            case 2:
-                printTimeInterval = 15;
-                break;
-            case 3:
-                printTimeInterval = 30;
-                break;
-            case 4:
-                printTimeInterval = 0;
-                break;
-            default:
-                printTimeInterval = 0;
-                break;
-        }
+        printTimeInterval = printTimeIntervalMap.get(printTimeIntervalSpin.getSelectedItemPosition());
     }
 
     class TvUpdateThread extends Thread {
@@ -209,31 +200,46 @@ public class QueryDataAllActivity extends PrintActivity {
             try {
                 timeBeginStr = timeBeginEt.getText().toString();
                 if (TextUtils.isEmpty(timeBeginStr)) {
-                    Toast.makeText(getBaseContext(), "请选择起始时间", Toast.LENGTH_SHORT).show();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(QueryDataAllActivity.this, "请选择起始时间", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     return;
                 }
                 timeEndStr = timeEndEt.getText().toString();
                 if (TextUtils.isEmpty(timeEndStr)) {
-                    Toast.makeText(getBaseContext(), "请选择终止时间", Toast.LENGTH_SHORT).show();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(QueryDataAllActivity.this, "请选择终止时间", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     return;
                 }
                 Date timeBegin = DateUtils.parseStringToDate(timeBeginStr, DateUtils.C_YYYY_MM_DD_HH_MM);
                 Date timeEnd = DateUtils.parseStringToDate(timeEndStr, DateUtils.C_YYYY_MM_DD_HH_MM);
                 Log.d(TAG, "timeBeginStr = " + timeBeginStr + ", timeEndStr = " + timeEndStr);
-                int crossDay = 30;
+                final int crossDay = 30;
                 if (timeEnd.getTime() - timeBegin.getTime() > 1000L * 60 * 60 * 24 * crossDay) {
-                    Toast.makeText(getApplicationContext(), "时间范围不能超过" + crossDay + "天", Toast.LENGTH_SHORT).show();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(QueryDataAllActivity.this, "时间范围不能超过" + crossDay + "天", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     return;
                 }
 
-                dataList = myApp.readDataSDDao.queryAll(timeBegin, timeEnd, 1000, 0);
-                if (dataList == null || dataList.isEmpty()) {
-                    Toast.makeText(getBaseContext(), "无数据", Toast.LENGTH_SHORT).show();
-                    return;
-                }
                 queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
                 if (queryConfigRealtime == null) {
-                    Toast.makeText(getBaseContext(), "设备信息不存在", Toast.LENGTH_SHORT).show();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(QueryDataAllActivity.this, "设备本地配置信息不存在", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     return;
                 }
                 getPrintSet();
@@ -250,10 +256,22 @@ public class QueryDataAllActivity extends PrintActivity {
                     String sensorId = readDataRealtime.getSensorId();
                     List<ReadDataResponse> dataList = myApp.readDataSDDao.queryBySensorId(sensorId, timeBegin, timeEnd, Integer.MAX_VALUE, 0);
                     List<ReadDataResponse> filterDataList = ReadDataAllPrintUtils.filterDataList(dataList, printTimeInterval);
+                    if(filterDataList == null || filterDataList.isEmpty()){
+                        Toast.makeText(QueryDataAllActivity.this, "数据为空，请稍后再试", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     dataListAll.add(filterDataList);
                 }
                 if(dataListAll != null && !dataListAll.isEmpty()){
-                    printStr = ReadDataAllPrintUtils.toPrintStr(dataListAll, printSetVo, queryConfigRealtime);
+                    printStr = ReadDataAllPrintUtils.toPrintStr(readDataRealtimeList, dataListAll, printSetVo, queryConfigRealtime);
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(QueryDataAllActivity.this, "数据为空，请稍后再试", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    return;
                 }
 
                 printStrTv.setText(printStr);
@@ -262,6 +280,12 @@ public class QueryDataAllActivity extends PrintActivity {
             } catch (Exception e){
                 e.printStackTrace();
                 Log.d(TAG, "查询异常", e);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(QueryDataAllActivity.this, "查询异常，请稍后再试", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         }
     }

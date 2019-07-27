@@ -1,16 +1,19 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="450dp"
-    android:layout_height="300dp">
+    android:layout_height="300dp"
+    android:background="@color/white">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             android:textStyle="bold"/>
 
         <LinearLayout
@@ -18,8 +21,9 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
                 android:text="客户码"/>
 
             <EditText
@@ -35,8 +39,9 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
                 android:text="工作模式"/>
 
             <EditText
@@ -53,8 +58,9 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
                 android:text="传输速率"/>
 
             <EditText
@@ -71,8 +77,9 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="80dp"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
                 android:text="频段"/>
 
             <EditText

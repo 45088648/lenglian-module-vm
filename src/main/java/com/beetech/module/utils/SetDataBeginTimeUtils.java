@@ -20,7 +20,7 @@ public class SetDataBeginTimeUtils {
             if (module != null && myApp.initResult) {
                 SetDataBeginTimeRequest setDataBeginTimeRequest = new SetDataBeginTimeRequest(myApp.gwId);
                 byte[] buf = setDataBeginTimeRequest.getBuf();
-                Log.d(TAG, "SetDataBeginTimeRequest.buf="+ ByteUtilities.asHex(buf).toUpperCase());
+                Log.d(TAG, Thread.currentThread().getName() + ", SetDataBeginTimeRequest.buf="+ ByteUtilities.asHex(buf).toUpperCase());
 
                 boolean sendResult = module.send(buf);
                 myApp.lastWriteTime = System.currentTimeMillis();

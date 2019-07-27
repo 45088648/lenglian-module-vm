@@ -19,7 +19,7 @@ public class ReadNextUtils {
             ReadDataRequest readDataRequest = new ReadDataRequest(myApp.gwId, 0, myApp.serialNo);
             readDataRequest.pack();
             byte[] buf = readDataRequest.getBuf();
-            Log.d(TAG, "readDataRequest.buf="+ ByteUtilities.asHex(buf).toUpperCase()+", myApp.serialNo="+myApp.serialNo);
+            Log.d(TAG, Thread.currentThread().getName() + ", readDataRequest.buf="+ ByteUtilities.asHex(buf).toUpperCase()+", myApp.serialNo="+myApp.serialNo);
 
             Module module = myApp.module;
             boolean sendResult = module.send(buf);
