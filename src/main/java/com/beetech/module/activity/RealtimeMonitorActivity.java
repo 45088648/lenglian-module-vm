@@ -604,7 +604,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
                 Log.d(TAG, "刷新数据异常");
             }
 
-            if(Constant.alarmFlag){
+            if(Constant.alarmFlag && myApp.monitorState == 1){
                 try{
                     checkAlarm();
                 } catch (Exception e){
@@ -769,7 +769,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             myApp.moduleHandler.sendEmptyMessage(9);
 
             //删除历史数据
-            baseSDDaoUtils.deleteLog();
+//            baseSDDaoUtils.deleteLog();
 
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.MINUTE, 1); // 延迟一分钟启动时间
