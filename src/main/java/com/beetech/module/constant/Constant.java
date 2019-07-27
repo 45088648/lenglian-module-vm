@@ -64,9 +64,9 @@ public class Constant {
     public static boolean IS_DEBUGGABLE = false; //是否调试模式
     public static boolean IS_TTSS_TOAST = false; //百度语音是否toast
 
-    public static boolean alarmFlag = false; //是否报警
+    public static boolean alarmFlag = true; //是否报警
     public static boolean alarmVoiceFlag = false; //是否语音报警
-    public static boolean alarmLightFlag = false; //是否灯光报警
+    public static boolean alarmLightFlag = true; //是否灯光报警
 
     public final static String className_moduleService = "com.beetech.module.service.ModuleService";
     public final static String className_guardService = "com.beetech.module.service.GuardService";

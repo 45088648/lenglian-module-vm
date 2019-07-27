@@ -1,14 +1,17 @@
 package com.beetech.module.adapter;
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.beetech.module.R;
 import com.beetech.module.bean.ReadDataRealtime;
 import com.beetech.module.constant.Constant;
+
 import java.util.List;
 
 public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataRealtimeRvAdapter.ViewHolder> {
@@ -55,7 +58,7 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
         if(tempHight != 0 && tempHight != 0 && (temp > tempHight || temp < tempLower)){
             isTempAlarm = true;
         }
-        holder.tvTemp.setTextColor((isAlarm && isTempAlarm) ? Constant.COLOR_RED : Constant.COLOR_BLACK);
+        holder.tvTemp.setTextColor((isAlarm && isTempAlarm) ? Constant.COLOR_RED : Color.BLUE);
 
         //判断是否设置了监听器
         if(mOnItemClickListener != null){

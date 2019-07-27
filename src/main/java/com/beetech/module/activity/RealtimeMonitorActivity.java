@@ -88,6 +88,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
+import java.util.TimerTask;
 
 public class RealtimeMonitorActivity extends AppCompatActivity {
     private final static String TAG = RealtimeMonitorActivity.class.getSimpleName();
@@ -666,6 +667,19 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             if(Constant.alarmLightFlag){
                 try {
                     PowerLED.getInstance().on();
+
+                    //延迟3秒关闭
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            try {
+                                PowerLED.getInstance().off();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Log.e(TAG, "LED 关灯异常", e);
+                            }
+                        }
+                    }, 3*1000L);
                 }catch (Exception e){
                     e.printStackTrace();
                     Log.e(TAG, "LED 开灯异常",e);

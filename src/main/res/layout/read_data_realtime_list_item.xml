@@ -42,7 +42,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:textSize="32sp"
-            android:textColor="@color/black"
+            android:textColor="@color/blue"
             android:textStyle="bold"
             android:text="" />
     </TableRow>
