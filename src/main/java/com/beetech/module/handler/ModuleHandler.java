@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.bean.QueryConfigRealtime;
 import com.beetech.module.code.BaseResponse;
@@ -19,6 +20,7 @@ import com.beetech.module.code.response.SetTimeResponse;
 import com.beetech.module.code.response.UpdateSSParamResponse;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.utils.ByteUtilities;
+import com.beetech.module.utils.DeleteHistoryDataUtils;
 import com.beetech.module.utils.ModuleFreeUtils;
 import com.beetech.module.utils.ModuleInitUtils;
 import com.beetech.module.utils.QueryConfigUtils;
@@ -28,6 +30,7 @@ import com.beetech.module.utils.SetDataBeginTimeUtils;
 import com.beetech.module.utils.SetTimeUtils;
 import com.beetech.module.utils.UpdateSSParamUtils;
 import com.rscja.deviceapi.Module;
+
 import java.util.Calendar;
 import java.util.Date;
 
@@ -98,6 +101,17 @@ public class ModuleHandler extends Handler {
                     Log.e(TAG, "QueryConfigUtils.queryConfig 异常", e);
                 }
 
+                break;
+
+            case 3:
+                Log.d(TAG, "DeleteHistoryDataUtils.deleteHistoryData");
+                try {
+                    DeleteHistoryDataUtils.deleteHistoryData(myApp);
+                    myApp.appLogSDDao.save("删除模块历史数据");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e(TAG, "DeleteHistoryDataUtils.deleteHistoryData 异常", e);
+                }
                 break;
 
             case 4:// 授时
