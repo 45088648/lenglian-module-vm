@@ -186,7 +186,7 @@ public class ModuleHandler extends Handler {
     private void unpackReceiveBuf(byte[] readBuf) {
         Log.d(TAG, Thread.currentThread().getName() + ", unpackReceiveBuf.bufHex="+ ByteUtilities.asHex(readBuf).toUpperCase());
         myApp.moduleReceiveDataTime = System.currentTimeMillis();
-        StringBuffer toastMsg = new StringBuffer();
+        StringBuffer toastSb = new StringBuffer();
         int cmd = 0;
         int bufLen = readBuf.length;
         int index = 0;
@@ -283,7 +283,7 @@ public class ModuleHandler extends Handler {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                toastMsg.append("查询本地配置反馈：").append(Constant.sdf.format(queryConfigResponse.getCalendar()));
+                toastSb.append("查询本地配置反馈：").append(Constant.sdf.format(queryConfigResponse.getCalendar()));
             }
 
             if(response instanceof DeleteHistoryDataResponse){
@@ -295,7 +295,7 @@ public class ModuleHandler extends Handler {
             if(response instanceof SetDataBeginTimeResponse){
                 SetDataBeginTimeResponse setDataBeginTimeResponse = (SetDataBeginTimeResponse)response;
                 myApp.setDataBeginTime = setDataBeginTimeResponse.getDataBeginTime();
-                toastMsg.append("设置数据开始时间反馈：").append(Constant.sdf.format(myApp.setDataBeginTime)+"~"+setDataBeginTimeResponse.getError());
+                toastSb.append("设置数据开始时间反馈：").append(Constant.sdf.format(myApp.setDataBeginTime)+"~"+setDataBeginTimeResponse.getError());
             }
 
             if(response instanceof SetTimeResponse){
@@ -304,10 +304,10 @@ public class ModuleHandler extends Handler {
 
             if(response instanceof UpdateSSParamResponse){
                 UpdateSSParamResponse updateSSParamResponse = (UpdateSSParamResponse)response;
-                if(toastMsg.length()==0){
-                    toastMsg.append("修改SS时间参数反馈：");
+                if(toastSb.length()==0){
+                    toastSb.append("修改SS时间参数反馈：");
                 }
-                toastMsg.append(updateSSParamResponse.getSensorId()).append("~").append(updateSSParamResponse.getError()).append(" ");
+                toastSb.append(updateSSParamResponse.getSensorId()).append("~").append(updateSSParamResponse.getError()).append(" ");
             }
         }
 
@@ -319,10 +319,15 @@ public class ModuleHandler extends Handler {
             }
         }
 
-        if(!TextUtils.isEmpty(toastMsg.toString())){
-//            Looper.prepare();
-//            Toast.makeText(myApp.getApplicationContext(), toastMsg.toString(), Toast.LENGTH_SHORT).show();
-//            Looper.loop();
+        if(!TextUtils.isEmpty(toastSb.toString())){
+            try {
+                Message toastMsg = new Message();
+                toastMsg.obj = toastSb.toString();
+                myApp.toastHandler.sendMessage(toastMsg);
+            }catch (Exception e){
+                e.printStackTrace();
+                Log.e("提示消息异常", e.getMessage());
+            }
         }
     }
 

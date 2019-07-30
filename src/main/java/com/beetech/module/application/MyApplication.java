@@ -29,6 +29,7 @@ import com.beetech.module.greendao.dao.DaoMaster;
 import com.beetech.module.greendao.dao.DaoSession;
 import com.beetech.module.handler.CrashHandler;
 import com.beetech.module.handler.ModuleHandler;
+import com.beetech.module.handler.ToastHandler;
 import com.beetech.module.service.LocationService;
 import com.beetech.module.thread.ThreadModuleReceive;
 import com.beetech.module.thread.ThreadTimeTask;
@@ -86,6 +87,7 @@ public class MyApplication extends Application {
     public ThreadTimeTask threadTimeTask;
     public HandlerThread moduleHandlerThread;
     public ModuleHandler moduleHandler;
+    public ToastHandler toastHandler;
 
     public IoSession session;
     //定位
@@ -120,7 +122,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        toastHandler = new ToastHandler(this);
         appException = CrashHandler.getInstance();
         appException.init(getApplicationContext());
 

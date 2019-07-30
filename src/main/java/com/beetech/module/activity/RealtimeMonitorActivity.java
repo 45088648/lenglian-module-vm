@@ -246,19 +246,23 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             }
 
         };
-        try {
-            initialTts(); // 初始化TTS引擎
 
-            SystemClock.sleep(3000);
-            speak("测试");
-        } catch (Exception e){
-            e.printStackTrace();
-            Log.e(TAG, "初始化TTS引擎异常");
-        }
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+                    initialTts(); // 初始化TTS引擎
+                    SystemClock.sleep(3000);
+                    speak("测试");
+                } catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(TAG, "初始化TTS引擎异常");
+                }
+            }
+        }.start();
 
         initBaiduGps();
     }
-
 
     public  void initBaiduGps(){
         //开启前台定位服务：
