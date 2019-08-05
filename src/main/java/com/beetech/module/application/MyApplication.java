@@ -4,19 +4,15 @@ import android.app.Application;
 import android.app.Service;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.HandlerThread;
-import android.os.Looper;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.mapapi.SDKInitializer;
 import com.beetech.module.bean.QueryConfigRealtime;
 import com.beetech.module.client.ConnectUtils;
-import com.beetech.module.cockroach.Cockroach;
-import com.beetech.module.cockroach.ExceptionHandler;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.dao.AppLogSDDao;
 import com.beetech.module.dao.GpsDataSDDao;
@@ -41,10 +37,8 @@ import com.beetech.module.utils.PhoneInfoUtils;
 import com.github.anrwatchdog.ANRError;
 import com.github.anrwatchdog.ANRWatchDog;
 import com.rscja.deviceapi.Module;
-
 import org.apache.mina.core.session.IoSession;
 import org.greenrobot.greendao.query.QueryBuilder;
-
 import java.util.Date;
 import java.util.Timer;
 
@@ -163,7 +157,6 @@ public class MyApplication extends Application {
         timer = new Timer();
 
         initConfig();
-        install();
 
         Constant.IS_DEBUGGABLE = AppStateUtils.isDebuggable(this);
 //        Constant.IS_SAVE_MODULE_LOG = AppStateUtils.isDebuggable(this);
@@ -228,37 +221,6 @@ public class MyApplication extends Application {
         //控制台打印SQL语句日志
         QueryBuilder.LOG_SQL = true;
         QueryBuilder.LOG_VALUES = true;
-    }
-
-    private void install() {
-        final Thread.UncaughtExceptionHandler sysExcepHandler = Thread.getDefaultUncaughtExceptionHandler();
-        Cockroach.install(this.getApplicationContext(), new ExceptionHandler() {
-            @Override
-            protected void onUncaughtExceptionHappened(Thread thread, Throwable throwable) {
-                Log.e("AndroidRuntime", "--->onUncaughtExceptionHappened:" + thread + "<---", throwable);
-                appException.saveCrashInfo2File(throwable);
-            }
-
-            @Override
-            protected void onBandageExceptionHappened(Throwable throwable) {
-                throwable.printStackTrace();//打印警告级别log，该throwable可能是最开始的bug导致的，无需关心
-            }
-
-            @Override
-            protected void onEnterSafeMode() {
-
-            }
-
-            @Override
-            protected void onMayBeBlackScreen(Throwable e) {
-                Thread thread = Looper.getMainLooper().getThread();
-                Log.e("AndroidRuntime", "--->onUncaughtExceptionHappened:" + thread + "<---", e);
-                //黑屏时建议直接杀死app
-                sysExcepHandler.uncaughtException(thread, new RuntimeException("black screen"));
-            }
-
-        });
-
     }
 
     public DaoMaster.DevOpenHelper getDevOpenHelper() {

@@ -22,14 +22,13 @@ public class JobProtectService extends Service {
     public void onCreate() {
         super.onCreate();
         appLogSDDao = new AppLogSDDao(this);
-//        appLogSDDao.save(TAG + " schedule ");
-
 //        Toast.makeText(getApplicationContext(), TAG + "schedule ", Toast.LENGTH_SHORT).show();
 
         /*如果服务正在运行，直接return*/
         if (!ServiceAliveUtils.isServiceRunning(JobProtectService.this, Constant.className_moduleService)){
             /* 启动串口通信服务 */
             startService(new Intent(this, ModuleService.class));
+            appLogSDDao.save(TAG + " schedule start ModuleService ");
         }
     }
 

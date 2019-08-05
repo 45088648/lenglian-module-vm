@@ -67,9 +67,7 @@ import com.beetech.module.listener.PhoneStatListener;
 import com.beetech.module.listener.UiMessageListener;
 import com.beetech.module.service.JobProtectService;
 import com.beetech.module.service.ModuleService;
-import com.beetech.module.service.PlayerMusicService;
 import com.beetech.module.service.RemoteService;
-import com.beetech.module.utils.AutoCheck;
 import com.beetech.module.utils.DevStateUtils;
 import com.beetech.module.utils.NetUtils;
 import com.beetech.module.utils.OfflineResource;
@@ -247,21 +245,33 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
         };
 
-        new Thread(){
-            @Override
-            public void run() {
-                try {
-                    initialTts(); // 初始化TTS引擎
-                    SystemClock.sleep(3000);
-                    speak("测试");
-                } catch (Exception e){
-                    e.printStackTrace();
-                    Log.e(TAG, "初始化TTS引擎异常");
-                }
-            }
-        }.start();
+        new InitialTtsAsyncTask().execute();
 
         initBaiduGps();
+    }
+
+    class InitialTtsAsyncTask extends AsyncTask<String, Integer, Integer> {
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            try {
+                initialTts(); // 初始化TTS引擎
+                SystemClock.sleep(3000);
+                speak("测试");
+            } catch (Exception e){
+                e.printStackTrace();
+                Log.e(TAG, "初始化TTS引擎异常");
+            }
+            return 0;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+        }
     }
 
     public  void initBaiduGps(){
@@ -291,8 +301,10 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
         // 合成前可以修改参数：
         // Map<String, String> params = getParams();
         // synthesizer.setParams(params);
-        int result = synthesizer.speak(text);
-        checkResult(result, "speak");
+        if(synthesizer != null){
+            int result = synthesizer.speak(text);
+            checkResult(result, "speak");
+        }
     }
 
     private void checkResult(int result, String method) {
@@ -398,20 +410,20 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
         // 如果您集成中出错，请将下面一段代码放在和demo中相同的位置，并复制InitConfig 和 AutoCheck到您的项目中
         // 上线时请删除AutoCheck的调用
-        AutoCheck.getInstance(getApplicationContext()).check(initConfig, new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                if (msg.what == 100) {
-                    AutoCheck autoCheck = (AutoCheck) msg.obj;
-                    synchronized (autoCheck) {
-                        String message = autoCheck.obtainDebugMessage();
-                        toPrint(message); // 可以用下面一行替代，在logcat中查看代码
-                        // Log.w("AutoCheckMessage", message);
-                    }
-                }
-            }
-
-        });
+//        AutoCheck.getInstance(getApplicationContext()).check(initConfig, new Handler() {
+//            @Override
+//            public void handleMessage(Message msg) {
+//                if (msg.what == 100) {
+//                    AutoCheck autoCheck = (AutoCheck) msg.obj;
+//                    synchronized (autoCheck) {
+//                        String message = autoCheck.obtainDebugMessage();
+//                        toPrint(message); // 可以用下面一行替代，在logcat中查看代码
+//                        // Log.w("AutoCheckMessage", message);
+//                    }
+//                }
+//            }
+//
+//        });
         synthesizer = new NonBlockSyntherizer(this, initConfig, mainHandler); // 此处可以改为MySyntherizer 了解调用过程
     }
 
@@ -429,10 +441,6 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
             //开启守护线程 aidl
             startService(new Intent(this, RemoteService.class));
-
-            //循环播放一段无声音频
-            Intent intent = new Intent(this,PlayerMusicService.class);
-            startService(intent);
 
             //创建唤醒定时任务
             try {
@@ -671,13 +679,14 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             if(Constant.alarmLightFlag){
                 try {
                     PowerLED.getInstance().on();
-
+                    Log.d(TAG, "LED on");
                     //延迟3秒关闭
                     timer.schedule(new TimerTask() {
                         @Override
                         public void run() {
                             try {
                                 PowerLED.getInstance().off();
+                                Log.d(TAG, "LED off");
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 Log.e(TAG, "LED 关灯异常", e);
@@ -694,6 +703,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             if(Constant.alarmLightFlag) {
                 try {
                     PowerLED.getInstance().off();
+                    Log.d(TAG, "LED off");
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.e(TAG, "LED 关灯异常", e);
@@ -770,7 +780,9 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
     public void beginMonitor(){
         try{
             //设置数据开始时间
-            myApp.moduleHandler.sendEmptyMessage(9);
+            Message msg = new Message();
+            msg.what = 9;
+            myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
 
             //删除历史数据
 //            baseSDDaoUtils.deleteLog();

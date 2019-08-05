@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
@@ -101,7 +102,9 @@ public class UpdateConfigActivity extends Activity {
                                 myApp.bps = Integer.valueOf(bpsEt.getText().toString());
                                 myApp.channel = Integer.valueOf(channelEt.getText().toString());
 
-                                myApp.moduleHandler.sendEmptyMessage(84);
+                                Message msg = new Message();
+                                msg.what = 84;
+                                myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
                             } catch (Exception e){
                                 e.printStackTrace();
                                 Log.e(TAG, "修改模块参数异常", e);

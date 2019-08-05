@@ -19,10 +19,10 @@ public class CheckSessionUtils {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e(TAG, "checkLocationService 异常 ", e);
+            Log.e(TAG, "checkSession 异常 ", e);
 
         } finally {
-            Log.d(TAG, "checkLocationService 耗时 "+(System.currentTimeMillis() - beginTimeInMills));
+            Log.d(TAG, "checkSession 耗时 "+(System.currentTimeMillis() - beginTimeInMills));
         }
     }
 }

@@ -122,7 +122,9 @@ public class RunStateFragment extends Fragment {
 
     @OnClick(R.id.btnQueryConfig)
     public void btnQueryConfig_onClick(View v) {
-        myApp.moduleHandler.sendEmptyMessage(1);
+        Message msg = new Message();
+        msg.what = 1;
+        myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
     }
 
     @OnClick(R.id.btnUpdateConfig)
@@ -164,7 +166,9 @@ public class RunStateFragment extends Fragment {
 
             public void onClick(DialogInterface dialog, int which) {
                 try {
-                    myApp.moduleHandler.sendEmptyMessage(0x9c);
+                    Message msg = new Message();
+                    msg.what = 0x9c;
+                    myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
@@ -292,7 +296,9 @@ public class RunStateFragment extends Fragment {
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {
-                myApp.moduleHandler.sendEmptyMessage(3);
+                Message msg = new Message();
+                msg.what = 3;
+                myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
                 dialog.dismiss();
             }
         });
@@ -335,7 +341,10 @@ public class RunStateFragment extends Fragment {
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {
-                myApp.moduleHandler.sendEmptyMessage(-1);
+                Message msg = new Message();
+                msg.what = -1;
+                myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
+
                 myApp.manualStopModuleFlag = 1;
                 myApp.appLogSDDao.save("模块释放手动");
                 dialog.dismiss();
@@ -357,7 +366,10 @@ public class RunStateFragment extends Fragment {
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {
-                myApp.moduleHandler.sendEmptyMessage(0);
+                Message msg = new Message();
+                msg.what = 0;
+                myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
+
                 myApp.manualStopModuleFlag = 0;
                 myApp.appLogSDDao.save("模块上电手动");
                 dialog.dismiss();
@@ -373,7 +385,9 @@ public class RunStateFragment extends Fragment {
 
     @OnClick(R.id.btnSetTime)
     public void btnSetTime_OnClick(View v) {
-        myApp.moduleHandler.sendEmptyMessage(4);
+        Message msg = new Message();
+        msg.what = 4;
+        myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
     }
 
     @OnClick(R.id.btnSetDataBeginTime)
@@ -384,7 +398,9 @@ public class RunStateFragment extends Fragment {
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {
-                myApp.moduleHandler.sendEmptyMessage(9);
+                Message msg = new Message();
+                msg.what = 9;
+                myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
                 dialog.dismiss();
             }
         });

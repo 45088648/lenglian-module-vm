@@ -1,26 +1,28 @@
 package com.beetech.module.handler;
 
-import java.io.File;  
-import java.io.FileOutputStream;  
-import java.io.PrintWriter;  
-import java.io.StringWriter;  
-import java.io.Writer;  
-import java.lang.Thread.UncaughtExceptionHandler;  
-import java.lang.reflect.Field;  
-import java.text.DateFormat;  
-import java.text.SimpleDateFormat;  
-import java.util.Date;  
-import java.util.HashMap;  
-import java.util.Map;  
-import android.content.Context;  
-import android.content.pm.PackageInfo;  
-import android.content.pm.PackageManager;  
-import android.content.pm.PackageManager.NameNotFoundException;  
-import android.os.Build;  
-import android.os.Environment;  
-import android.os.Looper;  
-import android.util.Log;  
-import android.widget.Toast;  
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
+import android.os.Environment;
+import android.os.Message;
+import android.util.Log;
+
+import com.beetech.module.application.MyApplication;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.lang.reflect.Field;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
   
 /** 
  * CrashHandler处理类,当程序发生Uncaught异常的时候,有该类来接管程序,并记录发送错误报告.
@@ -33,7 +35,8 @@ public class CrashHandler implements UncaughtExceptionHandler {
     //CrashHandler实例  
     private static CrashHandler INSTANCE = new CrashHandler();
     //程序的Context对象  
-    private Context mContext;  
+    private Context mContext;
+    private MyApplication myApp;
     //用来存储设备信息和异常信息  
     private Map<String, String> infos = new HashMap<String, String>();  
   
@@ -54,7 +57,8 @@ public class CrashHandler implements UncaughtExceptionHandler {
      * @param context 
      */  
     public void init(Context context) {  
-        mContext = context;  
+        mContext = context;
+        myApp = (MyApplication) context.getApplicationContext();
         //获取系统默认的UncaughtException处理器  
         mDefaultHandler = Thread.getDefaultUncaughtExceptionHandler();  
         //设置该CrashHandler为程序的默认处理器  
@@ -90,20 +94,21 @@ public class CrashHandler implements UncaughtExceptionHandler {
     private boolean handleException(Throwable ex) {  
         if (ex == null) {  
             return false;  
-        }  
-        //使用Toast来显示异常信息  
-        new Thread() {  
-            @Override  
-            public void run() {  
-                Looper.prepare();  
-                Toast.makeText(mContext, "很抱歉,程序出现异常,即将退出.", Toast.LENGTH_LONG).show();  
-                Looper.loop();  
-            }  
-        }.start();  
+        }
         //收集设备参数信息   
         collectDeviceInfo(mContext);  
         //保存日志文件   
-        saveCrashInfo2File(ex);  
+        saveCrashInfo2File(ex);
+
+        //使用Toast来显示异常信息
+        try{
+            Message msg = new Message();
+            msg.obj = "很抱歉,程序出现异常,即将退出.";
+            myApp.toastHandler.sendMessage(msg);
+        } catch (Exception e){
+            e.printStackTrace();
+            Log.e(TAG, "Crash Toast 异常");
+        }
         return true;  
     }  
       

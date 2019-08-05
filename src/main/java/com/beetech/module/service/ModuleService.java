@@ -23,7 +23,6 @@ import android.support.annotation.Nullable;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
-
 import com.beetech.module.KeepAliveConnection;
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.constant.Constant;
@@ -37,7 +36,6 @@ import com.beetech.module.receiver.WakeReceiver;
 import com.beetech.module.thread.ThreadModuleReceive;
 import com.beetech.module.thread.ThreadTimeTask;
 import com.beetech.module.utils.ServiceAliveUtils;
-import com.rscja.deviceapi.PowerLED;
 
 public class ModuleService extends Service {
     private final static String TAG = ModuleService.class.getSimpleName();
@@ -129,13 +127,6 @@ public class ModuleService extends Service {
             registerReceiver(mSmsReceiver, smsFilter);
         }
         detectUsbWithBroadcast();
-
-        try {
-            PowerLED.getInstance().off();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, "LED 关灯异常", e);
-        }
     }
 
     private void detectUsbWithBroadcast() {
