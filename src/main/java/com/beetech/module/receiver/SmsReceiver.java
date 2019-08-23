@@ -120,6 +120,18 @@ public class SmsReceiver extends BroadcastReceiver {
                 baseSDDaoUtils.trancateLog();
                 myApp.appLogSDDao.save("短信指令清空日志");
 
+            }  else if("saveLogOn".equals(smsContent)){
+
+                Constant.IS_SAVE_MODULE_LOG = true;
+                Constant.IS_SAVE_SOCKET_LOG = true;
+                myApp.appLogSDDao.save("短信开启记录日志");
+
+            }   else if("saveLogOff".equals(smsContent)){
+
+                Constant.IS_SAVE_MODULE_LOG = false;
+                Constant.IS_SAVE_SOCKET_LOG = false;
+                myApp.appLogSDDao.save("短信关闭记录日志");
+
             } else if("gwlast".equals(smsContent)){
 
                 IoSession mSession = myApp.session;

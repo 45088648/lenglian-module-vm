@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: me.weishu:free_reflection:1.2.0@aar">
+    <CLASSES>
+      <root url="jar://D:/AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/free_reflection-1.2.0.aar/29a909ecff264adf87f3b7f442fa3ad4/jars/classes.jar!/" />
+      <root url="file://D:/AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/free_reflection-1.2.0.aar/29a909ecff264adf87f3b7f442fa3ad4/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://D:/AndroidStudioCache/.gradle/caches/modules-2/files-2.1/me.weishu/free_reflection/1.2.0/cab4055804d1627f1db0e78db31002053d5e10a3/free_reflection-1.2.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

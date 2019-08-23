@@ -133,9 +133,9 @@ public class MyApplication extends Application {
         phoneInfoUtils = new PhoneInfoUtils(this);
         //Android Pad VT VM
         Constant.verName = "APVV"+APKVersionCodeUtils.getVerName(this);
-        Constant.imei = MobileInfoUtil.getIMEI(this);
+//        Constant.imei = MobileInfoUtil.getIMEI(this);
 //        Constant.devNum = phoneInfoUtils.getNativePhoneNumber();
-        Constant.iccid = phoneInfoUtils.getIccid();
+//        Constant.iccid = phoneInfoUtils.getIccid();
 
 
         /***
