@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.telephony.gsm.SmsMessage;
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.alibaba.fastjson.JSON;
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.bean.vt.VtSocketLog;
@@ -14,6 +15,7 @@ import com.beetech.module.bean.vt.VtStateRequestBeanUtils;
 import com.beetech.module.client.ClientConnectManager;
 import com.beetech.module.client.ConnectUtils;
 import com.beetech.module.constant.Constant;
+import com.beetech.module.dao.BaseSDDaoUtils;
 import com.beetech.module.utils.AppStateUtils;
 import com.beetech.module.utils.DeleteHistoryDataUtils;
 import com.beetech.module.utils.ModuleUtils;
@@ -23,6 +25,7 @@ import org.apache.mina.core.future.IoFuture;
 import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.session.IoSession;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -30,6 +33,7 @@ public class SmsReceiver extends BroadcastReceiver {
     private final static String TAG = SmsReceiver.class.getSimpleName();
 
     private ModuleUtils moduleUtils;
+    private BaseSDDaoUtils baseSDDaoUtils;
     private MyApplication myApp;
     private VtStateRequestBeanUtils vtStateRequestBeanUtils;
 
@@ -39,6 +43,7 @@ public class SmsReceiver extends BroadcastReceiver {
         myApp = (MyApplication)context.getApplicationContext();
 
         vtStateRequestBeanUtils = new VtStateRequestBeanUtils(context);
+        baseSDDaoUtils = new BaseSDDaoUtils(myApp);
 
         //[1]获取发短信送的号码  和内容
         Object[] objects = (Object[]) intent.getExtras().get("pdus");
@@ -109,6 +114,11 @@ public class SmsReceiver extends BroadcastReceiver {
                 long sensorDataTimeEndInMills = System.currentTimeMillis();
                 DeleteHistoryDataUtils.deleteHistoryData(context);
                 myApp.appLogSDDao.save("短信指令删除标签模块历史数据");
+
+            }  else if("trancateLog".equals(smsContent)){ // 清空日志
+
+                baseSDDaoUtils.trancateLog();
+                myApp.appLogSDDao.save("短信指令清空日志");
 
             } else if("gwlast".equals(smsContent)){
 

@@ -120,6 +120,7 @@ public class StateRequestBean {
 	private Integer mnc2;
 
 	private String appState;
+	private String wifiIp;
 
 	public StateRequestBean() {
 	}
@@ -357,5 +358,13 @@ public class StateRequestBean {
 
 	public void setAppState(String appState) {
 		this.appState = appState;
+	}
+
+	public String getWifiIp() {
+		return wifiIp;
+	}
+
+	public void setWifiIp(String wifiIp) {
+		this.wifiIp = wifiIp;
 	}
 }

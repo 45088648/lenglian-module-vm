@@ -77,7 +77,6 @@ import com.beetech.module.utils.SysRequestUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
-import com.rscja.deviceapi.PowerLED;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -245,7 +244,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
         };
 
-        new InitialTtsAsyncTask().execute();
+//        new InitialTtsAsyncTask().execute();
 
         initBaiduGps();
     }
@@ -678,14 +677,14 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
             if(Constant.alarmLightFlag){
                 try {
-                    PowerLED.getInstance().on();
+                    myApp.powerLED.on();
                     Log.d(TAG, "LED on");
                     //延迟3秒关闭
                     timer.schedule(new TimerTask() {
                         @Override
                         public void run() {
                             try {
-                                PowerLED.getInstance().off();
+                                myApp.powerLED.off();
                                 Log.d(TAG, "LED off");
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -702,7 +701,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
         } else {
             if(Constant.alarmLightFlag) {
                 try {
-                    PowerLED.getInstance().off();
+                    myApp.powerLED.off();
                     Log.d(TAG, "LED off");
                 } catch (Exception e) {
                     e.printStackTrace();

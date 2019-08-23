@@ -128,10 +128,10 @@
     <orderEntry type="library" name="Gradle: org.reactivestreams:reactive-streams:1.0.2@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.amitshekhar.android:debug-db:1.0.6@aar" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.paging:common:1.0.0-alpha3@jar" level="project" />
-    <orderEntry type="library" name="Gradle: __local_aars__:D.\workspaces\androidstudio\demo-module\libs\mina-core-2.0.19.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:D.\workspaces\androidstudio\lenglian-module-vm\libs\mina-core-2.0.19.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.paging:runtime:1.0.0-alpha3@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-annotations:26.1.0@jar" level="project" />
-    <orderEntry type="library" name="Gradle: __local_aars__:D.\workspaces\androidstudio\demo-module\libs\xUtils-2.5.5.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:D.\workspaces\androidstudio\lenglian-module-vm\libs\xUtils-2.5.5.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.persistence:db:1.1.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.amitshekhar.android:debug-db-base:1.0.6@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support.constraint:constraint-layout:1.1.3@aar" level="project" />
@@ -140,18 +140,18 @@
     <orderEntry type="library" name="Gradle: android.arch.lifecycle:runtime:1.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: me.weishu:free_reflection:1.2.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.core:common:1.1.1@jar" level="project" />
-    <orderEntry type="library" name="Gradle: __local_aars__:D.\workspaces\androidstudio\demo-module\libs\slf4j-android-1.6.1-RC1.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:D.\workspaces\androidstudio\lenglian-module-vm\libs\slf4j-android-1.6.1-RC1.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="Gradle: org.greenrobot:greendao:3.2.2@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-fragment:26.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.persistence:db-framework:1.1.1@aar" level="project" />
-    <orderEntry type="library" name="Gradle: __local_aars__:D.\workspaces\androidstudio\demo-module\libs\deviceapi(ver20190111).jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:D.\workspaces\androidstudio\lenglian-module-vm\libs\deviceapi(ver20190111).jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.persistence.room:common:1.1.1@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.alibaba:fastjson:1.1.67.android@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-core-utils:26.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:recyclerview-v7:26.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.lzy.net:okgo:3.0.4@aar" level="project" />
     <orderEntry type="library" name="Gradle: org.greenrobot:greendao-api:3.2.2@jar" level="project" />
-    <orderEntry type="library" name="Gradle: __local_aars__:D.\workspaces\androidstudio\demo-module\libs\com.baidu.tts_2.3.2.20180713_6101c2a.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:D.\workspaces\androidstudio\lenglian-module-vm\libs\com.baidu.tts_2.3.2.20180713_6101c2a.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-compat:26.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.persistence.room:runtime:1.1.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-core-ui:26.1.0@aar" level="project" />

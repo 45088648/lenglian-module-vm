@@ -8,6 +8,7 @@ import android.os.SystemClock;
 import android.os.Vibrator;
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.mapapi.SDKInitializer;
@@ -37,6 +38,7 @@ import com.beetech.module.utils.PhoneInfoUtils;
 import com.github.anrwatchdog.ANRError;
 import com.github.anrwatchdog.ANRWatchDog;
 import com.rscja.deviceapi.Module;
+import com.rscja.deviceapi.PowerLED;
 import org.apache.mina.core.session.IoSession;
 import org.greenrobot.greendao.query.QueryBuilder;
 import java.util.Date;
@@ -44,7 +46,7 @@ import java.util.Timer;
 
 public class MyApplication extends Application {
     private final static String TAG = MyApplication.class.getSimpleName();
-
+    public PowerLED powerLED;
     public Module module;
     public boolean initResult; //模块上电初始化结果
     public int manualStopModuleFlag = 0; // 手动模块断电释放标记：0：未断电 1：断电

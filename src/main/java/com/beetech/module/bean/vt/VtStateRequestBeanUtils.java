@@ -54,6 +54,7 @@ public class VtStateRequestBeanUtils {
                     myApp.netWorkType = NetUtils.getNetworkState(mContext);
                     if (myApp.netWorkType == NetUtils.NETWORK_WIFI) {
                         dbm = getWifiRssi(myApp);
+
                     }else if(myApp.netWorkType == NetUtils.NETWORK_2G || myApp.netWorkType == NetUtils.NETWORK_3G || myApp.netWorkType == NetUtils.NETWORK_4G ){
                         dbm = getMobileDbm(myApp);
                     }
@@ -62,6 +63,19 @@ public class VtStateRequestBeanUtils {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                //获取wifi服务
+                WifiManager wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+                //判断wifi是否开启
+                if (wifiManager.isWifiEnabled()) {
+                    WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+                    if(wifiInfo != null){
+                        int ipAddress = wifiInfo.getIpAddress();
+                        String ip = intToIp(ipAddress);
+                        body.setWifiIp(ip);
+                    }
+                }
+
                 body.setVar(Constant.verName);
                 body.setGwstate(myApp.initResult ? 1 : 0);
 
@@ -249,5 +263,12 @@ public class VtStateRequestBeanUtils {
         WifiManager wifi_service = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
         WifiInfo wifiInfo = wifi_service.getConnectionInfo();
         return wifiInfo.getRssi();
+    }
+
+    private String intToIp(int i) {
+        return (i & 0xFF ) + "." +
+                ((i >> 8 ) & 0xFF) + "." +
+                ((i >> 16 ) & 0xFF) + "." +
+                ( i >> 24 & 0xFF) ;
     }
 }

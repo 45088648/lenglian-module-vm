@@ -36,6 +36,7 @@ import com.beetech.module.receiver.WakeReceiver;
 import com.beetech.module.thread.ThreadModuleReceive;
 import com.beetech.module.thread.ThreadTimeTask;
 import com.beetech.module.utils.ServiceAliveUtils;
+import com.rscja.deviceapi.PowerLED;
 
 public class ModuleService extends Service {
     private final static String TAG = ModuleService.class.getSimpleName();
@@ -127,6 +128,11 @@ public class ModuleService extends Service {
             registerReceiver(mSmsReceiver, smsFilter);
         }
         detectUsbWithBroadcast();
+
+        if(myApp.powerLED == null){
+            myApp.powerLED = PowerLED.getInstance();
+            Log.d(TAG, "myApp.powerLED getInstance");
+        }
     }
 
     private void detectUsbWithBroadcast() {

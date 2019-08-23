@@ -22,23 +22,23 @@ public class DaoMaster extends AbstractDaoMaster {
     /** Creates underlying database table using DAOs. */
     public static void createAllTables(Database db, boolean ifNotExists) {
         AppLogDao.createTable(db, ifNotExists);
+        GpsDataBeanDao.createTable(db, ifNotExists);
         ModuleBufDao.createTable(db, ifNotExists);
         QueryConfigRealtimeDao.createTable(db, ifNotExists);
         ReadDataRealtimeDao.createTable(db, ifNotExists);
         VtSocketLogDao.createTable(db, ifNotExists);
         ReadDataResponseDao.createTable(db, ifNotExists);
-        GpsDataBeanDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
     public static void dropAllTables(Database db, boolean ifExists) {
         AppLogDao.dropTable(db, ifExists);
+        GpsDataBeanDao.dropTable(db, ifExists);
         ModuleBufDao.dropTable(db, ifExists);
         QueryConfigRealtimeDao.dropTable(db, ifExists);
         ReadDataRealtimeDao.dropTable(db, ifExists);
         VtSocketLogDao.dropTable(db, ifExists);
         ReadDataResponseDao.dropTable(db, ifExists);
-        GpsDataBeanDao.dropTable(db, ifExists);
     }
 
     /**
@@ -58,12 +58,12 @@ public class DaoMaster extends AbstractDaoMaster {
     public DaoMaster(Database db) {
         super(db, SCHEMA_VERSION);
         registerDaoClass(AppLogDao.class);
+        registerDaoClass(GpsDataBeanDao.class);
         registerDaoClass(ModuleBufDao.class);
         registerDaoClass(QueryConfigRealtimeDao.class);
         registerDaoClass(ReadDataRealtimeDao.class);
         registerDaoClass(VtSocketLogDao.class);
         registerDaoClass(ReadDataResponseDao.class);
-        registerDaoClass(GpsDataBeanDao.class);
     }
 
     public DaoSession newSession() {
