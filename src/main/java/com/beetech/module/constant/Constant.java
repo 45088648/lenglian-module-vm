@@ -41,7 +41,7 @@ public class Constant {
     public static final int COLOR_BLACK = Color.parseColor("#000000");
 //    public static final int[] COLORS = new int[]{SENSOR_COLOR, SENSOR_COLOR1, COLOR_BLUE, COLOR_VIOLET, COLOR_GREEN, COLOR_ORANGE, COLOR_RED};
     public static final int[] COLORS = new int[]{COLOR_BLUE, COLOR_BLUE, COLOR_BLUE, COLOR_BLUE, COLOR_BLUE, COLOR_BLUE, COLOR_BLUE};
-
+    public static int RED_THEME = Color.parseColor("#eb2127");
     public static final String PACKAGE_NAME = "";
 
     public static String verName;
@@ -75,4 +75,7 @@ public class Constant {
 //    public final static String[] printTimeIntvalItems = { "5分钟", "4分钟", "3分钟", "2分钟", "1分钟"};
 //    public final static String[] colSizeSpinItems = { "两组", "一组", "三组"};
 
+
+    public static final String VERSION_DOWNLOAD_URL = "http://app.wendu114.com/apk/v600/t/lenglian-module-vm.apk"; // 下载地址
+    public static final String DOWNLOAD_NAME = "lenglian-module-vm.apk"; // 下载存储的文件名
 }

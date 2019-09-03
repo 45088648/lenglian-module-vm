@@ -89,6 +89,8 @@ public class VtStateRequestBeanUtils {
                     body.setLjs(readDataRealtimeList.size());
                     body.setData(data);
                 }
+                body.setHardVer(queryConfigRealtime.getHardVer());
+                body.setSoftVer(queryConfigRealtime.getSoftVer());
 
                 //获取手机基站信息
                 try {

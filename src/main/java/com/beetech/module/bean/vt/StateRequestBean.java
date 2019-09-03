@@ -81,6 +81,9 @@ public class StateRequestBean {
 	 * 传输速率  Hex字符串 转 int   1位的十进制 转int    1 2 3 4 5
 	 */
 	private Integer bps;
+
+	private String hardVer;
+	private String softVer;
 	
 	/**
 	 * 基站信息 lac
@@ -366,5 +369,21 @@ public class StateRequestBean {
 
 	public void setWifiIp(String wifiIp) {
 		this.wifiIp = wifiIp;
+	}
+
+	public String getHardVer() {
+		return hardVer;
+	}
+
+	public void setHardVer(String hardVer) {
+		this.hardVer = hardVer;
+	}
+
+	public String getSoftVer() {
+		return softVer;
+	}
+
+	public void setSoftVer(String softVer) {
+		this.softVer = softVer;
 	}
 }

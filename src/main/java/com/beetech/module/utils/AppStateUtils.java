@@ -61,6 +61,8 @@ public class AppStateUtils {
                 stateSb.append("工作模式：").append(myApp.pattern).append(" ");
                 stateSb.append("传输速率：").append(myApp.bps).append(" ");
                 stateSb.append("频段：").append(myApp.channel).append(" ");
+                stateSb.append("硬件：").append(queryConfigRealtime.getHardVer()).append(" ");
+                stateSb.append("软件：").append(queryConfigRealtime.getSoftVer()).append(" ");
             }
             if(myApp.setDataBeginTime != null){
                 stateSb.append("数据开始时间：").append(Constant.sdf.format(myApp.setDataBeginTime)).append(" ");
