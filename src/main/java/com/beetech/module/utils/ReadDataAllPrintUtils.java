@@ -160,6 +160,158 @@ public class ReadDataAllPrintUtils {
         return sb.toString();
     }
 
+    public static String toPrintStrOver(List<ReadDataRealtime> readDataRealtimeList, List<List<ReadDataResponse>> dataListAll, PrintSetVo printSetVo, QueryConfigRealtime queryConfigRealtime) {
+        String space = " ";
+        int colSize = 1;
+        int rhFlag = printSetVo.getRhFlag();
+        int printTimeInterval = printSetVo.getPrintTimeInterval();
+        Double tempDataMax = null;
+        Double tempDataMin = null;
+        Double tempDataSum = 0.0;
+        Double tempDataAvg = null;
+        Double rhMax = null;
+        Double rhMin = null;
+        Double rhSum = 0.0;
+        Double rhAvg = null;
+        if(dataListAll == null || dataListAll.isEmpty()){
+            return null;
+        }
+        List<String> timeStrList = new LinkedList<>();
+        Map<String, ReadDataResponse> timeReadDataResponseMap = new TreeMap<>();
+
+        for (int i = 0; i< dataListAll.size();i++) {
+            List<ReadDataResponse> dataList = dataListAll.get(i);
+            for (ReadDataResponse readDataResponse : dataList) {
+                String sensorId = readDataResponse.getSensorId();
+                Date sensorDataTime = readDataResponse.getSensorDataTime();
+                String timeInMin = DateUtils.parseDateToString(sensorDataTime, DateUtils.C_YYYY_MM_DD_HH_MM);
+                timeReadDataResponseMap.put(sensorId+timeInMin, readDataResponse);
+                if(!timeStrList.contains(timeInMin)){
+                    timeStrList.add(timeInMin);
+                }
+            }
+        }
+
+        List<ReadDataResponse> firstDataList = dataListAll.get(0);
+        ReadDataResponse firstTempDataVo = firstDataList.get(0);
+        ReadDataResponse lastTempDataVo = firstDataList.get(firstDataList.size()-1);
+        String devNum = queryConfigRealtime.getDevNum();
+        String devName = queryConfigRealtime.getDevName();
+
+        List<String> lineList = new ArrayList<>();
+
+        Set<String> dateStrSet = new HashSet<>();
+        int col = 1;
+        StringBuffer lineStringBuffer = new StringBuffer();
+
+
+        boolean isOver = false; //是否超温数据
+        boolean isIntervalDiv = false; //是否能被存储间隔整除
+        for (String timeStr : timeStrList) {
+            isOver = false;
+            isIntervalDiv = false;
+            String dateStr = timeStr.substring(0, 10);
+            if (!dateStrSet.contains(dateStr)) {
+                if (!dateStrSet.isEmpty()) {
+                    lineList.add("");
+                }
+                String line = lineStringBuffer.toString();
+                if (!"".equals(line)) {
+                    lineList.add(line);
+                }
+                col = 1;
+
+                lineStringBuffer = new StringBuffer();
+                lineList.add("日期: " + dateStr);
+
+                String titleStr = "时间 ";
+                String titleTStr = "";
+                for (int i = 0; i < dataListAll.size(); i++) {
+                    titleTStr += space + " T" + (i+1);
+                }
+                titleStr += titleTStr;
+
+                for (int i = 0; i < colSize - 1; i++) {
+                    titleStr += space+space+space + titleStr;
+                }
+                lineList.add(titleStr);
+                dateStrSet.add(dateStr);
+            }
+
+            lineStringBuffer.append(timeStr.substring(11));
+
+            for (ReadDataRealtime readDataRealtime : readDataRealtimeList){
+                String sensorId = readDataRealtime.getSensorId();
+                Double tempLower = readDataRealtime.getTempLower();
+                Double tempHight = readDataRealtime.getTempHight();
+
+                ReadDataResponse readDataResponse = timeReadDataResponseMap.get(sensorId + timeStr);
+
+                if(readDataResponse == null){
+                    lineStringBuffer.append(space).append(" --- ");
+                } else {
+
+                    Double temp = readDataResponse.getTemp();
+                    Date sensorDataTime = readDataResponse.getSensorDataTime();
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(sensorDataTime);
+                    int minute = cal.get(Calendar.MINUTE);
+                    isIntervalDiv = minute % printTimeInterval  == 0;
+                    if(tempLower != 0 && tempHight != 0 && (temp > tempHight || temp < tempLower)){
+                        isOver = true;
+                    }
+
+                    lineStringBuffer.append(space).append(readDataResponse.getTemp());
+                }
+            }
+//            lineStringBuffer.append(space).append(isIntervalDiv).append(space).append(isOver);
+
+            if (col == colSize) {
+                String line = lineStringBuffer.toString();
+                if (!"".equals(line)) {
+                    lineList.add(line);
+                }
+                lineStringBuffer = new StringBuffer();
+                col = 1;
+            } else {
+                lineStringBuffer.append(" ");
+                col++;
+            }
+        }
+
+        String line = lineStringBuffer.toString();
+        if (!"".equals(line)) {// 不是间隔数据且不是超温数据不打印
+            lineList.add(line);
+        }
+
+        //=========================
+        StringBuffer sb = new StringBuffer();
+        sb.append("冷链记录确认单\n");
+        sb.append("-------------------------------\n");
+//        sb.append("设备号:").append(devNum).append("\n");
+//        if(devName != null && !"".equals(devName)){
+//            sb.append("标识名:").append(devName).append("\n");
+//        }
+//        if(tempLower != 0.0 && tempHight != 0.0){
+//            sb.append("温度阈值:").append(tempLower).append("℃~").append(tempHight).append( "℃\n");
+//        }
+
+        if (lineList != null && !lineList.isEmpty()) {
+            for (String dataLine : lineList) {
+                sb.append(dataLine).append("\n");
+            }
+        }
+
+        String beginTimeStr = dateFromat_mm.format(firstTempDataVo.getSensorDataTime());
+        String endTimeStr = dateFromat_mm.format(lastTempDataVo.getSensorDataTime());
+        sb.append("-------------------------------\n");
+        sb.append("有效开始时间：").append(beginTimeStr).append("\n");
+        sb.append("有效结束时间：").append(endTimeStr).append("\n");
+        sb.append("\n\n\n\n");
+        //=========================
+        return sb.toString();
+    }
+
     public static List<ReadDataResponse> filterDataList(List<ReadDataResponse> dataList, int timeInterval){
         List<ReadDataResponse> retList = new LinkedList<>();
         if(timeInterval <= 0){

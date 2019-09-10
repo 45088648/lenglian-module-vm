@@ -67,6 +67,10 @@ public class QueryDataAllActivity extends PrintActivity {
     @ViewInject(R.id.printTimeInterval)
     private Spinner printTimeIntervalSpin;
 
+    @ViewInject(R.id.isContainOverSpin)
+    private Spinner isContainOverSpin;
+    private boolean isContainOver;
+
     private MyApplication myApp;
 
     public BlueToothService blueToothService;// 蓝牙打印服务对象
@@ -151,10 +155,15 @@ public class QueryDataAllActivity extends PrintActivity {
         ArrayAdapter<String> printTimeIntervalAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, printTimeIntervalList);
         printTimeIntervalAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         printTimeIntervalSpin.setAdapter(printTimeIntervalAdapter);
+
+        ArrayAdapter<String> isContainOverAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, new String[]{"否", "是"});
+        isContainOverAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        isContainOverSpin.setAdapter(isContainOverAdapter);
     }
 
     private void getPrintSet() {
         printTimeInterval = printTimeIntervalMap.get(printTimeIntervalSpin.getSelectedItemPosition());
+        isContainOver = isContainOverSpin.getSelectedItemPosition() == 1;
     }
 
     class TvUpdateThread extends Thread {
@@ -251,11 +260,16 @@ public class QueryDataAllActivity extends PrintActivity {
                 if (readDataRealtimeList.size() <= 2) {
                     printSetVo.setColSize(2);
                 }
-
+                printSetVo.setPrintTimeInterval(printTimeInterval);
                 for (ReadDataRealtime readDataRealtime : readDataRealtimeList) {
                     String sensorId = readDataRealtime.getSensorId();
                     List<ReadDataResponse> dataList = myApp.readDataSDDao.queryBySensorId(sensorId, timeBegin, timeEnd, Integer.MAX_VALUE, 0);
-                    List<ReadDataResponse> filterDataList = ReadDataAllPrintUtils.filterDataList(dataList, printTimeInterval);
+                    List<ReadDataResponse> filterDataList = null;
+                    if(isContainOver){
+                        filterDataList = dataList;
+                    } else {
+                        filterDataList = ReadDataAllPrintUtils.filterDataList(dataList, printTimeInterval);
+                    }
                     if(filterDataList == null || filterDataList.isEmpty()){
                         Toast.makeText(QueryDataAllActivity.this, "数据为空，请稍后再试", Toast.LENGTH_SHORT).show();
                         return;
@@ -263,7 +277,11 @@ public class QueryDataAllActivity extends PrintActivity {
                     dataListAll.add(filterDataList);
                 }
                 if(dataListAll != null && !dataListAll.isEmpty()){
-                    printStr = ReadDataAllPrintUtils.toPrintStr(readDataRealtimeList, dataListAll, printSetVo, queryConfigRealtime);
+                    if(isContainOver){
+                        printStr = ReadDataAllPrintUtils.toPrintStrOver(readDataRealtimeList, dataListAll, printSetVo, queryConfigRealtime);
+                    } else {
+                        printStr = ReadDataAllPrintUtils.toPrintStr(readDataRealtimeList, dataListAll, printSetVo, queryConfigRealtime);
+                    }
                 } else {
                     runOnUiThread(new Runnable() {
                         @Override
