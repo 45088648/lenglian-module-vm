@@ -469,6 +469,8 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
                 try {
                     myApp.powerLED.on();
                     Log.d(TAG, "LED on");
+                    myApp.mMediaPlayer.start();
+
                     //延迟3秒关闭
                     timer.schedule(new TimerTask() {
                         @Override
@@ -476,9 +478,11 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
                             try {
                                 myApp.powerLED.off();
                                 Log.d(TAG, "LED off");
+                                myApp.mMediaPlayer.start();
                             } catch (Exception e) {
                                 e.printStackTrace();
                                 Log.e(TAG, "LED 关灯异常", e);
+                                myApp.mMediaPlayer.stop();
                             }
                         }
                     }, 3*1000L);
@@ -493,6 +497,10 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
                 try {
                     myApp.powerLED.off();
                     Log.d(TAG, "LED off");
+                    if(myApp.mMediaPlayer.isPlaying()){
+                        myApp.mMediaPlayer.stop();
+                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.e(TAG, "LED 关灯异常", e);

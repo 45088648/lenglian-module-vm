@@ -3,6 +3,7 @@ package com.beetech.module.application;
 import android.app.Application;
 import android.app.Service;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.MediaPlayer;
 import android.os.HandlerThread;
 import android.os.SystemClock;
 import android.os.Vibrator;
@@ -12,6 +13,7 @@ import android.util.Log;
 import com.baidu.location.BDAbstractLocationListener;
 import com.baidu.location.BDLocation;
 import com.baidu.mapapi.SDKInitializer;
+import com.beetech.module.R;
 import com.beetech.module.bean.QueryConfigRealtime;
 import com.beetech.module.client.ConnectUtils;
 import com.beetech.module.constant.Constant;
@@ -121,12 +123,15 @@ public class MyApplication extends Application {
     public Date beginMonitorTime;
     public Date endMonitorTime;
 
+    public MediaPlayer mMediaPlayer;
+
     @Override
     public void onCreate() {
         super.onCreate();
         toastHandler = new ToastHandler(this);
         appException = CrashHandler.getInstance();
         appException.init(getApplicationContext());
+        mMediaPlayer = MediaPlayer.create(this, R.raw.alarm);
 
         new ANRWatchDog().setANRListener(new ANRWatchDog.ANRListener() {
             @Override
