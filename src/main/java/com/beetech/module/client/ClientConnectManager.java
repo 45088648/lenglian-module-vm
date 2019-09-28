@@ -48,7 +48,10 @@ public class ClientConnectManager {
             @Override
             public void subscribe(@NonNull ObservableEmitter<Object> e) throws Exception {
                 NioSocketConnector mSocketConnector = getNioSocketConnector();
-
+                if(mSocketConnector == null) {
+                    Log.e(TAG, "mSocketConnector is null");
+                    return;
+                }
                 //配置服务器地址
                 InetSocketAddress mSocketAddress = new InetSocketAddress(ConnectUtils.HOST, ConnectUtils.PORT);
                 //发起连接
@@ -96,7 +99,10 @@ public class ClientConnectManager {
                     try {
                         count++;
                         mSocketConnector = getNioSocketConnector();
-
+                        if(mSocketConnector == null) {
+                            Log.e(TAG, "mSocketConnector is null");
+                            return;
+                        }
                         //配置服务器地址
                         InetSocketAddress mSocketAddress = new InetSocketAddress(ConnectUtils.HOST, ConnectUtils.PORT);
                         //发起连接
@@ -158,26 +164,30 @@ public class ClientConnectManager {
 
     public NioSocketConnector getNioSocketConnector(){
         NioSocketConnector mSocketConnector = null;
-        if (mSocketConnector == null) {
-            mSocketConnector = new NioSocketConnector();
-            mSocketConnector.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, ConnectUtils.IDLE_TIME);
+        try {
+            if (mSocketConnector == null) {
+                mSocketConnector = new NioSocketConnector();
+                mSocketConnector.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, ConnectUtils.IDLE_TIME);
 
-            TextLineCodecFactory codecFactory = new TextLineCodecFactory(Charset.forName("GBK"), "\0", "\0");
-            codecFactory.setDecoderMaxLineLength(1024*1024);
-            codecFactory.setEncoderMaxLineLength(1024*1024);
-            mSocketConnector.getFilterChain().addLast("codec", new ProtocolCodecFilter(codecFactory));
+                TextLineCodecFactory codecFactory = new TextLineCodecFactory(Charset.forName("GBK"), "\0", "\0");
+                codecFactory.setDecoderMaxLineLength(1024 * 1024);
+                codecFactory.setEncoderMaxLineLength(1024 * 1024);
+                mSocketConnector.getFilterChain().addLast("codec", new ProtocolCodecFilter(codecFactory));
 
-            // 获取过滤器链
-            DefaultIoFilterChainBuilder filterChain = mSocketConnector.getFilterChain();
+                // 获取过滤器链
+                DefaultIoFilterChainBuilder filterChain = mSocketConnector.getFilterChain();
 
-            //设置 handler 处理业务逻辑
-            mSocketConnector.setHandler(new MyHandler(context));
-            mSocketConnector.addListener(new HeartBeatListener(mSocketConnector, context));
+                //设置 handler 处理业务逻辑
+                mSocketConnector.setHandler(new MyHandler(context));
+                mSocketConnector.addListener(new HeartBeatListener(mSocketConnector, context));
 
-            mSocketConnector.getSessionConfig().setReceiveBufferSize(10240);	// 设置接收缓冲区的大小
-            mSocketConnector.getSessionConfig().setSendBufferSize(10240);// 设置输出缓冲区的大小
+                mSocketConnector.getSessionConfig().setReceiveBufferSize(10240);    // 设置接收缓冲区的大小
+                mSocketConnector.getSessionConfig().setSendBufferSize(10240);// 设置输出缓冲区的大小
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.e(TAG, "NioSocketConnector 创建失败"+e.getMessage(), e);
         }
-
         return mSocketConnector;
     }
 }

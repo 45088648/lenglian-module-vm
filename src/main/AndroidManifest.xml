@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.beetech.module"
     android:versionCode="1"
-    android:versionName="1.0.17"
+    android:versionName="1.0.19"
     android:sharedUserId="android.uid.system">
 
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
@@ -118,6 +118,7 @@
             android:label="离在线语音合成" />
 
         <service android:enabled="true" android:name=".service.ModuleService" />
+        <service android:enabled="true" android:name=".service.GPSService" />
         <service android:enabled="true" android:name=".service.JobProtectService" android:permission="android.permission.BIND_JOB_SERVICE"/>
 
         <service android:name=".service.ModuleService$GrayInnerService"

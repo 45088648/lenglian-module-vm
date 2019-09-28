@@ -1,10 +1,7 @@
 package com.beetech.module.code;
 
-import java.text.SimpleDateFormat;
-
 public abstract class CommonBase {
-	
-	public static SimpleDateFormat dateFromat = new SimpleDateFormat("yyMMddHHmmss");
+
 	public int begin; // 起始位
 	public int packLen; // 长度
 	public int loadLen; // 负载长度

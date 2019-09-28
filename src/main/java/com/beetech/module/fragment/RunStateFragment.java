@@ -236,6 +236,10 @@ public class RunStateFragment extends Fragment {
 
     @OnClick(R.id.btnTruncateLog)
     public void btnTruncateLog_onClick(View v) {
+        if(myApp.monitorState==1){
+            Toast.makeText(getContext(), "监控中，请先结束监控再操作", Toast.LENGTH_SHORT).show();
+            return;
+        }
         AlertDialog.Builder builder = new  AlertDialog.Builder(mContext);
         builder.setMessage("确定要清空全部日志数据吗？");
         builder.setTitle("提示");
@@ -288,6 +292,10 @@ public class RunStateFragment extends Fragment {
 
     @OnClick(R.id.btnTruncateAll)
     public void btnTruncateAll_onClick(View v) {
+        if(myApp.monitorState==1){
+            Toast.makeText(getContext(), "监控中，请先结束监控再操作", Toast.LENGTH_SHORT).show();
+            return;
+        }
         AlertDialog.Builder builder = new  AlertDialog.Builder(mContext);
         builder.setMessage("确定要清空全部数据吗？");
         builder.setTitle("提示");
@@ -411,6 +419,10 @@ public class RunStateFragment extends Fragment {
 
     @OnClick(R.id.btnSetDataBeginTime)
     public void btnSetDataBeginTime_OnClick(View v) {
+        if(myApp.monitorState==1){
+            Toast.makeText(getContext(), "监控中，请先结束监控再操作", Toast.LENGTH_SHORT).show();
+            return;
+        }
         AlertDialog.Builder builder = new  AlertDialog.Builder(mContext);
         builder.setMessage("确定要设置模块数据开始时间吗？");
         builder.setTitle("提示");

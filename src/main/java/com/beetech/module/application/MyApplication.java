@@ -22,6 +22,7 @@ import com.beetech.module.dao.QueryConfigRealtimeSDDao;
 import com.beetech.module.dao.ReadDataRealtimeSDDao;
 import com.beetech.module.dao.ReadDataSDDao;
 import com.beetech.module.dao.VtSocketLogSDDao;
+import com.beetech.module.gps.GpsContent;
 import com.beetech.module.greendao.dao.DaoMaster;
 import com.beetech.module.greendao.dao.DaoSession;
 import com.beetech.module.handler.CrashHandler;
@@ -39,8 +40,10 @@ import com.github.anrwatchdog.ANRError;
 import com.github.anrwatchdog.ANRWatchDog;
 import com.rscja.deviceapi.Module;
 import com.rscja.deviceapi.PowerLED;
+
 import org.apache.mina.core.session.IoSession;
 import org.greenrobot.greendao.query.QueryBuilder;
+
 import java.util.Date;
 import java.util.Timer;
 
@@ -91,6 +94,9 @@ public class MyApplication extends Application {
     public BDAbstractLocationListener locationListener;
     public BDLocation location;
     public Vibrator mVibrator;
+
+    //北斗定位
+    public GpsContent gpsContent = new GpsContent();
 
     //db操作对象
     public DaoMaster.DevOpenHelper devOpenHelper;

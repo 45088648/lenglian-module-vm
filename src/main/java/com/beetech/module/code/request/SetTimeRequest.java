@@ -1,9 +1,11 @@
 package com.beetech.module.code.request;
 
-import java.util.Arrays;
-import java.util.Date;
 import com.beetech.module.code.BaseRequest;
 import com.beetech.module.utils.ByteUtilities;
+
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 
 public class SetTimeRequest extends BaseRequest{
 	private int dataType; // 数据类型
@@ -44,6 +46,7 @@ public class SetTimeRequest extends BaseRequest{
 		ByteUtilities.intToNetworkByteOrder(getDataType() , buf , start, 1); start = start+1;
 		ByteUtilities.intToNetworkByteOrder(getDataLen() , buf , start, 1); start = start+1;
 		masterTime = new Date();
+		SimpleDateFormat dateFromat = new SimpleDateFormat("yyMMddHHmmss");
 		byte[] timeBcd = ByteUtilities.str2Bcd(dateFromat.format(masterTime));
 		for (byte b : timeBcd) {
 			Arrays.fill(buf, start, ++start, b);

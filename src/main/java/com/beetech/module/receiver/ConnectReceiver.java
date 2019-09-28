@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+
 import com.beetech.module.constant.Constant;
 import com.beetech.module.service.GuardService;
 import com.beetech.module.service.ModuleService;
@@ -33,5 +34,12 @@ public class ConnectReceiver extends BroadcastReceiver {
             context.startService(intent1);
             Log.d(TAG, "start GuardService");
         }
+
+//        if (!ServiceAliveUtils.isServiceRunning(context, Constant.className_GPSService)) {
+//            Intent intent1 = new Intent();
+//            intent1.setClass(context, GPSService.class);
+//            context.startService(intent1);
+//            Log.d(TAG, "start GPSService");
+//        }
     }
 }

@@ -4,6 +4,7 @@ import com.beetech.module.code.BaseResponse;
 import com.beetech.module.utils.ByteUtilities;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SetDataBeginTimeResponse extends BaseResponse {
@@ -23,7 +24,7 @@ public class SetDataBeginTimeResponse extends BaseResponse {
 		if(buf == null || buf.length == 0) {
 			return;
 		}
-		
+		SimpleDateFormat dateFromat = new SimpleDateFormat("yyMMddHHmmss");
 		int start = 0;
 		this.begin  = ByteUtilities.makeIntFromByte2(buf, start); start = start + 2;
 		this.packLen  = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;

@@ -2,11 +2,14 @@ package com.beetech.module.bean;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.baidu.location.BDLocation;
+import com.beetech.module.gps.GpsContent;
+
 import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
-import java.util.Date;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Index;
+
+import java.util.Date;
 
 @Entity(indexes = {
         @Index(value = "dataTime"),
@@ -48,6 +51,18 @@ public class GpsDataBean {
         setAltitude(location.getAltitude()); // 单位：米
         setAddress(location.getAddrStr());
         setLocType(location.getLocType());
+    }
+
+    public GpsDataBean(GpsContent gpsContent){
+        this.dataTime = new Date();
+        this.sendFlag = 0;
+
+        setLat(gpsContent.getLat());
+        setLng(gpsContent.getLng());
+        setSpeed(gpsContent.getSpeed()); // 单位：公里每小时
+        setDirection(gpsContent.getAngle());// 单位度
+        setAltitude(gpsContent.getAltitude()); // 单位：米
+        setLocType(0);
     }
 
     @Generated(hash = 1537768466)

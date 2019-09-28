@@ -1,13 +1,12 @@
 package com.beetech.module.code.response;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.util.Date;
 import com.beetech.module.code.BaseResponse;
 import com.beetech.module.utils.ByteUtilities;
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.Generated;
+
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class QueryConfigResponse extends BaseResponse {
 
@@ -42,7 +41,7 @@ public class QueryConfigResponse extends BaseResponse {
 		if(buf == null || buf.length == 0) {
 			return;
 		}
-		
+		SimpleDateFormat dateFromat = new SimpleDateFormat("yyMMddHHmmss");
 		int start = 0;
 		this.begin  = ByteUtilities.makeIntFromByte2(buf, start); start = start + 2;
 		this.packLen  = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;

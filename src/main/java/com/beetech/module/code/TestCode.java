@@ -5,23 +5,21 @@ import com.beetech.module.code.response.QueryConfigResponse;
 import com.beetech.module.code.response.ReadDataResponse;
 import com.beetech.module.code.response.SetTimeResponse;
 import com.beetech.module.utils.ByteUtilities;
-import com.beetech.module.utils.CRC16;
-import com.beetech.module.utils.CRC16_ITU;
-
-import java.util.Arrays;
 
 public class TestCode {
 
     public static void main(String[] args){
         System.out.print("Hello world!");
-        String hex = "acac3d0711180403005500041812121555380cfc1010101800045d031e613520630e640b75621812111554006718121115490168b6650779661849020000000084b6caca";
+        String hex = "ACAC3D0711185350005500581909280945370D27101055430F035D031E610013631A640CA2621909280945006719092809452568D2650B166614E50100000000BA1ECACA";
         byte[] buf = ByteUtilities.asByteArray(hex);
         BaseResponse response = ResponseFactory.unpack(buf);
         System.out.println(response);
 
         if(response instanceof ReadDataResponse){
             ReadDataResponse readDataResponse = (ReadDataResponse)response;
+            System.out.println(readDataResponse.getSensorId());
             System.out.println(readDataResponse.getTemp());
+            System.out.println(readDataResponse.getSensorDataTime());
 //            System.out.println(readDataResponse.getCrc());
 
         } else if (response instanceof QueryConfigResponse){

@@ -219,6 +219,12 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
     public void startModuleService(){
         /*如果服务正在运行，直接return*/
+//        if (!ServiceAliveUtils.isServiceRunning(this, Constant.className_GPSService)){
+//            Log.d(TAG, "startService GPSService");
+//            startService(new Intent(this, GPSService.class));
+//        }
+
+        /*如果服务正在运行，直接return*/
         if (!ServiceAliveUtils.isServiceRunning(this, Constant.className_moduleService)){
             /* 启动串口通信服务 */
             startService(new Intent(this, ModuleService.class));

@@ -3,13 +3,16 @@ package com.beetech.module.utils;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import com.beetech.module.service.LocationService;
+
 import com.baidu.location.BDLocation;
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.bean.QueryConfigRealtime;
 import com.beetech.module.client.ConnectUtils;
 import com.beetech.module.constant.Constant;
+import com.beetech.module.service.LocationService;
+
 import org.apache.mina.core.session.IoSession;
+
 import java.util.Date;
 
 public class AppStateUtils {
@@ -90,6 +93,18 @@ public class AppStateUtils {
                 stateSb.append(location.getLongitude()).append(",").append(location.getLatitude()).append(" ").append(location.getAddrStr());
             }
             stateSb.append("\n");
+
+//            //北斗定位
+//            GpsContent gpsContent = myApp.gpsContent;
+//            if(gpsContent != null){
+//                stateSb.append("BD：").append(" ");
+//                Date gpsTime = gpsContent.getGpsTime();
+//                if(gpsTime != null){
+//                    stateSb.append(Constant.sdf.format(gpsContent.getGpsTime())).append(",");
+//                }
+//                stateSb.append(gpsContent.getLng()).append(",").append(gpsContent.getLat()).append(",").append(gpsContent.getUsedCnt()).append(" ");
+//                stateSb.append("\n");
+//            }
 
             IoSession mSession = myApp.session;
             stateSb.append("会话：").append(mSession).append("\n");

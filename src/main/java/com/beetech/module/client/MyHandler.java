@@ -26,7 +26,8 @@ public class MyHandler extends IoHandlerAdapter {
 
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-        Log.d(TAG, ConnectUtils.stringNowTime() + " : 客户端调用exceptionCaught");
+        Log.d(TAG, ConnectUtils.stringNowTime() + " : 客户端调用exceptionCaught"+cause.getMessage());
+        cause.printStackTrace();
     }
 
     @Override

@@ -1,9 +1,11 @@
 package com.beetech.module.code.response;
 
-import java.text.ParseException;
-import java.util.Date;
 import com.beetech.module.code.BaseResponse;
 import com.beetech.module.utils.ByteUtilities;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class SetTimeResponse extends BaseResponse {
 	private int dataType; // 数据类型
@@ -21,7 +23,7 @@ public class SetTimeResponse extends BaseResponse {
 		if(buf == null || buf.length == 0) {
 			return;
 		}
-		
+
 		int start = 0;
 		this.begin  = ByteUtilities.makeIntFromByte2(buf, start); start = start + 2;
 		this.packLen  = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
@@ -32,6 +34,7 @@ public class SetTimeResponse extends BaseResponse {
 		this.dataLen = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
 
 		try {
+			SimpleDateFormat dateFromat = new SimpleDateFormat("yyMMddHHmmss");
 			this.masterTime = dateFromat.parse(ByteUtilities.bcd2Str(ByteUtilities.subBytes(buf, start, 6))); start = start + 6;
 		} catch (ParseException e) {
 			e.printStackTrace();
