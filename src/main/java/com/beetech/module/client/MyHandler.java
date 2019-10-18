@@ -26,7 +26,7 @@ public class MyHandler extends IoHandlerAdapter {
 
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-        Log.d(TAG, ConnectUtils.stringNowTime() + " : 客户端调用exceptionCaught"+cause.getMessage());
+        Log.d(TAG, ConnectUtils.stringNowTime() + " : 客户端调用exceptionCaught："+cause.getMessage());
         cause.printStackTrace();
     }
 
@@ -52,15 +52,14 @@ public class MyHandler extends IoHandlerAdapter {
 
                     String cmd = vtResponseBean.getCmd();
                     boolean success = vtResponseBean.getSuccess();
+                    Long id = vtResponseBean.getId();
 
                     if("SHTRF".equals(cmd) && success){
-                        Long id = vtResponseBean.getId();
                         myApp.readDataSDDao.updateResponseFlag(id, System.currentTimeMillis());
                         Log.d(TAG, "shtrf, received, id="+id);
                     }
 
                     if("GPSDATA".equals(cmd) && success){
-                        Long id = vtResponseBean.getId();
                         myApp.gpsDataSDDao.updateSendFlag(id, 1);
                         Log.d(TAG, "gpsData, received, id="+id);
                     }
@@ -74,6 +73,24 @@ public class MyHandler extends IoHandlerAdapter {
                         SysResponseBean sysResponseBean = JSON.parseObject(msg, SysResponseBean.class);
                         myApp.queryConfigRealtimeSDDao.update(sysResponseBean);
                     }
+
+                    if("STATE".equals(cmd) && success){
+                        if(Constant.IS_UP_MODULE_LOG){
+                            if(id < 999000000){
+                                myApp.moduleBufSDDao.updateSendFlag(id, true);
+                                Log.d(TAG, "STATE moduleBuf, received, id="+id);
+                            }
+                        }
+
+                        if(Constant.IS_UP_APP_LOG){
+                            if(id > 999000000) {
+                                long appLogId = id - 999000000;
+                                myApp.appLogSDDao.updateSendFlag(appLogId, 1);
+                                Log.d(TAG, "STATE appLog, received, id=" + id);
+                            }
+                        }
+                    }
+
                 }
             } catch (Exception e) {
                 e.printStackTrace();

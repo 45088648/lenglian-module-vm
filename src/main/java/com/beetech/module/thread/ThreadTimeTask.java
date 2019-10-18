@@ -4,16 +4,20 @@ import android.content.Context;
 import android.os.HandlerThread;
 import android.os.SystemClock;
 import android.util.Log;
+
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.utils.CheckSessionUtils;
 import com.beetech.module.utils.DeleteReadDataOldUtils;
 import com.beetech.module.utils.LocationServiceUtils;
+import com.beetech.module.utils.SendAppLogUtils;
 import com.beetech.module.utils.SendGpsDataUtils;
+import com.beetech.module.utils.SendModuleBufUtils;
 import com.beetech.module.utils.SendShtrfNoResponseUtils;
 import com.beetech.module.utils.SendShtrfUtils;
 import com.beetech.module.utils.SendVtStateUtils;
 import com.beetech.module.utils.SetSysTimeUtils;
+
 import java.util.Calendar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -172,6 +176,36 @@ public class ThreadTimeTask extends HandlerThread {
                     });
                 }
 
+                if(num % 54 == 0 && Constant.IS_UP_MODULE_LOG) {
+                    executor.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d(TAG, "SendModuleBufUtils.sendModuleBuf run");
+                            try {
+                                SendModuleBufUtils.sendModuleBuf(myApp);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Log.e(TAG, "SendModuleBufUtils.sendModuleBuf 异常", e);
+                            }
+                        }
+                    });
+                }
+
+                if(num % 56 == 0 && Constant.IS_UP_APP_LOG) {
+                    executor.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d(TAG, "SendAppLogUtils.sendAppLog run");
+                            try {
+                                SendAppLogUtils.sendAppLog(myApp);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Log.e(TAG, "SendAppLogUtils.sendAppLog 异常", e);
+                            }
+                        }
+                    });
+                }
+
                 //补发温湿度数据
                 if(num % 65 == 0){
                     executor.submit(new Runnable() {
@@ -203,7 +237,7 @@ public class ThreadTimeTask extends HandlerThread {
                     });
                 }
 
-                if(num > 0 && num % 9999 == 0){
+                if(num == 0){
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {

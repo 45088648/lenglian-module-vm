@@ -1,7 +1,6 @@
 package com.beetech.module.utils;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class NtpMessage {
@@ -312,7 +311,7 @@ public class NtpMessage {
         long ms = (long) (utc * 1000.0);
 
         // date/time
-        String date = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").format(new Date(ms));
+        String date = DateUtils.parseDateToString(new Date(ms), DateUtils.C_YYYY_MM_DD_HH_MM_SS);
 
         // fraction
         double fraction = timestamp - ((long) timestamp);

@@ -73,6 +73,7 @@ public class VtSocketLogSDDao {
         long startTimeInMills = System.currentTimeMillis();
         try{
             myApp.daoSession.getVtSocketLogDao().deleteAll();
+            myApp.database.execSQL("update sqlite_sequence set seq=0 where name='VT_SOCKET_LOG'");
         } catch (Exception e){
             e.printStackTrace();
             Log.e(TAG, "truncate 异常", e);

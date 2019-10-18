@@ -2,7 +2,7 @@ package com.beetech.module.bean.vt;
 
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.bean.QueryConfigRealtime;
-import com.beetech.module.constant.Constant;
+import com.beetech.module.utils.DateUtils;
 
 public class ShutdownRequestBean extends VtRequestBean {
     private ShutdownRequestBody body;
@@ -14,7 +14,7 @@ public class ShutdownRequestBean extends VtRequestBean {
         this();
         body = new ShutdownRequestBody();
         body.setImei(queryConfigRealtime.getImei());
-        body.setTime(Constant.dateFormat.format(queryConfigRealtime.getEndMonitorTime()));
+        body.setTime(DateUtils.parseDateToString(queryConfigRealtime.getEndMonitorTime(), DateUtils.C_YYYYMMDDHHMMSS));
         body.setBt(myApp.batteryPercent);
     }
 

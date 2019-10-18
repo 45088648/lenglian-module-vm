@@ -349,6 +349,7 @@ public class ReadDataSDDao {
         long startTimeInMills = System.currentTimeMillis();
         try{
             myApp.daoSession.getReadDataResponseDao().deleteAll();
+            myApp.database.execSQL("update sqlite_sequence set seq=0 where name='READ_DATA_RESPONSE'");
 
         } catch (Exception e){
             e.printStackTrace();

@@ -5,13 +5,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.beetech.module.R;
 import com.beetech.module.bean.GpsDataBean;
-import java.text.SimpleDateFormat;
+import com.beetech.module.utils.DateUtils;
+
 import java.util.List;
 
 public class GpsDataRvAdapter extends RecyclerView.Adapter<GpsDataRvAdapter.ViewHolder> {
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     List<GpsDataBean> mList;
 
@@ -62,7 +63,8 @@ public class GpsDataRvAdapter extends RecyclerView.Adapter<GpsDataRvAdapter.View
         holder.tvLng.setText(readData.getLng()+"");
 
         holder.tvAddress.setText(readData.getAddress());
-        holder.tvDataTime.setText(dateFormat.format(readData.getDataTime()));
+        holder.tvDataTime.setText(DateUtils.parseDateToString(readData.getDataTime(), DateUtils.C_YYYY_MM_DD_HH_MM_SS));
+
         holder.tvSendFlag.setText(readData.getSendFlag() == 0 ? "否" : "是");
     }
 

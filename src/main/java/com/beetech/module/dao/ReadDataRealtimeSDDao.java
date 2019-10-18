@@ -245,6 +245,7 @@ public class ReadDataRealtimeSDDao {
         long startTimeInMills = System.currentTimeMillis();
         try{
             myApp.daoSession.getReadDataRealtimeDao().deleteAll();
+            myApp.database.execSQL("update sqlite_sequence set seq=0 where name='READ_DATA_REALTIME'");
 
         } catch (Exception e){
             e.printStackTrace();

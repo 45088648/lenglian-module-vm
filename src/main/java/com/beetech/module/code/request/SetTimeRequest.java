@@ -2,8 +2,8 @@ package com.beetech.module.code.request;
 
 import com.beetech.module.code.BaseRequest;
 import com.beetech.module.utils.ByteUtilities;
+import com.beetech.module.utils.DateUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -46,8 +46,8 @@ public class SetTimeRequest extends BaseRequest{
 		ByteUtilities.intToNetworkByteOrder(getDataType() , buf , start, 1); start = start+1;
 		ByteUtilities.intToNetworkByteOrder(getDataLen() , buf , start, 1); start = start+1;
 		masterTime = new Date();
-		SimpleDateFormat dateFromat = new SimpleDateFormat("yyMMddHHmmss");
-		byte[] timeBcd = ByteUtilities.str2Bcd(dateFromat.format(masterTime));
+
+		byte[] timeBcd = ByteUtilities.str2Bcd(DateUtils.parseDateToString(masterTime, DateUtils.C_YYMMDDHHMMSS));
 		for (byte b : timeBcd) {
 			Arrays.fill(buf, start, ++start, b);
 		}

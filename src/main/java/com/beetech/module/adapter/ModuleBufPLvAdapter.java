@@ -10,11 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.beetech.module.R;
 import com.beetech.module.bean.ModuleBuf;
-import com.beetech.module.constant.Constant;
-
-import java.text.SimpleDateFormat;
+import com.beetech.module.utils.DateUtils;
 
 public class ModuleBufPLvAdapter extends PagedListAdapter<ModuleBuf, ModuleBufPLvAdapter.ViewHolder> {
 
@@ -68,7 +67,7 @@ public class ModuleBufPLvAdapter extends PagedListAdapter<ModuleBuf, ModuleBufPL
         holder.tvCmd.setText(moduleBuf.getCmd()+"");
         holder.tvBuf.setText(moduleBuf.getBufHex());
         holder.tvResult.setText(moduleBuf.isResult() ? "1" : "0");
-        holder.tvInputTime.setText(Constant.dateFormat4.format(moduleBuf.getInputTime()));
+        holder.tvInputTime.setText(DateUtils.parseDateToString(moduleBuf.getInputTime(), DateUtils.C_MM_DD_HH_MM_SS_SSS));
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

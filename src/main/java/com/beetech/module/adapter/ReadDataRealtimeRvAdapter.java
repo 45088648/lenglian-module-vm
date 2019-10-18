@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.beetech.module.R;
 import com.beetech.module.bean.ReadDataRealtime;
 import com.beetech.module.constant.Constant;
+import com.beetech.module.utils.DateUtils;
 
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
 
         holder.tvSensorId.setText(readDataRealtime.getSensorId());
         holder.tvTemp.setText(temp+"℃");
-        holder.tvSensorDataTime.setText(Constant.sdf2.format(readDataRealtime.getSensorDataTime()));
+        holder.tvSensorDataTime.setText(DateUtils.parseDateToString(readDataRealtime.getSensorDataTime(), DateUtils.C_MM_DD_HH_MM));
         setText(holder, position);
 
         boolean isAlarm = true;

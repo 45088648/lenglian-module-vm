@@ -200,7 +200,7 @@ public class QueryConfigRealtimeSDDao {
         long startTimeInMills = System.currentTimeMillis();
         try{
             myApp.daoSession.getQueryConfigRealtimeDao().deleteAll();
-
+            myApp.database.execSQL("update sqlite_sequence set seq=0 where name='QUERY_CONFIG_REALTIME'");
         } catch (Exception e){
             e.printStackTrace();
             Log.e(TAG, "truncate异常", e);

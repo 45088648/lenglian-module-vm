@@ -1,20 +1,21 @@
 package com.beetech.module.activity;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.TextView;
 import android.widget.Toast;
+
 import com.beetech.module.R;
 import com.beetech.module.code.response.ReadDataResponse;
 import com.beetech.module.dao.ReadDataSDDao;
-import java.text.SimpleDateFormat;
+import com.beetech.module.utils.DateUtils;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import lecho.lib.hellocharts.formatter.LineChartValueFormatter;
 import lecho.lib.hellocharts.formatter.SimpleLineChartValueFormatter;
 import lecho.lib.hellocharts.listener.ViewportChangeListener;
@@ -32,8 +33,6 @@ import lecho.lib.hellocharts.view.LineChartView;
  * 动态加载数据的折线图
  */
 public class TempLineActivity extends Activity {
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-    private static SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-HH-MM dd HH:mm");
 
     private static final String TAG = TempLineActivity.class.getSimpleName();
     private LineChartView chart;
@@ -100,7 +99,8 @@ public class TempLineActivity extends Activity {
             }
 
             AxisValue axisValue=new AxisValue(newIndex);
-            axisValue.setLabel(dateFormat.format(time));
+            axisValue.setLabel(DateUtils.parseDateToString(time, DateUtils.C_HHMMSS));
+
             mAxisXValues.add(axisValue);
 
             PointValue pointValue = new PointValue(newIndex, Double.valueOf(temp).floatValue());
@@ -201,7 +201,7 @@ public class TempLineActivity extends Activity {
                 Date time = readDataResponse.getSensorDataTime();
 
                 AxisValue axisValue=new AxisValue(newIndex);
-                axisValue.setLabel(dateFormat.format(time));
+                axisValue.setLabel(DateUtils.parseDateToString(time, DateUtils.C_HHMMSS));
                 mAxisXValues.add(axisValue);
 
                 if(tempMax == null || tempMax < temp){

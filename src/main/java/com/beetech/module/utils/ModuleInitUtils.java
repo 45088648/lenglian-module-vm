@@ -30,7 +30,7 @@ public class ModuleInitUtils {
                     }
 
                     boolean result = myApp.moduleUtils.init();
-                    myApp.appLogSDDao.save("模块上电 "+result+", readDataResponseTime="+Constant.sdf.format(new Date(myApp.moduleReceiveDataTime)));
+                    myApp.appLogSDDao.save("模块上电 "+result+", readDataResponseTime="+DateUtils.parseDateToString(new Date(myApp.moduleReceiveDataTime), DateUtils.C_YYYY_MM_DD_HH_MM_SS));
                 }
             }
 

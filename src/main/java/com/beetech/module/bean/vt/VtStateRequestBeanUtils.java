@@ -20,11 +20,13 @@ import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 import android.text.format.Formatter;
 import android.util.Log;
+
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.bean.QueryConfigRealtime;
 import com.beetech.module.bean.ReadDataRealtime;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.utils.NetUtils;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +51,7 @@ public class VtStateRequestBeanUtils {
                 StateRequestBean body = vtStateRequestBean.getBody();
                 body.setBt(myApp.batteryPercent);
                 body.setPower(myApp.power);
+                body.setMonitorState(myApp.monitorState);
                 try {
                     int dbm = 0;
                     myApp.netWorkType = NetUtils.getNetworkState(mContext);
@@ -184,6 +187,27 @@ public class VtStateRequestBeanUtils {
                     e.printStackTrace();
                 }
 
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return vtStateRequestBean;
+    }
+
+    public VtStateRequestBean getMessageShort(){
+        VtStateRequestBean vtStateRequestBean = null;
+        try {
+            QueryConfigRealtime queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
+            if(queryConfigRealtime != null){
+                vtStateRequestBean = new VtStateRequestBean(queryConfigRealtime);
+                StateRequestBean body = vtStateRequestBean.getBody();
+                body.setBt(myApp.batteryPercent);
+                body.setPower(myApp.power);
+                body.setMonitorState(myApp.monitorState);
+                body.setGwstate(myApp.initResult ? 1 : 0);
+                body.setSt(1);
+                body.setMit(myApp.initTime);
             }
         } catch (Exception e) {
             e.printStackTrace();

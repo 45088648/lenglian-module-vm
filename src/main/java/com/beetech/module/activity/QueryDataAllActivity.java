@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.beetech.module.R;
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.bean.QueryConfigRealtime;
@@ -33,7 +34,7 @@ import com.beetech.module.utils.ReadDataAllPrintUtils;
 import com.beetech.module.widget.time.OnDateEditClickListener;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
-import java.text.SimpleDateFormat;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,7 +44,6 @@ import java.util.Map;
 
 public class QueryDataAllActivity extends PrintActivity {
     private static final String TAG = QueryDataAllActivity.class.getSimpleName();
-    private static final SimpleDateFormat dateFromat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     @ViewInject(R.id.tv_status)
     private TextView tvStatus;
@@ -125,7 +125,7 @@ public class QueryDataAllActivity extends PrintActivity {
             cal_endMonitor.setTime(myApp.endMonitorTime);
             endTime = cal_endMonitor.getTime();
         }
-        timeEndEt.setText(dateFromat.format(endTime));
+        timeEndEt.setText(DateUtils.parseDateToString(endTime, DateUtils.C_YYYY_MM_DD_HH_MM));
 
         Date beginTime = null;
         if(myApp.beginMonitorTime == null){
@@ -134,7 +134,7 @@ public class QueryDataAllActivity extends PrintActivity {
         } else {
             beginTime = myApp.beginMonitorTime;
         }
-        timeBeginEt.setText(dateFromat.format(beginTime));
+        timeBeginEt.setText(DateUtils.parseDateToString(beginTime, DateUtils.C_YYYY_MM_DD_HH_MM));
 
         queryBtn.setOnClickListener(new QueryBtnOnClickListener());
         printBtn.setOnClickListener(new PrintBtnOnClickListener());

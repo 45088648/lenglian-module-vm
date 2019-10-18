@@ -27,6 +27,7 @@ public class AppLogDao extends AbstractDao<AppLog, Long> {
         public final static Property _id = new Property(0, Long.class, "_id", true, "_id");
         public final static Property InputTime = new Property(1, java.util.Date.class, "inputTime", false, "INPUT_TIME");
         public final static Property Content = new Property(2, String.class, "content", false, "CONTENT");
+        public final static Property SendFlag = new Property(3, int.class, "sendFlag", false, "SEND_FLAG");
     }
 
 
@@ -44,7 +45,11 @@ public class AppLogDao extends AbstractDao<AppLog, Long> {
         db.execSQL("CREATE TABLE " + constraint + "\"APP_LOG\" (" + //
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: _id
                 "\"INPUT_TIME\" INTEGER," + // 1: inputTime
-                "\"CONTENT\" TEXT);"); // 2: content
+                "\"CONTENT\" TEXT," + // 2: content
+                "\"SEND_FLAG\" INTEGER NOT NULL );"); // 3: sendFlag
+        // Add Indexes
+        db.execSQL("CREATE INDEX " + constraint + "IDX_APP_LOG_SEND_FLAG ON \"APP_LOG\"" +
+                " (\"SEND_FLAG\" ASC);");
     }
 
     /** Drops the underlying database table. */
@@ -71,6 +76,7 @@ public class AppLogDao extends AbstractDao<AppLog, Long> {
         if (content != null) {
             stmt.bindString(3, content);
         }
+        stmt.bindLong(4, entity.getSendFlag());
     }
 
     @Override
@@ -91,6 +97,7 @@ public class AppLogDao extends AbstractDao<AppLog, Long> {
         if (content != null) {
             stmt.bindString(3, content);
         }
+        stmt.bindLong(4, entity.getSendFlag());
     }
 
     @Override
@@ -103,7 +110,8 @@ public class AppLogDao extends AbstractDao<AppLog, Long> {
         AppLog entity = new AppLog( //
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // _id
             cursor.isNull(offset + 1) ? null : new java.util.Date(cursor.getLong(offset + 1)), // inputTime
-            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2) // content
+            cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // content
+            cursor.getInt(offset + 3) // sendFlag
         );
         return entity;
     }
@@ -113,6 +121,7 @@ public class AppLogDao extends AbstractDao<AppLog, Long> {
         entity.set_id(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setInputTime(cursor.isNull(offset + 1) ? null : new java.util.Date(cursor.getLong(offset + 1)));
         entity.setContent(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
+        entity.setSendFlag(cursor.getInt(offset + 3));
      }
     
     @Override

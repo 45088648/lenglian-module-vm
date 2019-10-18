@@ -3,6 +3,7 @@ package com.beetech.module.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Message;
 import android.telephony.gsm.SmsMessage;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,6 +18,7 @@ import com.beetech.module.client.ConnectUtils;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.dao.BaseSDDaoUtils;
 import com.beetech.module.utils.AppStateUtils;
+import com.beetech.module.utils.DateUtils;
 import com.beetech.module.utils.DeleteHistoryDataUtils;
 import com.beetech.module.utils.ModuleUtils;
 import com.beetech.module.utils.NodeParamUtils;
@@ -26,7 +28,6 @@ import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.session.IoSession;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SmsReceiver extends BroadcastReceiver {
@@ -53,10 +54,10 @@ public class SmsReceiver extends BroadcastReceiver {
             //[3]获取发送短信的内容
             String body = smsMessage.getMessageBody();
             Date date = new Date(smsMessage.getTimestampMillis());//时间
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
             //[4]获取发送者
             String address = smsMessage.getOriginatingAddress();
-            String receiveTime = format.format(date);
+            String receiveTime = DateUtils.parseDateToString(date, DateUtils.C_YYYY_MM_DD_HH_MM_SS);
             String logContent = "短信:" + body + "，" + address+"，"+receiveTime;
             Log.e(TAG, logContent);
             myApp.appLogSDDao.save(logContent);
@@ -84,6 +85,13 @@ public class SmsReceiver extends BroadcastReceiver {
                 myApp.queryConfigRealtimeSDDao.updateBySmsSt(smsContent);
                 myApp.appLogSDDao.save("短信初始化：host="+ ConnectUtils.HOST+", port="+ConnectUtils.PORT);
                 ClientConnectManager.getInstance(context).connect();
+
+            } else if("queryConfig".equals(smsContent)){
+
+                Message msg = new Message();
+                msg.what = 1;
+                myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
+                myApp.appLogSDDao.save("短信查询本地配置");
 
             } else if("ResetSystomOperation".equals(smsContent)){
 
@@ -132,7 +140,29 @@ public class SmsReceiver extends BroadcastReceiver {
                 Constant.IS_SAVE_SOCKET_LOG = false;
                 myApp.appLogSDDao.save("短信关闭记录日志");
 
-            } else if("gwlast".equals(smsContent)){
+            }   else if("saveAndUpModuleLogOn".equals(smsContent)){
+
+                Constant.IS_SAVE_MODULE_LOG = true;
+                Constant.IS_UP_MODULE_LOG = true;
+                myApp.appLogSDDao.save("短信开启记录并上传模块日志");
+
+            }   else if("saveAndUpModuleLogOff".equals(smsContent)){
+
+                Constant.IS_SAVE_MODULE_LOG = false;
+                Constant.IS_UP_MODULE_LOG = false;
+                myApp.appLogSDDao.save("短信关闭记录并上传模块日志");
+
+            }   else if("upAppLogOn".equals(smsContent)){
+
+                Constant.IS_UP_APP_LOG = true;
+                myApp.appLogSDDao.save("短信开启上传APP日志");
+
+            }   else if("upAppLogOff".equals(smsContent)){
+
+                Constant.IS_UP_APP_LOG = false;
+                myApp.appLogSDDao.save("短信关闭上传APP日志");
+
+            }  else if("gwlast".equals(smsContent)){
 
                 IoSession mSession = myApp.session;
                 if(mSession != null && mSession.isConnected()){

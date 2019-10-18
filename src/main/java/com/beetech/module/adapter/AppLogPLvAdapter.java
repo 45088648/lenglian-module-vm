@@ -10,9 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.beetech.module.R;
 import com.beetech.module.bean.AppLog;
-import com.beetech.module.constant.Constant;
+import com.beetech.module.utils.DateUtils;
 
 public class AppLogPLvAdapter extends PagedListAdapter<AppLog, AppLogPLvAdapter.ViewHolder> {
 
@@ -58,13 +59,15 @@ public class AppLogPLvAdapter extends PagedListAdapter<AppLog, AppLogPLvAdapter.
         AppLog appLog = mPagedList.get(position);
         holder.tvId.setText(appLog.get_id()+"");
         holder.tvContent.setText(appLog.getContent());
-        holder.tvInputTime.setText(Constant.dateFormat3.format(appLog.getInputTime()));
+        holder.tvSendFlag.setText(appLog.getSendFlag()+"");
+        holder.tvInputTime.setText(DateUtils.parseDateToString(appLog.getInputTime(), DateUtils.C_MM_DD_HH_MM_SS));
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView tvId;
         public TextView tvContent;
+        public TextView tvSendFlag;
         public TextView tvInputTime;
 
         public ViewHolder(View convertView) {
@@ -72,6 +75,7 @@ public class AppLogPLvAdapter extends PagedListAdapter<AppLog, AppLogPLvAdapter.
 
             tvId = (TextView) convertView.findViewById(R.id.tvId);
             tvContent = (TextView) convertView.findViewById(R.id.tvContent);
+            tvSendFlag = (TextView) convertView.findViewById(R.id.tvSendFlag);
             tvInputTime = (TextView) convertView.findViewById(R.id.tvInputTime);
         }
     }

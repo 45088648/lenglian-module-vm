@@ -56,6 +56,8 @@ public class ModuleBufDao extends AbstractDao<ModuleBuf, Long> {
         // Add Indexes
         db.execSQL("CREATE INDEX " + constraint + "IDX_MODULE_BUF_INPUT_TIME ON \"MODULE_BUF\"" +
                 " (\"INPUT_TIME\" ASC);");
+        db.execSQL("CREATE INDEX " + constraint + "IDX_MODULE_BUF_RESULT ON \"MODULE_BUF\"" +
+                " (\"RESULT\" ASC);");
     }
 
     /** Drops the underlying database table. */

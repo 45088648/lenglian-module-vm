@@ -3,8 +3,7 @@ package com.beetech.module.utils;
 import com.beetech.module.bean.QueryConfigRealtime;
 import com.beetech.module.bean.ReadDataRealtime;
 import com.beetech.module.code.response.ReadDataResponse;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -17,10 +16,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 public class ReadDataAllPrintUtils {
-
-    public static DecimalFormat tempFormat = new DecimalFormat("0.0");// 保留一位小数整数补.0
-    public static SimpleDateFormat dateFromat = new SimpleDateFormat(DateUtils.C_YYYY_MM_DD_HH_MM_SS);
-    public static SimpleDateFormat dateFromat_mm = new SimpleDateFormat(DateUtils.C_YYYY_MM_DD_HH_MM);
 
     public static String toPrintStr(List<ReadDataRealtime> readDataRealtimeList, List<List<ReadDataResponse>> dataListAll, PrintSetVo printSetVo, QueryConfigRealtime queryConfigRealtime) {
         String space = " ";
@@ -150,8 +145,8 @@ public class ReadDataAllPrintUtils {
             }
         }
 
-        String beginTimeStr = dateFromat_mm.format(firstTempDataVo.getSensorDataTime());
-        String endTimeStr = dateFromat_mm.format(lastTempDataVo.getSensorDataTime());
+        String beginTimeStr = DateUtils.parseDateToString(firstTempDataVo.getSensorDataTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
+        String endTimeStr = DateUtils.parseDateToString(lastTempDataVo.getSensorDataTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
         sb.append("-------------------------------\n");
         sb.append("有效开始时间：").append(beginTimeStr).append("\n");
         sb.append("有效结束时间：").append(endTimeStr).append("\n");
@@ -302,8 +297,8 @@ public class ReadDataAllPrintUtils {
             }
         }
 
-        String beginTimeStr = dateFromat_mm.format(firstTempDataVo.getSensorDataTime());
-        String endTimeStr = dateFromat_mm.format(lastTempDataVo.getSensorDataTime());
+        String beginTimeStr = DateUtils.parseDateToString(firstTempDataVo.getSensorDataTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
+        String endTimeStr = DateUtils.parseDateToString(lastTempDataVo.getSensorDataTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
         sb.append("-------------------------------\n");
         sb.append("有效开始时间：").append(beginTimeStr).append("\n");
         sb.append("有效结束时间：").append(endTimeStr).append("\n");

@@ -1,14 +1,17 @@
 package com.beetech.module.bean;
 
 import com.beetech.module.utils.ByteUtilities;
+
 import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Index;
+
 import java.util.Date;
-import org.greenrobot.greendao.annotation.Generated;
 
 @Entity(indexes = {
-        @Index(value = "inputTime")
+        @Index(value = "inputTime"),
+        @Index(value = "result")
 })
 public class ModuleBuf {
 
@@ -29,7 +32,6 @@ public class ModuleBuf {
         this.type = type;
         this.inputTime = new Date();
         this.cmd = cmd;
-        this.result = result;
     }
 
     @Generated(hash = 857339249)

@@ -1,7 +1,7 @@
 package com.beetech.module.bean.vt;
 
 import com.beetech.module.bean.ReadDataRealtime;
-import com.beetech.module.constant.Constant;
+import com.beetech.module.utils.DateUtils;
 
 import java.io.Serializable;
 
@@ -19,7 +19,7 @@ public class StateData implements Serializable{
 		this.ids = readDataRealtime.get_id();
 		this.rfId = readDataRealtime.getSensorId();
 		this.rssi = readDataRealtime.getRssi();
-		this.time = Constant.dateFormat.format(readDataRealtime.getSensorDataTime());
+		this.time = DateUtils.parseDateToString(readDataRealtime.getSensorDataTime(), DateUtils.C_YYYYMMDDHHMMSS);
 	}
 	
 	public Long getIds() {

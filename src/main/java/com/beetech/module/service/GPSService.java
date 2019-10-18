@@ -22,11 +22,11 @@ import com.beetech.module.application.MyApplication;
 import com.beetech.module.bean.GpsDataBean;
 import com.beetech.module.gps.GPSInfo;
 import com.beetech.module.gps.GpsContent;
+import com.beetech.module.utils.DateUtils;
 import com.rscja.deviceapi.BDNavigation;
 import com.rscja.deviceapi.exception.ConfigurationException;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
@@ -40,7 +40,6 @@ public class GPSService extends Service {
     MyApplication myApp;
     private LocationManager locationManager;
 
-    final SimpleDateFormat utcSdf1 = new SimpleDateFormat("HHmmss");
     public static long lastLocationChanged;
     public static long validPointCnt;
     long lastSpeakOnline;
@@ -162,7 +161,7 @@ public class GPSService extends Service {
 
                 if (sValues.length >= 12 && sValues[0].contains("GGA")) {
                     if (sValues[1].length() > 0) {
-                        Date utcTimeOld = utcSdf1.parse(sValues[1].substring(0, 6));
+                        Date utcTimeOld = DateUtils.parseStringToDate(sValues[1].substring(0, 6), DateUtils.C_HHMMSS1);
                         Calendar cal = Calendar.getInstance();
                         cal.setTime(utcTimeOld);
                         cal.add(Calendar.HOUR_OF_DAY, 8);

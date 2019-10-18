@@ -31,9 +31,11 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ZoomControls;
 
 import com.baidu.location.BDLocation;
 import com.baidu.mapapi.map.BaiduMap;
@@ -60,6 +62,7 @@ import com.beetech.module.listener.PhoneStatListener;
 import com.beetech.module.service.JobProtectService;
 import com.beetech.module.service.ModuleService;
 import com.beetech.module.service.RemoteService;
+import com.beetech.module.utils.DateUtils;
 import com.beetech.module.utils.DevStateUtils;
 import com.beetech.module.utils.NetUtils;
 import com.beetech.module.utils.NodeParamUtils;
@@ -170,6 +173,14 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
         mBaiduMap = mMapView.getMap();
         mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
         mBaiduMap.setMapStatus(MapStatusUpdateFactory.zoomTo(15));
+
+        // 隐藏logo
+        View child = mMapView.getChildAt(1);
+        if (child != null && (child instanceof ImageView || child instanceof ZoomControls)){
+            child.setVisibility(View.INVISIBLE);
+        }
+        mMapView.showScaleControl(false); //地图上比例尺
+        mMapView.showZoomControls(false); // 隐藏缩放控件
 
         //电量和插拔电源状态广播监听
         if(listener == null){
@@ -341,13 +352,13 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
         }
 
         if(myApp.beginMonitorTime != null){
-            tvBeginMonitorTime.setText(Constant.sdf.format(myApp.beginMonitorTime));
+            tvBeginMonitorTime.setText(DateUtils.parseDateToString(myApp.beginMonitorTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS));
             tvBeginMonitorTime.setTextColor(Color.BLUE);
         }else {
             tvBeginMonitorTime.setText(null);
         }
         if(myApp.endMonitorTime != null){
-            tvEndMonitorTime.setText(Constant.sdf.format(myApp.endMonitorTime));
+            tvEndMonitorTime.setText(DateUtils.parseDateToString(myApp.endMonitorTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS));
             tvEndMonitorTime.setTextColor(Color.BLUE);
         } else {
             tvEndMonitorTime.setText(null);
@@ -626,8 +637,8 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             if(!myApp.locationService.isStart()){
                 myApp.locationService.start();
             }
-            myApp.appLogSDDao.save("开始监控"+Constant.sdf.format(myApp.beginMonitorTime));
-            Toast.makeText(RealtimeMonitorActivity.this, "开始监控, "+Constant.sdf.format(myApp.beginMonitorTime), Toast.LENGTH_SHORT).show();
+            myApp.appLogSDDao.save("开始监控"+DateUtils.parseDateToString(myApp.beginMonitorTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS));
+            Toast.makeText(RealtimeMonitorActivity.this, "开始监控, "+DateUtils.parseDateToString(myApp.beginMonitorTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS), Toast.LENGTH_SHORT).show();
             btnBeginMonitor.setTextColor(Color.BLUE);
             btnEndMonitor.setTextColor(Color.BLACK);
             refreshState();
@@ -745,10 +756,10 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             }
 
             myApp.locationService.stop();
-            myApp.appLogSDDao.save("结束监控, "+ Constant.sdf.format(myApp.endMonitorTime));
+            myApp.appLogSDDao.save("结束监控, "+ DateUtils.parseDateToString(myApp.endMonitorTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS));
             btnBeginMonitor.setTextColor(Color.BLACK);
             btnEndMonitor.setTextColor(Color.RED);
-            Toast.makeText(RealtimeMonitorActivity.this,"结束监控"+ Constant.sdf.format(myApp.endMonitorTime), Toast.LENGTH_SHORT).show();
+            Toast.makeText(RealtimeMonitorActivity.this,"结束监控"+ DateUtils.parseDateToString(myApp.endMonitorTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS), Toast.LENGTH_SHORT).show();
 
             refreshState();
 

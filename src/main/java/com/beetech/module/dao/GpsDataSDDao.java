@@ -128,6 +128,8 @@ public class GpsDataSDDao {
         long startTimeInMills = System.currentTimeMillis();
         try{
             myApp.getDaoSession().getGpsDataBeanDao().deleteAll();
+            myApp.database.execSQL("update sqlite_sequence set seq=0 where name='GPS_DATA_BEAN'");
+
         } catch (Exception e){
             e.printStackTrace();
             Log.e(TAG, "truncate异常", e);

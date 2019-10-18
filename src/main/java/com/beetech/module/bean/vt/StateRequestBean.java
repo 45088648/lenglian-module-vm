@@ -1,15 +1,13 @@
 package com.beetech.module.bean.vt;
 
 import android.text.TextUtils;
-
 import com.beetech.module.bean.QueryConfigRealtime;
+import com.beetech.module.utils.DateUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 public class StateRequestBean {
-    public static SimpleDateFormat dateFromat = new SimpleDateFormat("yyyyMMddHHmmss");
 
 	private static final long serialVersionUID = -5980465058119958498L;
 
@@ -124,6 +122,11 @@ public class StateRequestBean {
 
 	private String appState;
 	private String wifiIp;
+	public int monitorState;
+	public int st = 0; // 0: 状态 1：模块日志 2:APP日志
+	public long mit; //模块上电时间，查看是否重启
+	public String bh; // bufHex 用来上传模块通信日志
+	public long bft; // 模块日志时间
 
 	public StateRequestBean() {
 	}
@@ -143,7 +146,7 @@ public class StateRequestBean {
 		this.ptn = queryConfigRealtime.getPattern();
 		this.gwid = queryConfigRealtime.getImei();
 		this.imei = queryConfigRealtime.getImei();
-		this.time = dateFromat.format(new Date());
+		this.time = DateUtils.parseDateToString(new Date(), DateUtils.C_YYYYMMDDHHMMSS);
 		this.csq = 0;
 	}
 
@@ -385,5 +388,45 @@ public class StateRequestBean {
 
 	public void setSoftVer(String softVer) {
 		this.softVer = softVer;
+	}
+
+	public int getMonitorState() {
+		return monitorState;
+	}
+
+	public void setMonitorState(int monitorState) {
+		this.monitorState = monitorState;
+	}
+
+	public int getSt() {
+		return st;
+	}
+
+	public void setSt(int st) {
+		this.st = st;
+	}
+
+	public long getMit() {
+		return mit;
+	}
+
+	public void setMit(long mit) {
+		this.mit = mit;
+	}
+
+	public String getBh() {
+		return bh;
+	}
+
+	public void setBh(String bh) {
+		this.bh = bh;
+	}
+
+	public long getBft() {
+		return bft;
+	}
+
+	public void setBft(long bft) {
+		this.bft = bft;
 	}
 }

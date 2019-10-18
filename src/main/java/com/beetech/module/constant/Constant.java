@@ -1,20 +1,11 @@
 package com.beetech.module.constant;
 
 import android.graphics.Color;
-import java.text.SimpleDateFormat;
+
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Constant {
-
-    public final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    public final static SimpleDateFormat sdf1 = new SimpleDateFormat("yy/MM/dd HH:mm");
-    public final static SimpleDateFormat sdf2 = new SimpleDateFormat("MM/dd HH:mm");
-    public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-    public static SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-    public static SimpleDateFormat dateFormat2 = new SimpleDateFormat("HH:mm:ss");
-    public static SimpleDateFormat dateFormat3 = new SimpleDateFormat("MM/dd HH:mm:ss");
-    public static SimpleDateFormat dateFormat4 = new SimpleDateFormat("MM/dd HH:mm:ss SSS");
 
     public final static int module = 4;
     public final static int baudrate = 115200;
@@ -61,6 +52,8 @@ public class Constant {
     //记录日志标志位
     public static boolean IS_SAVE_MODULE_LOG = false; //是否记录串口日志
     public static boolean IS_SAVE_SOCKET_LOG = false; //是否记录SOCKET日志
+    public static boolean IS_UP_MODULE_LOG = false; //是否上传串口日志
+    public static boolean IS_UP_APP_LOG = false; //是否上传APP日志
     public static boolean IS_DEBUGGABLE = false; //是否调试模式
     public static boolean IS_TTSS_TOAST = false; //百度语音是否toast
 

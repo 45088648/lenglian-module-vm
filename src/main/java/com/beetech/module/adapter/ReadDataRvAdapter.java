@@ -5,9 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.beetech.module.R;
 import com.beetech.module.code.response.ReadDataResponse;
-import com.beetech.module.constant.Constant;
+import com.beetech.module.utils.DateUtils;
+
 import java.util.List;
 
 public class ReadDataRvAdapter extends RecyclerView.Adapter<ReadDataRvAdapter.ViewHolder> {
@@ -45,8 +47,8 @@ public class ReadDataRvAdapter extends RecyclerView.Adapter<ReadDataRvAdapter.Vi
         holder.tvRh.setText(readData.getRh()+"");
         holder.tvSsVoltage.setText(readData.getSsVoltage()+"");
         holder.tvRssi.setText(readData.getRssi()+"");
-        holder.tvSensorDataTime.setText(Constant.sdf.format(readData.getSensorDataTime()));
-        holder.tvGwTime.setText(Constant.dateFormat3.format(readData.getGwTime()));
+        holder.tvSensorDataTime.setText(DateUtils.parseDateToString(readData.getSensorDataTime(), DateUtils.C_YYYY_MM_DD_HH_MM_SS));
+        holder.tvGwTime.setText(DateUtils.parseDateToString(readData.getGwTime(), DateUtils.C_MM_DD_HH_MM_SS));
         holder.tvSendFlag.setText(readData.getSendFlag()+"");
         holder.tvResponseFlag.setText(readData.getResponseFlag()+"");
     }

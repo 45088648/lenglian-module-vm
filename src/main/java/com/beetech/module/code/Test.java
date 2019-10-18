@@ -2,12 +2,11 @@ package com.beetech.module.code;
 
 import com.alibaba.fastjson.JSON;
 import com.beetech.module.bean.vt.ShtrfRequestBean;
-import com.beetech.module.bean.vt.VtRequestBean;
 import com.beetech.module.bean.vt.VtResponseBean;
 import com.beetech.module.code.response.ReadDataResponse;
 import com.beetech.module.utils.ByteUtilities;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import com.beetech.module.utils.DateUtils;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -50,13 +49,7 @@ public class Test {
     }
 
     public static Date parseDate(String timeStr){
-        Date retDate = null;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
-        try {
-            retDate = dateFormat.parse(timeStr);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        Date retDate = DateUtils.parseStringToDate(timeStr, DateUtils.C_YYYYMMDDHHMM);
         return retDate;
     }
 

@@ -20,6 +20,7 @@ import com.beetech.module.code.response.SetTimeResponse;
 import com.beetech.module.code.response.UpdateSSParamResponse;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.utils.ByteUtilities;
+import com.beetech.module.utils.DateUtils;
 import com.beetech.module.utils.DeleteHistoryDataUtils;
 import com.beetech.module.utils.ModuleFreeUtils;
 import com.beetech.module.utils.ModuleInitUtils;
@@ -297,7 +298,7 @@ public class ModuleHandler extends Handler {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                toastSb.append("查询本地配置反馈：").append(Constant.sdf.format(queryConfigResponse.getCalendar()));
+                toastSb.append("查询本地配置反馈：").append(DateUtils.parseDateToString(queryConfigResponse.getCalendar(), DateUtils.C_YYYY_MM_DD_HH_MM_SS));
             }
 
             if(response instanceof DeleteHistoryDataResponse){
@@ -309,7 +310,7 @@ public class ModuleHandler extends Handler {
             if(response instanceof SetDataBeginTimeResponse){
                 SetDataBeginTimeResponse setDataBeginTimeResponse = (SetDataBeginTimeResponse)response;
                 myApp.setDataBeginTime = setDataBeginTimeResponse.getDataBeginTime();
-                toastSb.append("设置数据开始时间反馈：").append(Constant.sdf.format(myApp.setDataBeginTime)+"~"+setDataBeginTimeResponse.getError());
+                toastSb.append("设置数据开始时间反馈：").append(DateUtils.parseDateToString(myApp.setDataBeginTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS)+"~"+setDataBeginTimeResponse.getError());
             }
 
             if(response instanceof SetTimeResponse){

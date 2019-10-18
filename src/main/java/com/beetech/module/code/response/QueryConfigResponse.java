@@ -2,10 +2,9 @@ package com.beetech.module.code.response;
 
 import com.beetech.module.code.BaseResponse;
 import com.beetech.module.utils.ByteUtilities;
+import com.beetech.module.utils.DateUtils;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class QueryConfigResponse extends BaseResponse {
@@ -41,7 +40,7 @@ public class QueryConfigResponse extends BaseResponse {
 		if(buf == null || buf.length == 0) {
 			return;
 		}
-		SimpleDateFormat dateFromat = new SimpleDateFormat("yyMMddHHmmss");
+
 		int start = 0;
 		this.begin  = ByteUtilities.makeIntFromByte2(buf, start); start = start + 2;
 		this.packLen  = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
@@ -57,11 +56,8 @@ public class QueryConfigResponse extends BaseResponse {
 		this.debug = ByteUtilities.makeIntFromByte2(buf, start); start = start + 2;
 		this.category = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
 		this.interval = ByteUtilities.makeIntFromByte2(buf, start); start = start + 2;
-		try {
-			this.calendar = dateFromat.parse(ByteUtilities.bcd2Str(ByteUtilities.subBytes(buf, start, 6))); start = start + 6;
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		this.calendar = DateUtils.parseStringToDate(ByteUtilities.bcd2Str(ByteUtilities.subBytes(buf, start, 6)), DateUtils.C_YYMMDDHHMMSS); start = start + 6;
+
 		this.pattern = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
 		this.bps = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
 		this.channel = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;

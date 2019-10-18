@@ -2,6 +2,7 @@ package com.beetech.module.code.response;
 
 import com.beetech.module.code.BaseResponse;
 import com.beetech.module.utils.ByteUtilities;
+import com.beetech.module.utils.DateUtils;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;
@@ -9,8 +10,6 @@ import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Index;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity(indexes = {
@@ -122,7 +121,7 @@ public class ReadDataResponse extends BaseResponse {
 		if(buf == null || buf.length == 0) {
 			return;
 		}
-		SimpleDateFormat dateFromat = new SimpleDateFormat("yyMMddHHmmss");
+
 		int start = 0;
 		this.begin  = ByteUtilities.makeIntFromByte2(buf, start); start = start + 2;
 		this.packLen  = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
@@ -134,11 +133,8 @@ public class ReadDataResponse extends BaseResponse {
 		if(error == 0) {
 			this.gwType = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
 			this.serialNo = ByteUtilities.makeIntFromByte2(buf, start); start = start + 2;
-			try {
-				this.gwTime = dateFromat.parse(ByteUtilities.bcd2Str(ByteUtilities.subBytes(buf, start, 6))); start = start + 6;
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+			this.gwTime = DateUtils.parseStringToDate(ByteUtilities.bcd2Str(ByteUtilities.subBytes(buf, start, 6)), DateUtils.C_YYMMDDHHMMSS); start = start + 6;
+
 			BigDecimal gwVoltageBd = new BigDecimal(((ByteUtilities.toUnsignedInt(buf[start])*256+ByteUtilities.toUnsignedInt(buf[start+1])))*1.0/1000);
 			this.gwVoltage = gwVoltageBd.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue(); start = start + 2;
 
@@ -158,18 +154,13 @@ public class ReadDataResponse extends BaseResponse {
 			BigDecimal ssVoltageBd = new BigDecimal(((ByteUtilities.toUnsignedInt(buf[start])*256+ByteUtilities.toUnsignedInt(buf[start+1])))*1.0/1000);
 			this.ssVoltage = ssVoltageBd.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue(); start = start + 2;
 			this.type4 = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
-			try {
-				this.sensorDataTime = dateFromat.parse(ByteUtilities.bcd2Str(ByteUtilities.subBytes(buf, start, 6))); start = start + 6;
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+
+			this.sensorDataTime = DateUtils.parseStringToDate(ByteUtilities.bcd2Str(ByteUtilities.subBytes(buf, start, 6)), DateUtils.C_YYMMDDHHMMSS); start = start + 6;
+
 			
 			this.type5 = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
-			try {
-				this.ssTransfTime = dateFromat.parse(ByteUtilities.bcd2Str(ByteUtilities.subBytes(buf, start, 6))); start = start + 6;
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
+			this.ssTransfTime = DateUtils.parseStringToDate(ByteUtilities.bcd2Str(ByteUtilities.subBytes(buf, start, 6)), DateUtils.C_YYMMDDHHMMSS); start = start + 6;
+
 			this.type6 = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
 
 			this.rssi = ByteUtilities.toUnsignedInt(buf[start])-256; start = start + 1;

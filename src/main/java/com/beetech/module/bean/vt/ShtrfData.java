@@ -2,12 +2,10 @@ package com.beetech.module.bean.vt;
 
 import com.beetech.module.code.response.ReadDataResponse;
 import com.beetech.module.constant.Constant;
-
-import java.text.SimpleDateFormat;
+import com.beetech.module.utils.DateUtils;
 
 public class ShtrfData {
 
-	public static SimpleDateFormat dateFromat = new SimpleDateFormat("yyyyMMddHHmmss");
 	/**
 	 * 标签ID  MAC地址
 	 */
@@ -38,12 +36,12 @@ public class ShtrfData {
 	
 	public ShtrfData() {}
 	public ShtrfData(ReadDataResponse readDataResponse) {
-		this.gt = dateFromat.format(readDataResponse.getGwTime());
+		this.gt = DateUtils.parseDateToString(readDataResponse.getGwTime(), DateUtils.C_YYYYMMDDHHMMSS);
 		this.rfId = readDataResponse.getSensorId();
 		this.gwId = Constant.imei;
 		this.h = Double.valueOf(readDataResponse.getRh()*10).intValue();
 		this.t = Double.valueOf(readDataResponse.getTemp()*10).intValue();
-		this.time  = dateFromat.format(readDataResponse.getSensorDataTime());
+		this.time  = DateUtils.parseDateToString(readDataResponse.getSensorDataTime(), DateUtils.C_YYYYMMDDHHMMSS);
 		this.rssi  = readDataResponse.getRssi();
 		this.sv = Double.valueOf(readDataResponse.getSsVoltage()*1000).intValue();
 	}

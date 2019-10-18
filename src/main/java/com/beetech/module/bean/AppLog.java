@@ -1,16 +1,24 @@
 package com.beetech.module.bean;
 
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
-import java.util.Date;
-import org.greenrobot.greendao.annotation.Generated;
+import com.alibaba.fastjson.annotation.JSONField;
 
-@Entity
+import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Index;
+
+import java.util.Date;
+
+@Entity(indexes = {
+        @Index(value = "sendFlag")
+})
 public class AppLog {
     @Id(autoincrement = true)
     private Long _id;
     private Date inputTime;
     private String content;
+    @JSONField(serialize=false)
+    private int sendFlag;
 
     public AppLog(){}
 
@@ -19,11 +27,12 @@ public class AppLog {
         inputTime = new Date();
     }
 
-    @Generated(hash = 1847713552)
-    public AppLog(Long _id, Date inputTime, String content) {
+    @Generated(hash = 1880252904)
+    public AppLog(Long _id, Date inputTime, String content, int sendFlag) {
         this._id = _id;
         this.inputTime = inputTime;
         this.content = content;
+        this.sendFlag = sendFlag;
     }
 
     public Long get_id() {
@@ -48,5 +57,13 @@ public class AppLog {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public int getSendFlag() {
+        return sendFlag;
+    }
+
+    public void setSendFlag(int sendFlag) {
+        this.sendFlag = sendFlag;
     }
 }

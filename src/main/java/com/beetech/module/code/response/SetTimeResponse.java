@@ -2,9 +2,8 @@ package com.beetech.module.code.response;
 
 import com.beetech.module.code.BaseResponse;
 import com.beetech.module.utils.ByteUtilities;
+import com.beetech.module.utils.DateUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class SetTimeResponse extends BaseResponse {
@@ -33,12 +32,8 @@ public class SetTimeResponse extends BaseResponse {
 		this.dataType = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
 		this.dataLen = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
 
-		try {
-			SimpleDateFormat dateFromat = new SimpleDateFormat("yyMMddHHmmss");
-			this.masterTime = dateFromat.parse(ByteUtilities.bcd2Str(ByteUtilities.subBytes(buf, start, 6))); start = start + 6;
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		this.masterTime = DateUtils.parseStringToDate(ByteUtilities.bcd2Str(ByteUtilities.subBytes(buf, start, 6)), DateUtils.C_YYMMDDHHMMSS); start = start + 6;
+
 		this.crc  = ByteUtilities.makeIntFromByte2(buf, start); start = start + 2;
 		this.end  = ByteUtilities.makeIntFromByte2(buf, start); start = start + 2;
 	}

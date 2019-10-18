@@ -39,19 +39,20 @@ public class AppStateUtils {
             stateSb.append("ICCID：").append(Constant.iccid).append(" ");
             stateSb.append(" ").append(Constant.IS_SAVE_MODULE_LOG);
             stateSb.append(" ").append(Constant.IS_SAVE_SOCKET_LOG).append(" ");
-            stateSb.append("isDebuggable：").append(isDebuggable(context)).append(" ");
+            stateSb.append(" ").append(Constant.IS_UP_APP_LOG).append(" ");
+            stateSb.append(" ").append(isDebuggable(context)).append(" ");
             stateSb.append(" ").append(Constant.readDataResponseTimeOut).append(" ");
             stateSb.append("\n");
 
             String moduleName = myApp.module+"";
             moduleName = moduleName.substring(moduleName.lastIndexOf(".")+1);
             stateSb.append("模块：").append(moduleName.equals("")? "空" : moduleName).append(" ");
-            stateSb.append(myApp.initResult ? "上电" : "释放").append(" ").append(Constant.sdf.format(new Date(myApp.initTime))).append(" ");
-            stateSb.append("读：").append(Constant.sdf.format(new Date(myApp.lastReadTime))).append(" ");
-            stateSb.append("写：").append(Constant.sdf.format(new Date(myApp.lastWriteTime))).append(" ");
+            stateSb.append(myApp.initResult ? "上电" : "释放").append(" ").append(DateUtils.parseDateToString(new Date(myApp.initTime), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
+            stateSb.append("读：").append(DateUtils.parseDateToString(new Date(myApp.lastReadTime), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
+            stateSb.append("写：").append(DateUtils.parseDateToString(new Date(myApp.lastWriteTime), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
             stateSb.append("\n");
             stateSb.append("数据标志：").append(myApp.readDataResponseError).append(" ");
-            stateSb.append("时间：").append(Constant.sdf.format(new Date(myApp.readDataResponseTime))).append(" ");
+            stateSb.append("时间：").append(DateUtils.parseDateToString(new Date(myApp.readDataResponseTime), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
             stateSb.append("RAM待发：").append(myApp.readDataResponseWaitSentSize1).append(" ");
             stateSb.append("Flash待发：").append(myApp.readDataResponseWaitSentSize2).append(" ");
             stateSb.append("Flash错误：").append(myApp.readDataResponseErrorcode).append(" ");
@@ -66,9 +67,10 @@ public class AppStateUtils {
                 stateSb.append("频段：").append(myApp.channel).append(" ");
                 stateSb.append("硬件：").append(queryConfigRealtime.getHardVer()).append(" ");
                 stateSb.append("软件：").append(queryConfigRealtime.getSoftVer()).append(" ");
+                stateSb.append("\n");
             }
             if(myApp.setDataBeginTime != null){
-                stateSb.append("数据开始时间：").append(Constant.sdf.format(myApp.setDataBeginTime)).append(" ");
+                stateSb.append("数据开始时间：").append(DateUtils.parseDateToString(myApp.setDataBeginTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
             }
             stateSb.append("\n");
             if(myApp.frontDeleteResponse != null){
@@ -110,9 +112,9 @@ public class AppStateUtils {
             stateSb.append("会话：").append(mSession).append("\n");
             if(mSession != null){
                 stateSb.append("连接：").append(mSession.isConnected() ? "连通" : "断开").append(" ");
-                stateSb.append("创建：").append(Constant.sdf.format(new Date(mSession.getCreationTime()))).append(" ");
-                stateSb.append("IO：").append(Constant.sdf.format(new Date(mSession.getLastIoTime()))).append(" ");
-                stateSb.append("Idle：").append(Constant.sdf.format(new Date(mSession.getLastBothIdleTime()))).append(" ");
+                stateSb.append("创建：").append(DateUtils.parseDateToString(new Date(mSession.getCreationTime()), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
+                stateSb.append("IO：").append(DateUtils.parseDateToString(new Date(mSession.getLastIoTime()), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
+                stateSb.append("Idle：").append(DateUtils.parseDateToString(new Date(mSession.getLastBothIdleTime()), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
             }
             stateSb.append("\n");
 
@@ -125,7 +127,7 @@ public class AppStateUtils {
             stateSb.append("定时任务：").append(myApp.threadTimeTask);
             if(myApp.threadTimeTask != null){
                 stateSb.append(" ").append(myApp.threadTimeTask.isAlive() ? "alive" : "");
-                stateSb.append(" ").append(Constant.sdf.format(new Date(myApp.threadTimeTask.runTime)));
+                stateSb.append(" ").append(DateUtils.parseDateToString(new Date(myApp.threadTimeTask.runTime), DateUtils.C_YYYY_MM_DD_HH_MM_SS));
                 stateSb.append(" ").append(Constant.NUM.longValue());
             }
             stateSb.append("\n");
@@ -133,7 +135,7 @@ public class AppStateUtils {
             stateSb.append("读串口：").append(myApp.threadModuleReceive);
             if(myApp.threadModuleReceive != null){
                 stateSb.append(" ").append(myApp.threadModuleReceive.isAlive() ? "alive" : "");
-                stateSb.append(" ").append(Constant.sdf.format(new Date(myApp.threadModuleReceive.runTime)));
+                stateSb.append(" ").append(DateUtils.parseDateToString(new Date(myApp.threadModuleReceive.runTime), DateUtils.C_YYYY_MM_DD_HH_MM_SS));
                 stateSb.append(" ").append(Constant.NUM_RECEIVE.longValue());
             }
             stateSb.append("\n");

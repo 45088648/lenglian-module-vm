@@ -10,6 +10,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.beetech.module.application.MyApplication;
+import com.beetech.module.utils.DateUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,8 +19,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,8 +39,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
     //用来存储设备信息和异常信息  
     private Map<String, String> infos = new HashMap<String, String>();  
   
-    //用于格式化日期,作为日志文件名的一部分  
-    private DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");  
+    //用于格式化日期,作为日志文件名的一部分
   
     /** 保证只有一个AppEeception实例 */  
     private CrashHandler() { }
@@ -169,7 +167,7 @@ public class CrashHandler implements UncaughtExceptionHandler {
         sb.append(result);  
         try {  
             long timestamp = System.currentTimeMillis();  
-            String time = formatter.format(new Date());  
+            String time = DateUtils.parseDateToString(new Date(), DateUtils.C_YYYY_MM_DD_HH_MM_SS1);
             String fileName = "crash-log-" + time + "-" + timestamp + ".log";
             if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {  
                 String path = android.os.Environment.getExternalStorageDirectory().getAbsolutePath() + "/module/LOG/";

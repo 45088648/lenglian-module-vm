@@ -1,6 +1,7 @@
 package com.beetech.module.client;
 
-import com.beetech.module.constant.Constant;
+import com.beetech.module.utils.DateUtils;
+
 import java.util.Date;
 
 public class ConnectUtils {
@@ -19,8 +20,7 @@ public class ConnectUtils {
      * @return
      */
     public static String stringNowTime() {
-//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return Constant.dateFormat3.format(new Date());
+        return DateUtils.parseDateToString(new Date(), DateUtils.C_MM_DD_HH_MM_SS);
     }
 
 }

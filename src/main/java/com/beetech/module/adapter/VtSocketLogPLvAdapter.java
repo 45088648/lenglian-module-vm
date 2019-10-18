@@ -10,9 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.beetech.module.R;
 import com.beetech.module.bean.vt.VtSocketLog;
-import com.beetech.module.constant.Constant;
+import com.beetech.module.utils.DateUtils;
 
 public class VtSocketLogPLvAdapter extends PagedListAdapter<VtSocketLog, VtSocketLogPLvAdapter.ViewHolder> {
 
@@ -58,7 +59,7 @@ public class VtSocketLogPLvAdapter extends PagedListAdapter<VtSocketLog, VtSocke
         VtSocketLog vtSocketLog = mPagedList.get(position);
         holder.tvId.setText(vtSocketLog.get_id()+"");
         holder.tvText.setText(vtSocketLog.getText());
-        holder.tvInputTime.setText(Constant.dateFormat3.format(vtSocketLog.getInputTime()));
+        holder.tvInputTime.setText(DateUtils.parseDateToString(vtSocketLog.getInputTime(), DateUtils.C_MM_DD_HH_MM_SS));
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

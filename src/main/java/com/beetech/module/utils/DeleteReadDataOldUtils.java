@@ -2,8 +2,9 @@ package com.beetech.module.utils;
 
 import android.content.Context;
 import android.util.Log;
+
 import com.beetech.module.application.MyApplication;
-import com.beetech.module.constant.Constant;
+
 import java.util.Calendar;
 
 public class DeleteReadDataOldUtils {
@@ -18,7 +19,7 @@ public class DeleteReadDataOldUtils {
             cal.add(Calendar.DAY_OF_YEAR, -30);
             long sensorDataTimeEndInMills = cal.getTimeInMillis();
             myApp.readDataSDDao.deleteOld(sensorDataTimeEndInMills);
-            myApp.appLogSDDao.save("定时删除历史温湿度数据，"+ Constant.sdf.format(cal.getTime()));
+            myApp.appLogSDDao.save("定时删除历史温湿度数据，"+ DateUtils.parseDateToString(cal.getTime(), DateUtils.C_YYYY_MM_DD_HH_MM_SS));
 
         } catch (Exception e){
             e.printStackTrace();
