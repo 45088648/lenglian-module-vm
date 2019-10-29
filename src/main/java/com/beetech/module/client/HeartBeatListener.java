@@ -44,6 +44,6 @@ public class HeartBeatListener implements IoServiceListener {
 
     @Override
     public void sessionDestroyed(IoSession arg0) {
-        ClientConnectManager.getInstance(context).rePeatConnect();
+        ClientConnectManager.getInstance(context).connect();
     }
 }

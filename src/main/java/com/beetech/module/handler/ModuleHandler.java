@@ -32,7 +32,6 @@ import com.beetech.module.utils.SetTimeUtils;
 import com.beetech.module.utils.UpdateSSParamUtils;
 import com.rscja.deviceapi.Module;
 
-import java.util.Calendar;
 import java.util.Date;
 
 public class ModuleHandler extends Handler {
@@ -267,27 +266,25 @@ public class ModuleHandler extends Handler {
                     }
                 }
 
-                //读取下一条
-                Calendar cal = Calendar.getInstance();
-                int second = cal.get(Calendar.SECOND);
+                /*
+                   读到数据，继续读取下一条；读到空，停止读取，下一次35继续读取
+                 */
                 myApp.gwId = readDataResponse.getGwId();
                 if(myApp.readDataResponseError == 0){
                     myApp.serialNo = readDataResponse.getSerialNo();
 
-                    if((second >= 35 && second <= 59)){
-                        myApp.readDataResponseTime = System.currentTimeMillis();
-                        Log.d(TAG, "myApp.readDataResponseTime="+myApp.readDataResponseTime);
-                        Log.d(TAG, "ReadNextUtils.readNext " + myApp.serialNo);
-                        try{
-                            ReadNextUtils.readNext(myApp);
-                        } catch (Exception e){
-                            e.printStackTrace();
-                            Log.e(TAG, "ReadNextUtils.readNext异常", e);
-                        }
-                    } else {
-                        myApp.readDataResponseTime = 0;
+                    myApp.readDataResponseTime = System.currentTimeMillis();
+                    Log.d(TAG, "myApp.readDataResponseTime="+myApp.readDataResponseTime);
+                    Log.d(TAG, "ReadNextUtils.readNext " + myApp.serialNo);
+                    try{
+                        ReadNextUtils.readNext(myApp);
+                    } catch (Exception e){
+                        e.printStackTrace();
+                        Log.e(TAG, "ReadNextUtils.readNext异常", e);
                     }
-
+                } else {
+                    myApp.readDataResponseTime = 0;
+                    Log.d(TAG, "模块无传感器数据");
                 }
             }
 
@@ -356,13 +353,13 @@ public class ModuleHandler extends Handler {
 
         }else if(myApp.monitorState == 0){
 
-            if(myApp.endMonitorTime == null){
+            if(myApp.beginMonitorTime == null || myApp.endMonitorTime == null){
                 return false;
             }
-            if(sensorDataTime.equals(myApp.endMonitorTime) ){
+            if(sensorDataTime.equals(myApp.beginMonitorTime) ){
                 return true;
 
-            }else if(sensorDataTime.after(myApp.endMonitorTime) && sensorDataTime.before(myApp.endMonitorTime)) {
+            }else if(sensorDataTime.after(myApp.beginMonitorTime) && sensorDataTime.before(myApp.endMonitorTime)) {
                 return true;
 
             }else if(sensorDataTime.equals(myApp.endMonitorTime)){

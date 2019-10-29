@@ -13,6 +13,9 @@ public class SetSysTimeUtils {
 
         try {
             MyApplication myApp = (MyApplication)context.getApplicationContext();
+            if(myApp.netWorkType == NetUtils.NETWORK_NONE){
+                return;
+            }
             long ntpTimeInMills = NtpUtils.getTimeInMills();
             if(ntpTimeInMills < 1559318400000L){
                 Log.e(TAG, "ntpTimeInMills < 2019-6-1, ntpTimeInMills="+ntpTimeInMills);

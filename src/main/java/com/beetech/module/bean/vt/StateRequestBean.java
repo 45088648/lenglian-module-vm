@@ -122,7 +122,6 @@ public class StateRequestBean {
 
 	private String appState;
 	private String wifiIp;
-	public int monitorState;
 	public int st = 0; // 0: 状态 1：模块日志 2:APP日志
 	public long mit; //模块上电时间，查看是否重启
 	public String bh; // bufHex 用来上传模块通信日志
@@ -132,7 +131,6 @@ public class StateRequestBean {
 	}
 
 	public StateRequestBean(QueryConfigRealtime queryConfigRealtime) {
-		this.gwstate = 1;
 		try{
 			String customer = queryConfigRealtime.getCustomer();
 			if (!TextUtils.isEmpty(customer)) {
@@ -388,14 +386,6 @@ public class StateRequestBean {
 
 	public void setSoftVer(String softVer) {
 		this.softVer = softVer;
-	}
-
-	public int getMonitorState() {
-		return monitorState;
-	}
-
-	public void setMonitorState(int monitorState) {
-		this.monitorState = monitorState;
 	}
 
 	public int getSt() {

@@ -23,12 +23,15 @@ import android.support.annotation.Nullable;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
+
 import com.beetech.module.KeepAliveConnection;
+import com.beetech.module.R;
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.dao.AppLogSDDao;
 import com.beetech.module.handler.ModuleHandler;
 import com.beetech.module.listener.BatteryListener;
+import com.beetech.module.listener.MyBDLocationListener;
 import com.beetech.module.listener.PhoneStatListener;
 import com.beetech.module.receiver.ConnectReceiver;
 import com.beetech.module.receiver.SmsReceiver;
@@ -132,6 +135,32 @@ public class ModuleService extends Service {
         if(myApp.powerLED == null){
             myApp.powerLED = PowerLED.getInstance();
             Log.d(TAG, "myApp.powerLED getInstance");
+        }
+
+        initBaiduGps();
+
+
+    }
+
+    public  void initBaiduGps(){
+        //开启前台定位服务：
+        Notification.Builder builder = new Notification.Builder (getApplicationContext());
+        Intent nfIntent = new Intent(getBaseContext(), ModuleService.class);
+        builder.setContentIntent(PendingIntent.getActivity(getBaseContext(), 0, nfIntent, 0)) // 设置PendingIntent
+                .setContentTitle("正在进行后台定位")
+                .setSmallIcon(R.mipmap.temp)
+                .setContentText("后台定位通知")
+                .setAutoCancel(true)
+                .setWhen(System.currentTimeMillis());
+        Notification notification = builder.build();
+        notification.defaults = Notification.DEFAULT_SOUND;
+        myApp.locationService.getClient().enableLocInForeground(1001, notification);
+
+        myApp.locationListener = new MyBDLocationListener(getBaseContext());
+        myApp.locationService.registerListener(myApp.locationListener);
+
+        if(!myApp.locationService.isStart()){
+            myApp.locationService.start();
         }
     }
 

@@ -1,6 +1,8 @@
 package com.beetech.module.bean.vt;
 
 import com.beetech.module.code.response.ReadDataResponse;
+import com.beetech.module.constant.Constant;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,7 @@ public class ShtrfRequestBeanBody {
 	 * 网关IMEI SN
 	 */
 	private String imei;
+	private String gwId;
 	/**
 	 * 20180101031212
 	 */
@@ -26,6 +29,7 @@ public class ShtrfRequestBeanBody {
 	public ShtrfRequestBeanBody() {}
 	public ShtrfRequestBeanBody(ReadDataResponse readDataResponse) {
 	    this.imei = readDataResponse.getSensorId();
+		this.gwId = Constant.imei;
         this.data = new ArrayList<>();
         ShtrfData shtrfData = new ShtrfData(readDataResponse);
         this.data.add(shtrfData);
@@ -77,5 +81,13 @@ public class ShtrfRequestBeanBody {
 
 	public void setBt(Integer bt) {
 		this.bt = bt;
+	}
+
+	public String getGwId() {
+		return gwId;
+	}
+
+	public void setGwId(String gwId) {
+		this.gwId = gwId;
 	}
 }

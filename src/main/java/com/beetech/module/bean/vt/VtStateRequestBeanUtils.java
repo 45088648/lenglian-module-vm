@@ -51,7 +51,7 @@ public class VtStateRequestBeanUtils {
                 StateRequestBean body = vtStateRequestBean.getBody();
                 body.setBt(myApp.batteryPercent);
                 body.setPower(myApp.power);
-                body.setMonitorState(myApp.monitorState);
+
                 try {
                     int dbm = 0;
                     myApp.netWorkType = NetUtils.getNetworkState(mContext);
@@ -80,7 +80,7 @@ public class VtStateRequestBeanUtils {
                 }
 
                 body.setVar(Constant.verName);
-                body.setGwstate(myApp.initResult ? 1 : 0);
+                body.setGwstate(myApp.monitorState);
 
                 List<ReadDataRealtime> readDataRealtimeList = myApp.readDataRealtimeSDDao.queryAll();
                 if(readDataRealtimeList != null && !readDataRealtimeList.isEmpty()){
@@ -204,8 +204,8 @@ public class VtStateRequestBeanUtils {
                 StateRequestBean body = vtStateRequestBean.getBody();
                 body.setBt(myApp.batteryPercent);
                 body.setPower(myApp.power);
-                body.setMonitorState(myApp.monitorState);
-                body.setGwstate(myApp.initResult ? 1 : 0);
+
+                body.setGwstate(myApp.monitorState);
                 body.setSt(1);
                 body.setMit(myApp.initTime);
             }
@@ -242,40 +242,26 @@ public class VtStateRequestBeanUtils {
      *
      * @return 当前手机主卡信号强度,单位 dBm（-1是默认值，表示获取失败）
      */
-    public int getMobileDbm(Context context)
-    {
+    public int getMobileDbm(Context context){
         int dbm = -1;
         TelephonyManager tm = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
         List<CellInfo> cellInfoList;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-        {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1){
             cellInfoList = tm.getAllCellInfo();
-            if (null != cellInfoList)
-            {
-                for (CellInfo cellInfo : cellInfoList)
-                {
-                    if (cellInfo instanceof CellInfoGsm)
-                    {
+            if (null != cellInfoList){
+                for (CellInfo cellInfo : cellInfoList){
+                    if (cellInfo instanceof CellInfoGsm){
                         CellSignalStrengthGsm cellSignalStrengthGsm = ((CellInfoGsm)cellInfo).getCellSignalStrength();
                         dbm = cellSignalStrengthGsm.getDbm();
-                    }
-                    else if (cellInfo instanceof CellInfoCdma)
-                    {
-                        CellSignalStrengthCdma cellSignalStrengthCdma =
-                                ((CellInfoCdma)cellInfo).getCellSignalStrength();
+                    } else if (cellInfo instanceof CellInfoCdma){
+                        CellSignalStrengthCdma cellSignalStrengthCdma = ((CellInfoCdma)cellInfo).getCellSignalStrength();
                         dbm = cellSignalStrengthCdma.getDbm();
-                    }
-                    else if (cellInfo instanceof CellInfoWcdma)
-                    {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2)
-                        {
-                            CellSignalStrengthWcdma cellSignalStrengthWcdma =
-                                    ((CellInfoWcdma)cellInfo).getCellSignalStrength();
+                    } else if (cellInfo instanceof CellInfoWcdma){
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2){
+                            CellSignalStrengthWcdma cellSignalStrengthWcdma = ((CellInfoWcdma)cellInfo).getCellSignalStrength();
                             dbm = cellSignalStrengthWcdma.getDbm();
                         }
-                    }
-                    else if (cellInfo instanceof CellInfoLte)
-                    {
+                    } else if (cellInfo instanceof CellInfoLte){
                         CellSignalStrengthLte cellSignalStrengthLte = ((CellInfoLte)cellInfo).getCellSignalStrength();
                         dbm = cellSignalStrengthLte.getDbm();
                     }

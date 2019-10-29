@@ -34,8 +34,10 @@ import com.beetech.module.utils.ReadDataAllPrintUtils;
 import com.beetech.module.widget.time.OnDateEditClickListener;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
+import com.lidroid.xutils.view.annotation.event.OnClick;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -60,6 +62,12 @@ public class QueryDataAllActivity extends PrintActivity {
 
     @ViewInject(R.id.query_btn)
     private Button queryBtn;
+
+    @ViewInject(R.id.sensorId_select_btn)
+    private Button sensorIdSelectBtn;
+
+    @ViewInject(R.id.sensorId_select_tv)
+    private TextView sensorIdSelectTv;
 
     @ViewInject(R.id.print_str_tv)
     private TextView printStrTv;
@@ -90,6 +98,10 @@ public class QueryDataAllActivity extends PrintActivity {
     private int printTimeInterval = 5; // 打印间隔，单位：分钟
     private List<String> printTimeIntervalList = new LinkedList<>();
     private Map<Integer, Integer> printTimeIntervalMap = new HashMap<>();
+
+    private AlertDialog sensorIdSelectDialog;
+    private List sensorIdListSelect = new LinkedList();
+    private List sensorIdList = new LinkedList();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -136,8 +148,6 @@ public class QueryDataAllActivity extends PrintActivity {
         }
         timeBeginEt.setText(DateUtils.parseDateToString(beginTime, DateUtils.C_YYYY_MM_DD_HH_MM));
 
-        queryBtn.setOnClickListener(new QueryBtnOnClickListener());
-        printBtn.setOnClickListener(new PrintBtnOnClickListener());
         blueOutHandler = new Handler();
         printHandler = new PrintHandler();
         tv_update = new TvUpdateThread();
@@ -159,6 +169,71 @@ public class QueryDataAllActivity extends PrintActivity {
         ArrayAdapter<String> isContainOverAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, new String[]{"否", "是"});
         isContainOverAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         isContainOverSpin.setAdapter(isContainOverAdapter);
+
+        List<ReadDataRealtime> readDataRealtimeList = myApp.readDataRealtimeSDDao.queryAll();
+        if(readDataRealtimeList != null && !readDataRealtimeList.isEmpty()){
+            sensorIdListSelect.clear();
+            int size = readDataRealtimeList.size();
+            for (int i = 0; i< size; i++){
+                ReadDataRealtime rdr = readDataRealtimeList.get(i);
+                sensorIdListSelect.add(rdr.getSensorId());
+            }
+            sensorIdSelectTv.setText(TextUtils.join(", ", sensorIdListSelect));
+        }
+
+    }
+
+    @OnClick(R.id.sensorId_select_btn)
+    public void sensorIdSelectBtn_onClick(View view){
+        List<ReadDataRealtime> readDataRealtimeList = myApp.readDataRealtimeSDDao.queryAll();
+
+        if(readDataRealtimeList == null || readDataRealtimeList.isEmpty()){
+            return;
+        }
+        sensorIdList = sensorIdListSelect;
+        int size = readDataRealtimeList.size();
+        String[] sensorIds = new String[size];
+        boolean[] isCheckeds = new boolean[size];
+        for (int i = 0; i< size; i++){
+            ReadDataRealtime rdr = readDataRealtimeList.get(i);
+            String sensorId = rdr.getSensorId();
+            sensorIds[i] = sensorId;
+            isCheckeds[i] = sensorIdListSelect.contains(sensorId);
+        }
+        final String[] items = sensorIds;
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setTitle("请选择打印标签");
+        alertBuilder.setMultiChoiceItems(sensorIds, isCheckeds, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i, boolean isChecked) {
+                String sensorId = items[i];
+                if (isChecked){
+                    if(!sensorIdList.contains(sensorId)){
+                        sensorIdList.add(sensorId);
+                    }
+                }else {
+                    sensorIdList.remove(sensorId);
+                }
+            }
+        });
+        alertBuilder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                sensorIdSelectDialog.dismiss();
+                Collections.sort(sensorIdList);
+                sensorIdListSelect = sensorIdList;
+                sensorIdSelectTv.setText(TextUtils.join(", ", sensorIdList));
+            }
+        });
+
+        alertBuilder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                sensorIdSelectDialog.dismiss();
+            }
+        });
+        sensorIdSelectDialog = alertBuilder.create();
+        sensorIdSelectDialog.show();
     }
 
     private void getPrintSet() {
@@ -203,134 +278,134 @@ public class QueryDataAllActivity extends PrintActivity {
 
     }
 
-    class QueryBtnOnClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            try {
-                timeBeginStr = timeBeginEt.getText().toString();
-                if (TextUtils.isEmpty(timeBeginStr)) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(QueryDataAllActivity.this, "请选择起始时间", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    return;
-                }
-                timeEndStr = timeEndEt.getText().toString();
-                if (TextUtils.isEmpty(timeEndStr)) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(QueryDataAllActivity.this, "请选择终止时间", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    return;
-                }
-                Date timeBegin = DateUtils.parseStringToDate(timeBeginStr, DateUtils.C_YYYY_MM_DD_HH_MM);
-                Date timeEnd = DateUtils.parseStringToDate(timeEndStr, DateUtils.C_YYYY_MM_DD_HH_MM);
-                Log.d(TAG, "timeBeginStr = " + timeBeginStr + ", timeEndStr = " + timeEndStr);
-                final int crossDay = 30;
-                if (timeEnd.getTime() - timeBegin.getTime() > 1000L * 60 * 60 * 24 * crossDay) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(QueryDataAllActivity.this, "时间范围不能超过" + crossDay + "天", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    return;
-                }
-
-                queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
-                if (queryConfigRealtime == null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(QueryDataAllActivity.this, "设备本地配置信息不存在", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    return;
-                }
-                getPrintSet();
-                Log.d(TAG, "printTimeInterval=" + printTimeInterval);
-
-                List<ReadDataRealtime> readDataRealtimeList = myApp.readDataRealtimeSDDao.queryAll();
-                List<List<ReadDataResponse>> dataListAll = new LinkedList<>();
-                PrintSetVo printSetVo = new PrintSetVo();
-                if (readDataRealtimeList.size() <= 2) {
-                    printSetVo.setColSize(2);
-                }
-                printSetVo.setPrintTimeInterval(printTimeInterval);
-                for (ReadDataRealtime readDataRealtime : readDataRealtimeList) {
-                    String sensorId = readDataRealtime.getSensorId();
-                    List<ReadDataResponse> dataList = myApp.readDataSDDao.queryBySensorId(sensorId, timeBegin, timeEnd, Integer.MAX_VALUE, 0);
-                    List<ReadDataResponse> filterDataList = null;
-                    if(isContainOver){
-                        filterDataList = dataList;
-                    } else {
-                        filterDataList = ReadDataAllPrintUtils.filterDataList(dataList, printTimeInterval);
-                    }
-                    if(filterDataList == null || filterDataList.isEmpty()){
-                        Toast.makeText(QueryDataAllActivity.this, "数据为空，请稍后再试", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    dataListAll.add(filterDataList);
-                }
-                if(dataListAll != null && !dataListAll.isEmpty()){
-                    if(isContainOver){
-                        printStr = ReadDataAllPrintUtils.toPrintStrOver(readDataRealtimeList, dataListAll, printSetVo, queryConfigRealtime);
-                    } else {
-                        printStr = ReadDataAllPrintUtils.toPrintStr(readDataRealtimeList, dataListAll, printSetVo, queryConfigRealtime);
-                    }
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(QueryDataAllActivity.this, "数据为空，请稍后再试", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    return;
-                }
-
-                printStrTv.setText(printStr);
-                printBtn.setVisibility(View.VISIBLE);
-
-            } catch (Exception e){
-                e.printStackTrace();
-                Log.d(TAG, "查询异常", e);
+    @OnClick(R.id.query_btn)
+    public void queryBtn_onClick(View v) {
+        try {
+            timeBeginStr = timeBeginEt.getText().toString();
+            if (TextUtils.isEmpty(timeBeginStr)) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(QueryDataAllActivity.this, "查询异常，请稍后再试", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(QueryDataAllActivity.this, "请选择起始时间", Toast.LENGTH_SHORT).show();
                     }
                 });
+                return;
             }
+            timeEndStr = timeEndEt.getText().toString();
+            if (TextUtils.isEmpty(timeEndStr)) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(QueryDataAllActivity.this, "请选择终止时间", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return;
+            }
+            Date timeBegin = DateUtils.parseStringToDate(timeBeginStr, DateUtils.C_YYYY_MM_DD_HH_MM);
+            Date timeEnd = DateUtils.parseStringToDate(timeEndStr, DateUtils.C_YYYY_MM_DD_HH_MM);
+            Log.d(TAG, "timeBeginStr = " + timeBeginStr + ", timeEndStr = " + timeEndStr);
+            final int crossDay = 30;
+            if (timeEnd.getTime() - timeBegin.getTime() > 1000L * 60 * 60 * 24 * crossDay) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(QueryDataAllActivity.this, "时间范围不能超过" + crossDay + "天", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return;
+            }
+
+            queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
+            if (queryConfigRealtime == null) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(QueryDataAllActivity.this, "设备本地配置信息不存在", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return;
+            }
+            getPrintSet();
+            Log.d(TAG, "printTimeInterval=" + printTimeInterval);
+
+            List<ReadDataRealtime> readDataRealtimeList = myApp.readDataRealtimeSDDao.queryAll();
+            List<ReadDataRealtime> readDataRealtimeListSelect = new LinkedList<>();
+            List<List<ReadDataResponse>> dataListAll = new LinkedList<>();
+            PrintSetVo printSetVo = new PrintSetVo();
+            if (readDataRealtimeList.size() <= 2) {
+                printSetVo.setColSize(2);
+            }
+            printSetVo.setPrintTimeInterval(printTimeInterval);
+            for (ReadDataRealtime readDataRealtime : readDataRealtimeList) {
+                String sensorId = readDataRealtime.getSensorId();
+                if(sensorIdListSelect.isEmpty() || sensorIdListSelect.contains(sensorId)){
+                    readDataRealtimeListSelect.add(readDataRealtime);
+                } else {
+                    continue;
+                }
+                List<ReadDataResponse> dataList = myApp.readDataSDDao.queryBySensorId(sensorId, timeBegin, timeEnd, Integer.MAX_VALUE, 0);
+                List<ReadDataResponse> filterDataList = null;
+                if(isContainOver){
+                    filterDataList = dataList;
+                } else {
+                    filterDataList = ReadDataAllPrintUtils.filterDataList(dataList, printTimeInterval);
+                }
+                if(filterDataList == null || filterDataList.isEmpty()){
+                    Toast.makeText(QueryDataAllActivity.this, "数据为空，请稍后再试", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                dataListAll.add(filterDataList);
+            }
+            if(dataListAll != null && !dataListAll.isEmpty()){
+                if(isContainOver){
+                    printStr = ReadDataAllPrintUtils.toPrintStrOver(readDataRealtimeListSelect, dataListAll, printSetVo, queryConfigRealtime);
+                } else {
+                    printStr = ReadDataAllPrintUtils.toPrintStr(readDataRealtimeListSelect, dataListAll, printSetVo, queryConfigRealtime);
+                }
+            } else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(QueryDataAllActivity.this, "数据为空，请稍后再试", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return;
+            }
+
+            printStrTv.setText(printStr);
+            printBtn.setVisibility(View.VISIBLE);
+
+        } catch (Exception e){
+            e.printStackTrace();
+            Log.d(TAG, "查询异常", e);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(QueryDataAllActivity.this, "查询异常，请稍后再试", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
-
-    class PrintBtnOnClickListener implements View.OnClickListener {
-
-        @Override
-        public void onClick(View v) {
-            if(TextUtils.isEmpty(printStr)){
-                mToastHandler.sendEmptyMessage(3);
-                return;
-            }
-            new AlertDialog.Builder(QueryDataAllActivity.this).setTitle("打印确认").setMessage("确认打印该数据吗？")
-            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    toPrint();
-                }
-            }).setNegativeButton("否", new DialogInterface.OnClickListener(){
-                @Override
-                public void onClick(DialogInterface arg0, int arg1) {
-                    blueToothService.stop();
-                }
-
-            }).show();
+    @OnClick(R.id.print_btn)
+    public void printBtn_onClick(View v) {
+        if(TextUtils.isEmpty(printStr)){
+            mToastHandler.sendEmptyMessage(3);
+            return;
         }
+        new AlertDialog.Builder(QueryDataAllActivity.this).setTitle("打印确认").setMessage("确认打印该数据吗？")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        toPrint();
+                    }
+                }).setNegativeButton("否", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface arg0, int arg1) {
+                blueToothService.stop();
+            }
+
+        }).show();
     }
 
     public void toPrint() {

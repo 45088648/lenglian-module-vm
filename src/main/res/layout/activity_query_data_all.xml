@@ -7,6 +7,27 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">
+
+        <LinearLayout
+            android:id="@+id/sensorIdSelectLl"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <Button android:id="@+id/sensorId_select_btn"
+                android:layout_width="120dp"
+                android:layout_height="40dp"
+                android:text="选择打印标签"/>
+
+            <TextView
+                android:id="@+id/sensorId_select_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:textColor="@color/black"
+                android:textSize="10sp"/>
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/queryLl"
             android:orientation="horizontal"
@@ -49,6 +70,7 @@
                 android:textColor="@color/black"
                 android:text="分钟间隔"/>
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/queryLl1"
             android:orientation="horizontal"

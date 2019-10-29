@@ -11,7 +11,7 @@ import org.apache.mina.core.session.IoSession;
 import java.util.List;
 
 public class SendGpsDataUtils {
-    private final static String TAG = ModuleInitUtils.class.getSimpleName();
+    private final static String TAG = SendGpsDataUtils.class.getSimpleName();
     private final static int queryCount = 30;
 
     public static void sendGpsData(Context context){

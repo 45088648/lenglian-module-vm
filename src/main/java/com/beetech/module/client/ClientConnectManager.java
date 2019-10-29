@@ -2,17 +2,22 @@ package com.beetech.module.client;
 
 import android.content.Context;
 import android.util.Log;
+
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.dao.AppLogSDDao;
+
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
+import org.apache.mina.transport.socket.SocketSessionConfig;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
+
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -169,9 +174,10 @@ public class ClientConnectManager {
                 mSocketConnector = new NioSocketConnector();
                 mSocketConnector.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, ConnectUtils.IDLE_TIME);
 
+                mSocketConnector.setConnectTimeoutMillis(30000); //设置连接超时
                 TextLineCodecFactory codecFactory = new TextLineCodecFactory(Charset.forName("GBK"), "\0", "\0");
-                codecFactory.setDecoderMaxLineLength(1024 * 1024);
-                codecFactory.setEncoderMaxLineLength(1024 * 1024);
+                codecFactory.setDecoderMaxLineLength(10240);
+                codecFactory.setEncoderMaxLineLength(10240);
                 mSocketConnector.getFilterChain().addLast("codec", new ProtocolCodecFilter(codecFactory));
 
                 // 获取过滤器链
@@ -180,9 +186,9 @@ public class ClientConnectManager {
                 //设置 handler 处理业务逻辑
                 mSocketConnector.setHandler(new MyHandler(context));
                 mSocketConnector.addListener(new HeartBeatListener(mSocketConnector, context));
-
-                mSocketConnector.getSessionConfig().setReceiveBufferSize(10240);    // 设置接收缓冲区的大小
-                mSocketConnector.getSessionConfig().setSendBufferSize(10240);// 设置输出缓冲区的大小
+                SocketSessionConfig socketSessionConfig = mSocketConnector.getSessionConfig();
+                socketSessionConfig.setReceiveBufferSize(10240);    // 设置接收缓冲区的大小
+                socketSessionConfig.setSendBufferSize(10240);   // 设置输出缓冲区的大小
             }
         }catch (Exception e){
             e.printStackTrace();

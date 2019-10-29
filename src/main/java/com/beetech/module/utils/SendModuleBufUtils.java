@@ -47,8 +47,7 @@ public class SendModuleBufUtils {
                         StateRequestBean body = vtStateRequestBean.getBody();
                         body.setBt(myApp.batteryPercent);
                         body.setPower(myApp.power);
-                        body.setMonitorState(myApp.monitorState);
-                        body.setGwstate(myApp.initResult ? 1 : 0);
+                        body.setGwstate(myApp.monitorState);
                         body.setSt(1);
                         body.setMit(myApp.initTime);
 

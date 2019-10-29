@@ -64,6 +64,14 @@ public class WakeReceiver extends BroadcastReceiver {
                 appLogSDDao.save("threadModuleReceive is null, restart threadModuleReceive = "+myApp.threadModuleReceive);
             }
             Log.d(TAG, "threadModuleReceive = "+myApp.threadModuleReceive);
+
+//            if (!ActivityUtils.isForeground(context.getApplicationContext(), RealtimeMonitorActivity.class.getName())){
+//                Log.d(TAG, "判断监测界面是否在前台");
+//
+//                Intent dialogIntent = new Intent(context.getApplicationContext(), RealtimeMonitorActivity.class);
+//                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                context.getApplicationContext().startActivity(dialogIntent);
+//            }
         }
     }
 

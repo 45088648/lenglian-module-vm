@@ -2,8 +2,6 @@ package com.beetech.module.activity;
 
 import android.app.AlertDialog;
 import android.app.KeyguardManager;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
@@ -57,7 +55,6 @@ import com.beetech.module.dao.BaseSDDaoUtils;
 import com.beetech.module.dao.ReadDataRealtimeSDDao;
 import com.beetech.module.fragment.GridSpacingItemDecoration;
 import com.beetech.module.listener.BatteryListener;
-import com.beetech.module.listener.MyBDLocationListener;
 import com.beetech.module.listener.PhoneStatListener;
 import com.beetech.module.service.JobProtectService;
 import com.beetech.module.service.ModuleService;
@@ -205,27 +202,6 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
         //定时刷新
         handlerRefresh.removeCallbacks(runnableRefresh);
         handlerRefresh.postDelayed(runnableRefresh, 0);
-
-        initBaiduGps();
-    }
-
-    public  void initBaiduGps(){
-        //开启前台定位服务：
-        Notification.Builder builder = new Notification.Builder (getApplicationContext());
-        Intent nfIntent = new Intent(getBaseContext(), MainActivity.class);
-        builder.setContentIntent(PendingIntent.getActivity(getBaseContext(), 0, nfIntent, 0)) // 设置PendingIntent
-                .setContentTitle("正在进行后台定位")
-                .setSmallIcon(R.mipmap.temp)
-                .setContentText("后台定位通知")
-                .setAutoCancel(true)
-                .setWhen(System.currentTimeMillis());
-        Notification notification = builder.build();
-        notification.defaults = Notification.DEFAULT_SOUND;
-        myApp.locationService.getClient().enableLocInForeground(1001, notification);
-
-        myApp.locationListener = new MyBDLocationListener(getBaseContext());
-        myApp.locationService.registerListener(myApp.locationListener);
-//        myApp.locationService.start();
     }
 
     public void startModuleService(){
@@ -310,7 +286,6 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
         tvImei.setText(Constant.imei);
         tvDevNum.setText(Constant.devNum);
 
-
         try {
             int dbm = 0;
             myApp.netWorkType = NetUtils.getNetworkState(myApp);
@@ -331,17 +306,6 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-//        tvGtwState.setText(ConnectUtils.HOST + ":" +ConnectUtils.PORT);
-//        if(myApp.session != null){
-//            if(myApp.session.isConnected()){
-//                tvGtwState.setTextColor(Color.BLUE);
-//            } else {
-//                tvGtwState.setTextColor(Color.RED);
-//            }
-//        } else {
-//            tvGtwState.setTextColor(Color.GRAY);
-//        }
 
         if(myApp.monitorState == 0){
             tvMonitorState.setText("未监控");
@@ -536,12 +500,6 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
         mBaiduMap.clear();
         mBaiduMap.addOverlay(option);
         mBaiduMap.setMapStatus(MapStatusUpdateFactory.newLatLng(point));
-
-        //画圆
-//                    OverlayOptions ooCircle = new CircleOptions().fillColor(0x384d73b3)
-//                            .center(point).stroke(new Stroke(3, 0x784d73b3))
-//                            .radius(Float.valueOf(location.getRadius()).intValue());
-//                    mBaiduMap.addOverlay(ooCircle);
     }
 
     @OnClick(R.id.btn_beginMonitor)
@@ -592,37 +550,10 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             msg.what = 9;
             myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
 
-            //删除历史数据
-//            baseSDDaoUtils.deleteLog();
-
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.MINUTE, 1); // 延迟一分钟启动时间
             cal.set(Calendar.SECOND, 0); //秒和毫秒取0
             cal.set(Calendar.MILLISECOND, 0);
-
-//            timer.schedule(new TimerTask() {
-//                @Override
-//                public void run() {
-//
-//                }
-//            }, cal.getTime());
-
-//            Log.d(TAG, "SetDataBeginTimeUtils.setDataBeginTime");
-//            try {
-//                SetDataBeginTimeUtils.setDataBeginTime(myApp);
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        Toast.makeText(RealtimeMonitorActivity.this, "设置数据开始时间完成", Toast.LENGTH_SHORT).show();
-//                        SystemClock.sleep(1000);
-//                        refreshState();
-//                    }
-//                });
-//
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                Log.e(TAG, "SetDataBeginTimeUtils.setDataBeginTime 异常", e);
-//            };
 
             myApp.beginMonitorTime = cal.getTime();
             myApp.endMonitorTime = null;
@@ -792,7 +723,6 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_print)
     public void btn_print_onClick(View v) {
-
         try{
             Intent intent = new Intent(RealtimeMonitorActivity.this, QueryDataAllActivity.class);
             startActivity(intent);
