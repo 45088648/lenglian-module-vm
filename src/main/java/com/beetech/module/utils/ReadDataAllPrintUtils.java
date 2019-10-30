@@ -3,6 +3,7 @@ package com.beetech.module.utils;
 import com.beetech.module.bean.QueryConfigRealtime;
 import com.beetech.module.bean.ReadDataRealtime;
 import com.beetech.module.code.response.ReadDataResponse;
+import com.beetech.module.constant.Constant;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -15,35 +16,46 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import java.text.DecimalFormat;
+
 public class ReadDataAllPrintUtils {
 
     public static String toPrintStr(List<ReadDataRealtime> readDataRealtimeList, List<List<ReadDataResponse>> dataListAll, PrintSetVo printSetVo, QueryConfigRealtime queryConfigRealtime) {
+        DecimalFormat tempFormat = new DecimalFormat("0.0");// 保留一位小数整数补.0
+
         String space = " ";
         int colSize = printSetVo.getColSize();
-        int rhFlag = printSetVo.getRhFlag();
         Double tempDataMax = null;
         Double tempDataMin = null;
-        Double tempDataSum = 0.0;
-        Double tempDataAvg = null;
-        Double rhMax = null;
-        Double rhMin = null;
-        Double rhSum = 0.0;
-        Double rhAvg = null;
         if(dataListAll == null || dataListAll.isEmpty()){
             return null;
         }
         List<String> timeStrList = new LinkedList<>();
         Map<String, ReadDataResponse> timeReadDataResponseMap = new TreeMap<>();
-
+        Map<String, Double> sensorId_avgTempMap = new HashMap<>();
         for (int i = 0; i< dataListAll.size();i++) {
             List<ReadDataResponse> dataList = dataListAll.get(i);
+            int size = dataList.size();
+            double tempSum = 0.0;
+            String sensorId = "";
             for (ReadDataResponse readDataResponse : dataList) {
-                String sensorId = readDataResponse.getSensorId();
+                sensorId = readDataResponse.getSensorId();
                 Date sensorDataTime = readDataResponse.getSensorDataTime();
+                double temp = readDataResponse.getTemp();
+                tempSum += temp;
                 String timeInMin = DateUtils.parseDateToString(sensorDataTime, DateUtils.C_YYYY_MM_DD_HH_MM);
                 timeReadDataResponseMap.put(sensorId+timeInMin, readDataResponse);
                 if(!timeStrList.contains(timeInMin)){
                     timeStrList.add(timeInMin);
+                }
+            }
+            if(size > 0){
+                try {
+                    Double tempAvgDouble = tempSum / size;
+                    double tempAvg = Double.valueOf(tempFormat.format(tempAvgDouble));
+                    sensorId_avgTempMap.put(sensorId, tempAvg);
+                } catch (Exception e){
+                    e.printStackTrace();
                 }
             }
         }
@@ -51,8 +63,6 @@ public class ReadDataAllPrintUtils {
         List<ReadDataResponse> firstDataList = dataListAll.get(0);
         ReadDataResponse firstTempDataVo = firstDataList.get(0);
         ReadDataResponse lastTempDataVo = firstDataList.get(firstDataList.size()-1);
-        String devNum = queryConfigRealtime.getDevNum();
-        String devName = queryConfigRealtime.getDevName();
 
         List<String> lineList = new ArrayList<>();
 
@@ -99,13 +109,42 @@ public class ReadDataAllPrintUtils {
                 if(readDataResponse == null){
                     ReadDataResponse lastReadDataResponse = lastReadDataResponseMap.get(sensorId);
                     if(lastReadDataResponse != null){
-                        lineStringBuffer.append(space).append(lastReadDataResponse.getTemp());
+                        double temp = lastReadDataResponse.getTemp();
+                        lineStringBuffer.append(space).append(temp);
+
+                        if(tempDataMax == null || tempDataMax < temp){
+                            tempDataMax = temp;
+                        }
+                        if(tempDataMin == null || tempDataMin > temp){
+                            tempDataMin = temp;
+                        }
+
                     } else {
-                        lineStringBuffer.append(space).append(" - ");
+                        Double temp = sensorId_avgTempMap.get(sensorId);
+                        if(temp != null){
+                            lineStringBuffer.append(space).append(temp);
+
+                            if(tempDataMax == null || tempDataMax < temp){
+                                tempDataMax = temp;
+                            }
+                            if(tempDataMin == null || tempDataMin > temp){
+                                tempDataMin = temp;
+                            }
+                        } else {
+                            lineStringBuffer.append(space).append(" - ");
+                        }
                     }
                 } else {
-                    lineStringBuffer.append(space).append(readDataResponse.getTemp());
+                    double temp = readDataResponse.getTemp();
+                    lineStringBuffer.append(space).append(temp);
                     lastReadDataResponseMap.put(sensorId, readDataResponse);
+
+                    if(tempDataMax == null || tempDataMax < temp){
+                        tempDataMax = temp;
+                    }
+                    if(tempDataMin == null || tempDataMin > temp){
+                        tempDataMin = temp;
+                    }
                 }
             }
 
@@ -131,13 +170,12 @@ public class ReadDataAllPrintUtils {
         StringBuffer sb = new StringBuffer();
         sb.append("冷链记录确认单\n");
         sb.append("-------------------------------\n");
-//        sb.append("设备号:").append(devNum).append("\n");
-//        if(devName != null && !"".equals(devName)){
-//            sb.append("标识名:").append(devName).append("\n");
-//        }
-//        if(tempLower != 0.0 && tempHight != 0.0){
-//            sb.append("温度阈值:").append(tempLower).append("℃~").append(tempHight).append( "℃\n");
-//        }
+        String plateNumber = printSetVo.getPlateNumber();
+        sb.append("车牌号:").append(plateNumber).append("\n");
+        sb.append("最高:").append(tempDataMax).append( "℃\n");
+        sb.append("最低:").append(tempDataMin).append( "℃\n");
+        sb.append("IMEI:").append(Constant.imei).append("\n");
+        sb.append("-------------------------------\n");
 
         if (lineList != null && !lineList.isEmpty()) {
             for (String dataLine : lineList) {
@@ -156,33 +194,42 @@ public class ReadDataAllPrintUtils {
     }
 
     public static String toPrintStrOver(List<ReadDataRealtime> readDataRealtimeList, List<List<ReadDataResponse>> dataListAll, PrintSetVo printSetVo, QueryConfigRealtime queryConfigRealtime) {
+        DecimalFormat tempFormat = new DecimalFormat("0.0");// 保留一位小数整数补.0
         String space = " ";
         int colSize = 1;
-        int rhFlag = printSetVo.getRhFlag();
         int printTimeInterval = printSetVo.getPrintTimeInterval();
         Double tempDataMax = null;
         Double tempDataMin = null;
-        Double tempDataSum = 0.0;
-        Double tempDataAvg = null;
-        Double rhMax = null;
-        Double rhMin = null;
-        Double rhSum = 0.0;
         Double rhAvg = null;
         if(dataListAll == null || dataListAll.isEmpty()){
             return null;
         }
         List<String> timeStrList = new LinkedList<>();
         Map<String, ReadDataResponse> timeReadDataResponseMap = new TreeMap<>();
-
+        Map<String, Double> sensorId_avgTempMap = new HashMap<>();
         for (int i = 0; i< dataListAll.size();i++) {
             List<ReadDataResponse> dataList = dataListAll.get(i);
+            int size = dataList.size();
+            double tempSum = 0.0;
+            String sensorId = "";
             for (ReadDataResponse readDataResponse : dataList) {
-                String sensorId = readDataResponse.getSensorId();
+                sensorId = readDataResponse.getSensorId();
                 Date sensorDataTime = readDataResponse.getSensorDataTime();
+                double temp = readDataResponse.getTemp();
+                tempSum += temp;
                 String timeInMin = DateUtils.parseDateToString(sensorDataTime, DateUtils.C_YYYY_MM_DD_HH_MM);
                 timeReadDataResponseMap.put(sensorId+timeInMin, readDataResponse);
                 if(!timeStrList.contains(timeInMin)){
                     timeStrList.add(timeInMin);
+                }
+            }
+            if(size > 0){
+                try {
+                    Double tempAvgDouble = tempSum / size;
+                    double tempAvg = Double.valueOf(tempFormat.format(tempAvgDouble));
+                    sensorId_avgTempMap.put(sensorId, tempAvg);
+                } catch (Exception e){
+                    e.printStackTrace();
                 }
             }
         }
@@ -190,8 +237,6 @@ public class ReadDataAllPrintUtils {
         List<ReadDataResponse> firstDataList = dataListAll.get(0);
         ReadDataResponse firstTempDataVo = firstDataList.get(0);
         ReadDataResponse lastTempDataVo = firstDataList.get(firstDataList.size()-1);
-        String devNum = queryConfigRealtime.getDevNum();
-        String devName = queryConfigRealtime.getDevName();
 
         List<String> lineList = new ArrayList<>();
 
@@ -255,8 +300,13 @@ public class ReadDataAllPrintUtils {
                     if(tempLower != 0 && tempHight != 0 && (temp > tempHight || temp < tempLower)){
                         isOver = true;
                     }
-
-                    lineStringBuffer.append(space).append(readDataResponse.getTemp());
+                    lineStringBuffer.append(space).append(temp);
+                    if(tempDataMax == null || tempDataMax < temp){
+                        tempDataMax = temp;
+                    }
+                    if(tempDataMin == null || tempDataMin > temp){
+                        tempDataMin = temp;
+                    }
                 }
             }
 //            lineStringBuffer.append(space).append(isIntervalDiv).append(space).append(isOver);
@@ -283,13 +333,12 @@ public class ReadDataAllPrintUtils {
         StringBuffer sb = new StringBuffer();
         sb.append("冷链记录确认单\n");
         sb.append("-------------------------------\n");
-//        sb.append("设备号:").append(devNum).append("\n");
-//        if(devName != null && !"".equals(devName)){
-//            sb.append("标识名:").append(devName).append("\n");
-//        }
-//        if(tempLower != 0.0 && tempHight != 0.0){
-//            sb.append("温度阈值:").append(tempLower).append("℃~").append(tempHight).append( "℃\n");
-//        }
+        String plateNumber = printSetVo.getPlateNumber();
+        sb.append("车牌号:").append(plateNumber).append("\n");
+        sb.append("最高:").append(tempDataMax).append( "℃\n");
+        sb.append("最低:").append(tempDataMin).append( "℃\n");
+        sb.append("IMEI:").append(Constant.imei).append("\n");
+        sb.append("-------------------------------\n");
 
         if (lineList != null && !lineList.isEmpty()) {
             for (String dataLine : lineList) {

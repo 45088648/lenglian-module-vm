@@ -216,6 +216,7 @@ public class MyApplication extends Application {
                 beginMonitorTime = queryConfigRealtime.getBeginMonitorTime();
                 endMonitorTime = queryConfigRealtime.getEndMonitorTime();
                 Constant.devNum = queryConfigRealtime.getDevNum();
+                Constant.devName = queryConfigRealtime.getDevName();
             }
         } catch (Exception e) {
             e.printStackTrace();

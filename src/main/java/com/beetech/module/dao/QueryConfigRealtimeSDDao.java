@@ -106,8 +106,9 @@ public class QueryConfigRealtimeSDDao {
             Constant.devNum = sysResponseBody.getNum();
             ConnectUtils.HOST = sysResponseBody.getIp1();
             ConnectUtils.PORT = sysResponseBody.getPort1();
-
+            Constant.devName = sysResponseBody.getDn();
             queryConfigRealtime.setDevNum(Constant.devNum);
+            queryConfigRealtime.setDevName(Constant.devName);
             queryConfigRealtime.setDevServerIp(ConnectUtils.HOST);
             queryConfigRealtime.setDevServerPort(ConnectUtils.PORT);
             queryConfigRealtime.setUpdateTime(new Date());

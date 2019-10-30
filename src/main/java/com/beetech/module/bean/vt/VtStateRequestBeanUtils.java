@@ -94,6 +94,7 @@ public class VtStateRequestBeanUtils {
                 }
                 body.setHardVer(queryConfigRealtime.getHardVer());
                 body.setSoftVer(queryConfigRealtime.getSoftVer());
+                body.setChannel(queryConfigRealtime.getChannel());
 
                 //获取手机基站信息
                 try {

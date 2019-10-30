@@ -63,7 +63,12 @@ public class SysResponseBody{
 	 * 设备外接电源是否报警配置
 	 */
 	private Integer epa;
-	
+
+	/**
+	 * 设备标识名
+	 */
+	private String dn;
+
 	public SysResponseBody() {
 
 	}
@@ -202,5 +207,13 @@ public class SysResponseBody{
 
 	public void setEpa(Integer epa) {
 		this.epa = epa;
+	}
+
+	public String getDn() {
+		return dn;
+	}
+
+	public void setDn(String dn) {
+		this.dn = dn;
 	}
 }

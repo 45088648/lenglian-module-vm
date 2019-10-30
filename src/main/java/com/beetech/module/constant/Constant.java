@@ -38,6 +38,7 @@ public class Constant {
     public static String verName;
     public static String imei;
     public static String devNum;
+    public static String devName;
     public static String devEncryption;
     public static String iccid;
     public static String phoneNumber;

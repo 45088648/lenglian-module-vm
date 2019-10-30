@@ -80,6 +80,7 @@ public class StateRequestBean {
 	 */
 	private Integer bps;
 
+	private Integer channel;
 	private String hardVer;
 	private String softVer;
 	
@@ -418,5 +419,13 @@ public class StateRequestBean {
 
 	public void setBft(long bft) {
 		this.bft = bft;
+	}
+
+	public Integer getChannel() {
+		return channel;
+	}
+
+	public void setChannel(Integer channel) {
+		this.channel = channel;
 	}
 }

@@ -9,7 +9,6 @@
         android:layout_height="fill_parent">
 
         <LinearLayout
-            android:id="@+id/sensorIdSelectLl"
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
@@ -29,10 +28,67 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/queryLl"
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:text="  车牌号："/>
+
+            <EditText
+                android:id="@+id/plateNumber_et"
+                android:layout_width="100dp"
+                android:layout_height="35dp"
+                android:gravity="right"
+                android:textColor="@color/black"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:text="  间隔"/>
+            <Spinner
+                android:id="@+id/printTimeInterval"
+                android:textSize="10sp"
+                android:layout_width="80dp"
+                android:layout_height="40dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:text="分钟  "/>
+
+            <CheckBox
+                android:id="@+id/isContainOver_cb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:text="包括超阈值"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:text="采集时间："/>
 
             <EditText android:id="@+id/time_begin_et"
                 android:layout_width="115dp"
@@ -58,48 +114,17 @@
                 android:focusable="false"
                 android:clickable="true" />
 
-            <Spinner
-                android:id="@+id/printTimeInterval"
-                android:textSize="10sp"
-                android:layout_width="80dp"
-                android:layout_height="40dp" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:textSize="12sp"
-                android:textColor="@color/black"
-                android:text="分钟间隔"/>
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/queryLl1"
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:textSize="12sp"
-                android:textColor="@color/black"
-                android:text="包括超阈值"/>
-
-            <Spinner
-                android:id="@+id/isContainOverSpin"
-                android:textSize="10sp"
-                android:layout_width="80dp"
-                android:layout_height="40dp" />
 
             <Button android:id="@+id/query_btn"
                 android:layout_width="70dp"
                 android:layout_height="40dp"
                 android:text="查询"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/printBtnLl"
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
 
             <Button
                 android:id="@+id/print_btn"

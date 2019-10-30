@@ -16,6 +16,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -75,9 +76,12 @@ public class QueryDataAllActivity extends PrintActivity {
     @ViewInject(R.id.printTimeInterval)
     private Spinner printTimeIntervalSpin;
 
-    @ViewInject(R.id.isContainOverSpin)
-    private Spinner isContainOverSpin;
+    @ViewInject(R.id.isContainOver_cb)
+    private CheckBox isContainOverCb;
     private boolean isContainOver;
+
+    @ViewInject(R.id.plateNumber_et)
+    private EditText plateNumberEt;
 
     private MyApplication myApp;
 
@@ -121,12 +125,11 @@ public class QueryDataAllActivity extends PrintActivity {
         timeBeginEt.setOnClickListener(new OnDateEditClickListener(this));
         timeEndEt.setOnClickListener(new OnDateEditClickListener(this));
 
-        //默认最近1个小时范围
-//        Calendar cal = Calendar.getInstance();
-//        timeEndEt.setText(DateUtils.parseDateToString(cal.getTime(), DateUtils.C_YYYY_MM_DD_HH_MM));
-//        cal.add(Calendar.HOUR_OF_DAY, -1);
-//        timeBeginEt.setText(DateUtils.parseDateToString(cal.getTime(), DateUtils.C_YYYY_MM_DD_HH_MM));
-
+        QueryConfigRealtime queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
+        String devName = "";
+        if(queryConfigRealtime != null) {
+            devName = queryConfigRealtime.getDevName();
+        }
         //默认最近1个小时范围
         Calendar cal = Calendar.getInstance();
         Date endTime = null;
@@ -166,10 +169,6 @@ public class QueryDataAllActivity extends PrintActivity {
         printTimeIntervalAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         printTimeIntervalSpin.setAdapter(printTimeIntervalAdapter);
 
-        ArrayAdapter<String> isContainOverAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, new String[]{"否", "是"});
-        isContainOverAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        isContainOverSpin.setAdapter(isContainOverAdapter);
-
         List<ReadDataRealtime> readDataRealtimeList = myApp.readDataRealtimeSDDao.queryAll();
         if(readDataRealtimeList != null && !readDataRealtimeList.isEmpty()){
             sensorIdListSelect.clear();
@@ -180,7 +179,7 @@ public class QueryDataAllActivity extends PrintActivity {
             }
             sensorIdSelectTv.setText(TextUtils.join(", ", sensorIdListSelect));
         }
-
+        plateNumberEt.setText(devName);
     }
 
     @OnClick(R.id.sensorId_select_btn)
@@ -238,7 +237,7 @@ public class QueryDataAllActivity extends PrintActivity {
 
     private void getPrintSet() {
         printTimeInterval = printTimeIntervalMap.get(printTimeIntervalSpin.getSelectedItemPosition());
-        isContainOver = isContainOverSpin.getSelectedItemPosition() == 1;
+        isContainOver = isContainOverCb.isChecked();
     }
 
     class TvUpdateThread extends Thread {
@@ -336,6 +335,7 @@ public class QueryDataAllActivity extends PrintActivity {
                 printSetVo.setColSize(2);
             }
             printSetVo.setPrintTimeInterval(printTimeInterval);
+            printSetVo.setPlateNumber(plateNumberEt.getText().toString());
             for (ReadDataRealtime readDataRealtime : readDataRealtimeList) {
                 String sensorId = readDataRealtime.getSensorId();
                 if(sensorIdListSelect.isEmpty() || sensorIdListSelect.contains(sensorId)){
