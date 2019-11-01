@@ -2,7 +2,6 @@ package com.beetech.module.activity;
 
 import android.app.AlertDialog;
 import android.app.KeyguardManager;
-import android.app.ProgressDialog;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
@@ -18,12 +17,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.PowerManager;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.TelephonyManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -47,7 +44,6 @@ import com.baidu.mapapi.model.LatLng;
 import com.beetech.module.R;
 import com.beetech.module.adapter.ReadDataRealtimeRvAdapter;
 import com.beetech.module.application.MyApplication;
-import com.beetech.module.bean.QueryConfigRealtime;
 import com.beetech.module.bean.ReadDataRealtime;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.dao.AppLogSDDao;
@@ -59,22 +55,19 @@ import com.beetech.module.listener.PhoneStatListener;
 import com.beetech.module.service.JobProtectService;
 import com.beetech.module.service.ModuleService;
 import com.beetech.module.service.RemoteService;
+import com.beetech.module.utils.BeginMonitorUtils;
+import com.beetech.module.utils.SoundLedAlarmUtils;
 import com.beetech.module.utils.DateUtils;
 import com.beetech.module.utils.DevStateUtils;
+import com.beetech.module.utils.EndMonitorUtils;
 import com.beetech.module.utils.NetUtils;
-import com.beetech.module.utils.NodeParamUtils;
 import com.beetech.module.utils.ServiceAliveUtils;
-import com.beetech.module.utils.ShutdownRequestUtils;
-import com.beetech.module.utils.SysRequestUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 
-import java.util.ArrayList;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class RealtimeMonitorActivity extends AppCompatActivity {
     private final static String TAG = RealtimeMonitorActivity.class.getSimpleName();
@@ -91,13 +84,10 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
     private ReadDataRealtimeSDDao readDataRealtimeSDDao;
     private List<ReadDataRealtime> readDataRealtimeList;
-    private List<ReadDataRealtime> readDataRealtimeListAlarm;
-    private Integer sensorCount;
 
     private ReadDataRealtimeRvAdapter readDataRealtimeRvAdapter;
     int spanCount = 1;
     int spacing = 5;
-    public ProgressDialog progressDialog;
 
     //定位
     @ViewInject(R.id.bmapView)
@@ -114,6 +104,8 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
     TextView tvNetState;
     @ViewInject(R.id.tvMonitorState)
     TextView tvMonitorState;
+    @ViewInject(R.id.tvRefreshTime)
+    TextView tvRefreshTime;
     @ViewInject(R.id.tvBeginMonitorTime)
     TextView tvBeginMonitorTime;
     @ViewInject(R.id.tvEndMonitorTime)
@@ -128,12 +120,8 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
     @ViewInject(R.id.btn_print)
     private Button btnPrint;
-    @ViewInject(R.id.btn_refreshNode)
-    private Button btnRefreshNode;
-
 
     private BaseSDDaoUtils baseSDDaoUtils;
-    private Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,7 +153,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
         myApp = (MyApplication) getApplication();
         baseSDDaoUtils = new BaseSDDaoUtils(myApp);
-        timer = new Timer();
+
         //定位
         mBaiduMap = mMapView.getMap();
         mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
@@ -245,25 +233,11 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
         }
     }
 
-    public void queryData(){
-        readDataRealtimeList = readDataRealtimeSDDao.queryAll();
-        sensorCount = readDataRealtimeList == null ? 0 : readDataRealtimeList.size();
-    }
-
-    public void refresh(){
+    public void refreshReadDataRealtimeRv(){
         readDataRealtimeRvAdapter = new ReadDataRealtimeRvAdapter(readDataRealtimeList);
         readDataRealtimeRvAdapter.setOnItemLongClickListener(new ReadDataRealtimeRvAdapter.OnItemLongClickListener() {
             @Override
             public void onItemLongClick(View view, int position) {
-                ReadDataRealtime readDataRealtime = readDataRealtimeList.get(position);
-                Intent intent=new Intent(getBaseContext(), QueryDataActivity.class);
-                intent.putExtra("sensorId", readDataRealtime.getSensorId());
-                startActivity(intent);
-            }
-        });
-        readDataRealtimeRvAdapter.setOnItemClickListener(new ReadDataRealtimeRvAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
                 ReadDataRealtime readDataRealtime = readDataRealtimeList.get(position);
                 Intent intent=new  Intent(RealtimeMonitorActivity.this, TempLineActivity.class);
                 intent.putExtra("sensorId",readDataRealtime.getSensorId());
@@ -315,6 +289,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             tvMonitorState.setTextColor(Color.BLUE);
         }
 
+        tvRefreshTime.setText(DateUtils.parseDateToString(new Date(), DateUtils.C_YYYY_MM_DD_HH_MM_SS));
         if(myApp.beginMonitorTime != null){
             tvBeginMonitorTime.setText(DateUtils.parseDateToString(myApp.beginMonitorTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS));
             tvBeginMonitorTime.setTextColor(Color.BLUE);
@@ -363,19 +338,12 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
     class RefreshAsyncTask extends AsyncTask<String, Integer, Integer> {
 
         @Override
-        protected void onPreExecute() {
-            if(progressDialog == null){
-
-            }
-            if(progressDialog != null && !progressDialog.isShowing()) {
-                progressDialog.show();
-            }
-        }
+        protected void onPreExecute() {}
 
         @Override
         protected Integer doInBackground(String... params) {
             try{
-                queryData();
+                readDataRealtimeList = readDataRealtimeSDDao.queryAll();
             } catch (Exception e){
                 e.printStackTrace();
                 Log.d(TAG, "刷新数据异常");
@@ -383,7 +351,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
             if(Constant.alarmFlag && myApp.monitorState == 1){
                 try{
-                    checkAlarm();
+                    SoundLedAlarmUtils.checkAlarm(myApp);
                 } catch (Exception e){
                     e.printStackTrace();
                     Log.d(TAG, "监测报警异常");
@@ -401,86 +369,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Integer result) {
-            refresh();
-            if(progressDialog != null && progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
-        }
-    }
-
-    public void checkAlarm(){
-        readDataRealtimeListAlarm = new ArrayList<>();
-        StringBuffer speakTextLong = new StringBuffer();
-        if(readDataRealtimeList != null){
-            for (ReadDataRealtime readDataRealtime : readDataRealtimeList){
-                String sensorId = readDataRealtime.getSensorId();
-                String devName = readDataRealtime.getDevName();
-                double temp = readDataRealtime.getTemp();
-                double tempLower = readDataRealtime.getTempLower();
-                double tempHight = readDataRealtime.getTempHight();
-                if(tempLower != 0 && tempHight != 0 && (temp > tempHight || temp < tempLower)){
-                    readDataRealtimeListAlarm.add(readDataRealtime);
-                    if(!TextUtils.isEmpty(devName)){
-                        speakTextLong.append(devName);
-                    }
-                    speakTextLong.append("，").append(sensorId).append("，").append(temp).append("℃");
-                }
-            }
-        }
-
-        int alarmSize = readDataRealtimeListAlarm.size();
-        Log.d(TAG, "alarmSize="+alarmSize);
-        if(alarmSize > 0){
-            StringBuffer speakText = new StringBuffer();
-            speakText.append(alarmSize).append("个监测点超温");
-            if(alarmSize < 5){
-                speakText.append(speakTextLong);
-            }
-            Log.d(TAG, "speakText = "+speakText.toString());
-            if(Constant.alarmVoiceFlag){
-            }
-
-            if(Constant.alarmLightFlag){
-                try {
-                    myApp.powerLED.on();
-                    Log.d(TAG, "LED on");
-                    myApp.mMediaPlayer.start();
-
-                    //延迟3秒关闭
-                    timer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            try {
-                                myApp.powerLED.off();
-                                Log.d(TAG, "LED off");
-                                myApp.mMediaPlayer.start();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                Log.e(TAG, "LED 关灯异常", e);
-                                myApp.mMediaPlayer.stop();
-                            }
-                        }
-                    }, 3*1000L);
-                }catch (Exception e){
-                    e.printStackTrace();
-                    Log.e(TAG, "LED 开灯异常",e);
-                }
-            }
-
-        } else {
-            if(Constant.alarmLightFlag) {
-                try {
-                    myApp.powerLED.off();
-                    Log.d(TAG, "LED off");
-                    if(myApp.mMediaPlayer.isPlaying()){
-                        myApp.mMediaPlayer.stop();
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.e(TAG, "LED 关灯异常", e);
-                }
-            }
+            refreshReadDataRealtimeRv();
         }
     }
 
@@ -505,220 +394,72 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
     @OnClick(R.id.btn_beginMonitor)
     public void btn_beginMonitor_onClick(View v) {
         if(myApp.monitorState == 1){
-            AlertDialog.Builder builder = new  AlertDialog.Builder(RealtimeMonitorActivity.this);
-            builder.setMessage("已 开始监控，要先 结束监控 吗？");
-            builder.setTitle("提示");
-            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-
-                public void onClick(DialogInterface dialog, int which) {
-                    endMonitor();
-                    dialog.dismiss();
-                }
-            });
-            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            builder.show();
-
-        } else {
-            AlertDialog.Builder builder = new  AlertDialog.Builder(this);
-            builder.setMessage("确定要 开始监控 吗？");
-            builder.setTitle("提示");
-            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-
-                public void onClick(DialogInterface dialog, int which) {
-                    beginMonitor();
-                    dialog.dismiss();
-                }
-            });
-            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            builder.show();
+            Toast.makeText(RealtimeMonitorActivity.this, "当前状态已是监控中", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-    }
+        AlertDialog.Builder builder = new  AlertDialog.Builder(this);
+        builder.setMessage("开始监控会清除标签历史数据，确定要开始监控吗？");
+        builder.setTitle("提示");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 
-    public void beginMonitor(){
-        try{
-            //设置数据开始时间
-            Message msg = new Message();
-            msg.what = 9;
-            myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
+            public void onClick(DialogInterface dialog, int which) {
+                try{
+                    BeginMonitorUtils.beginMonitor(myApp);
+                    refreshState();
+                    Toast.makeText(RealtimeMonitorActivity.this, "开始监控", Toast.LENGTH_SHORT).show();
 
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.MINUTE, 1); // 延迟一分钟启动时间
-            cal.set(Calendar.SECOND, 0); //秒和毫秒取0
-            cal.set(Calendar.MILLISECOND, 0);
-
-            myApp.beginMonitorTime = cal.getTime();
-            myApp.endMonitorTime = null;
-            myApp.monitorState = 1;
-            QueryConfigRealtime queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
-            if(queryConfigRealtime != null){
-                queryConfigRealtime.setMonitorState(myApp.monitorState);
-                queryConfigRealtime.setBeginMonitorTime(myApp.beginMonitorTime);
-                queryConfigRealtime.setEndMonitorTime(myApp.endMonitorTime);
-                myApp.queryConfigRealtimeSDDao.update(queryConfigRealtime);
-            }
-            if(!myApp.locationService.isStart()){
-                myApp.locationService.start();
-            }
-            myApp.appLogSDDao.save("开始监控"+DateUtils.parseDateToString(myApp.beginMonitorTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS));
-            Toast.makeText(RealtimeMonitorActivity.this, "开始监控, "+DateUtils.parseDateToString(myApp.beginMonitorTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS), Toast.LENGTH_SHORT).show();
-            btnBeginMonitor.setTextColor(Color.BLUE);
-            btnEndMonitor.setTextColor(Color.BLACK);
-            refreshState();
-
-            //发送SYS报文
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(TAG, "SysRequestUtils.requestSys");
-                    try {
-                        SysRequestUtils.requestSys(myApp);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(RealtimeMonitorActivity.this, "发送开始监控报文完成", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.e(TAG, "SysRequestUtils.requestSys 异常", e);
-                    }
+                    dialog.dismiss();
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(TAG, "开始监控异常", e);
                 }
-            }).start();
-
-            SystemClock.sleep(200);
-            //发送SYS报文
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(TAG, "NodeParamUtils.requestNodeParam");
-                    try {
-                        int ret = NodeParamUtils.requestNodeParam(myApp);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(RealtimeMonitorActivity.this, "发送获取标签参数报文完成", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.e(TAG, "NodeParamUtils.requestNodeParam 异常", e);
-                    }
-                }
-            }).start();
-        }catch (Exception e){
-            e.printStackTrace();
-            Log.e(TAG, "开始监控异常", e);
-        }
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     @OnClick(R.id.btn_endMonitor)
     public void btn_endMonitor_onClick(View v) {
         if(myApp.monitorState == 0){
-            AlertDialog.Builder builder = new  AlertDialog.Builder(RealtimeMonitorActivity.this);
-            builder.setMessage("未 开始监控，要 开始监控 吗？");
-            builder.setTitle("提示");
-            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-
-                public void onClick(DialogInterface dialog, int which) {
-                    beginMonitor();
-                    dialog.dismiss();
-                }
-            });
-            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            builder.show();
-
-        } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("确定要 结束监控 吗？");
-            builder.setTitle("提示");
-            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-
-                public void onClick(DialogInterface dialog, int which) {
-                    endMonitor();
-                    dialog.dismiss();
-                }
-            });
-            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            builder.show();
+            Toast.makeText(RealtimeMonitorActivity.this, "当前状态已是未监控", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("结束监控会停止记录标签数据，确定要结束监控吗？");
+        builder.setTitle("提示");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                try{
+                    EndMonitorUtils.endMonitor(myApp);
+                    Toast.makeText(RealtimeMonitorActivity.this, "结束监控", Toast.LENGTH_SHORT).show();
+
+                    refreshState();
+
+                    dialog.dismiss();
+                } catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(TAG, "结束监控异常", e);
+                }
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     public void endMonitor(){
-        try{
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.MINUTE, -2); // 提前2分钟结束监控时间
-            cal.set(Calendar.SECOND, 0); //秒和毫秒取0
-            cal.set(Calendar.MILLISECOND, 0);
-            if(myApp.beginMonitorTime != null && (cal.getTime().getTime() == myApp.beginMonitorTime.getTime() || cal.getTime().before(myApp.beginMonitorTime))){
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(RealtimeMonitorActivity.this, "监控时间过短，请稍后再试", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                return;
-            }
-            myApp.endMonitorTime = cal.getTime();
-            myApp.monitorState = 0;
-            QueryConfigRealtime queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
-            if(queryConfigRealtime != null){
-                queryConfigRealtime.setMonitorState(myApp.monitorState);
-                queryConfigRealtime.setEndMonitorTime(myApp.endMonitorTime);
-                myApp.queryConfigRealtimeSDDao.update(queryConfigRealtime);
-            }
 
-            myApp.locationService.stop();
-            myApp.appLogSDDao.save("结束监控, "+ DateUtils.parseDateToString(myApp.endMonitorTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS));
-            btnBeginMonitor.setTextColor(Color.BLACK);
-            btnEndMonitor.setTextColor(Color.RED);
-            Toast.makeText(RealtimeMonitorActivity.this,"结束监控"+ DateUtils.parseDateToString(myApp.endMonitorTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS), Toast.LENGTH_SHORT).show();
-
-            refreshState();
-
-            //发送SHUTDOWN报文
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(TAG, "ShutdownRequestUtils.requestShutdown");
-                    try {
-                        ShutdownRequestUtils.requestShutdown(myApp);
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(RealtimeMonitorActivity.this, "发送SHUTDOWN报文完成", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.e(TAG, "ShutdownRequestUtils.requestShutdown 异常", e);
-                    }
-                }
-            }).start();
-
-        } catch (Exception e){
-            e.printStackTrace();
-            Log.e(TAG, "结束监控异常", e);
-        }
     }
 
     @OnClick(R.id.btn_print)
@@ -729,39 +470,6 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
         }catch (Exception e){
             e.printStackTrace();
         }
-    }
-
-    @OnClick(R.id.btn_refreshNode)
-    public void btn_refreshNode_onClick(View v) {
-        AlertDialog.Builder builder = new  AlertDialog.Builder(this);
-        builder.setMessage("确定要清空标签节点吗？");
-        builder.setTitle("提示");
-        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-
-            public void onClick(DialogInterface dialog, int which) {
-                try {
-                    myApp.readDataRealtimeSDDao.truncate();
-
-                    Message msg = new Message();
-                    msg.obj = "清空标签监测节点";
-                    handlerToast.sendMessage(msg);
-
-                    handlerRefresh.removeCallbacks(runnableRefresh);
-                    handlerRefresh.postDelayed(runnableRefresh, 0);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.e(TAG, "刷新标签异常", e);
-                } finally {
-                    dialog.dismiss();
-                }
-            }
-        });
-        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.show();
     }
 
     @Override

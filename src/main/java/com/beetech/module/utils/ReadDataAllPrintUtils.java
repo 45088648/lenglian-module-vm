@@ -25,6 +25,7 @@ public class ReadDataAllPrintUtils {
 
         String space = " ";
         int colSize = printSetVo.getColSize();
+        boolean isPrintStats = printSetVo.isPrintStats();
         Double tempDataMax = null;
         Double tempDataMin = null;
         if(dataListAll == null || dataListAll.isEmpty()){
@@ -172,8 +173,10 @@ public class ReadDataAllPrintUtils {
         sb.append("-------------------------------\n");
         String plateNumber = printSetVo.getPlateNumber();
         sb.append("车牌号:").append(plateNumber).append("\n");
-        sb.append("最高:").append(tempDataMax).append( "℃\n");
-        sb.append("最低:").append(tempDataMin).append( "℃\n");
+        if(isPrintStats) {
+            sb.append("最高:").append(tempDataMax).append("℃\n");
+            sb.append("最低:").append(tempDataMin).append("℃\n");
+        }
         sb.append("IMEI:").append(Constant.imei).append("\n");
         sb.append("-------------------------------\n");
 
@@ -198,9 +201,10 @@ public class ReadDataAllPrintUtils {
         String space = " ";
         int colSize = 1;
         int printTimeInterval = printSetVo.getPrintTimeInterval();
+        boolean isPrintStats = printSetVo.isPrintStats();
         Double tempDataMax = null;
         Double tempDataMin = null;
-        Double rhAvg = null;
+
         if(dataListAll == null || dataListAll.isEmpty()){
             return null;
         }
@@ -335,8 +339,10 @@ public class ReadDataAllPrintUtils {
         sb.append("-------------------------------\n");
         String plateNumber = printSetVo.getPlateNumber();
         sb.append("车牌号:").append(plateNumber).append("\n");
-        sb.append("最高:").append(tempDataMax).append( "℃\n");
-        sb.append("最低:").append(tempDataMin).append( "℃\n");
+        if(isPrintStats) {
+            sb.append("最高:").append(tempDataMax).append("℃\n");
+            sb.append("最低:").append(tempDataMin).append("℃\n");
+        }
         sb.append("IMEI:").append(Constant.imei).append("\n");
         sb.append("-------------------------------\n");
 

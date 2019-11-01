@@ -6,6 +6,7 @@ import android.content.Intent;
 
 import com.beetech.module.activity.RealtimeMonitorActivity;
 import com.beetech.module.application.MyApplication;
+import com.beetech.module.utils.BeginMonitorUtils;
 
 //开机自启动广播接受
 public class AutoStartBroadcastReceiver extends BroadcastReceiver {
@@ -19,6 +20,7 @@ public class AutoStartBroadcastReceiver extends BroadcastReceiver {
 
             try{
                 MyApplication myApp = (MyApplication)context.getApplicationContext();
+                BeginMonitorUtils.beginMonitorByBoot(myApp);
                 if(myApp.appLogSDDao != null){
                     myApp.appLogSDDao.save("系统开机");
                 }
@@ -27,5 +29,5 @@ public class AutoStartBroadcastReceiver extends BroadcastReceiver {
             }
         }
     }
- 
+
 }

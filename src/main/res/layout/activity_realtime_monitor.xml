@@ -18,8 +18,8 @@
         android:id="@+id/stateLl"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
         android:layout_width="185dp"
         android:layout_height="wrap_content"
         android:background="@drawable/corners_shape"
@@ -137,6 +137,30 @@
                 android:textColor="@color/black"
                 android:textSize="12sp"
                 android:textStyle="bold"
+                android:text="刷新:" />
+            <TextView
+                android:id="@+id/tvRefreshTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:text="" />
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textStyle="bold"
                 android:text="开始:" />
             <TextView
                 android:id="@+id/tvBeginMonitorTime"
@@ -177,8 +201,8 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvReadDataRealtimeData"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginLeft="5dp"
         android:padding="0dp"
         android:layout_width="185dp"
         android:layout_height="wrap_content"
@@ -195,7 +219,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginTop="135dp"
         android:layout_marginRight="0dp"
-        android:layout_width="100dp"
+        android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:background="@drawable/corners_shape2"
         android:orientation="vertical">
@@ -208,10 +232,12 @@
             <Button
                 android:id="@+id/btn_beginMonitor"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_weight="1"
-                android:text="开始监控"
-                />
+                android:textSize="18sp"
+                android:layout_marginTop="5dp"
+                style="@style/button_blue_style"
+                android:text="开始监控" />
         </TableRow>
         <TableRow
             android:layout_width="match_parent"
@@ -221,10 +247,12 @@
             <Button
                 android:id="@+id/btn_endMonitor"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_weight="1"
-                android:text="结束监控"
-                />
+                android:textSize="18sp"
+                android:layout_marginTop="5dp"
+                style="@style/button_blue_style"
+                android:text="结束监控"/>
         </TableRow>
 
         <TableRow
@@ -234,24 +262,12 @@
             <Button
                 android:id="@+id/btn_print"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_weight="1"
-                android:text="打印数据"
-                />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center">
-            <Button
-                android:id="@+id/btn_refreshNode"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:visibility="gone"
-                android:text="刷新标签"
-                />
+                android:textSize="18sp"
+                android:layout_marginTop="5dp"
+                style="@style/button_blue_style"
+                android:text="打印数据"/>
         </TableRow>
 
     </LinearLayout>

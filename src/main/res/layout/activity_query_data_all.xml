@@ -2,29 +2,30 @@
     android:layout_width="460dp"
     android:layout_height="300dp"
     android:background="@color/white">
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:paddingLeft="5dp">
+
+    <LinearLayout
+        android:id="@+id/query_condition_ll"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/sensorId_select_ll"
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
 
-            <Button android:id="@+id/sensorId_select_btn"
-                android:layout_width="120dp"
-                android:layout_height="40dp"
-                android:text="选择打印标签"/>
-
-            <TextView
-                android:id="@+id/sensorId_select_tv"
-                android:layout_width="wrap_content"
+            <com.beetech.module.widget.RadioGroupEx
+                android:id="@+id/sensorId_select_rge"
+                android:layout_width="360dp"
                 android:layout_height="wrap_content"
-                android:gravity="right"
-                android:textColor="@color/black"
-                android:textSize="10sp"/>
+                android:orientation="horizontal">
+            </com.beetech.module.widget.RadioGroupEx>
         </LinearLayout>
 
         <LinearLayout
@@ -38,33 +39,24 @@
                 android:gravity="right"
                 android:textSize="12sp"
                 android:textColor="@color/black"
-                android:text="  车牌号："/>
+                android:text="车牌号："/>
 
             <EditText
                 android:id="@+id/plateNumber_et"
-                android:layout_width="100dp"
+                android:layout_width="150dp"
                 android:layout_height="35dp"
-                android:gravity="right"
+                android:gravity="left"
                 android:textColor="@color/black"
                 android:textSize="12sp"/>
 
-            <TextView
+            <CheckBox
+                android:id="@+id/isContainStats_cb"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:textSize="12sp"
                 android:textColor="@color/black"
-                android:text="  间隔"/>
-            <Spinner
-                android:id="@+id/printTimeInterval"
-                android:textSize="10sp"
-                android:layout_width="80dp"
-                android:layout_height="40dp" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:textSize="12sp"
-                android:textColor="@color/black"
-                android:text="分钟  "/>
+                android:checked="true"
+                android:text="最高最低" />
 
             <CheckBox
                 android:id="@+id/isContainOver_cb"
@@ -72,8 +64,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
                 android:textColor="@color/black"
-                android:text="包括超阈值"
-                />
+                android:text="超阈值" />
 
         </LinearLayout>
 
@@ -88,12 +79,12 @@
                 android:gravity="right"
                 android:textSize="12sp"
                 android:textColor="@color/black"
-                android:text="采集时间："/>
+                android:text="    开始："/>
 
             <EditText android:id="@+id/time_begin_et"
                 android:layout_width="115dp"
                 android:layout_height="40dp"
-                android:hint="起始时间"
+                android:hint="开始时间"
                 android:textSize="12sp"
                 android:cursorVisible="false"
                 android:focusable="false"
@@ -103,17 +94,42 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
-                android:text="至"/>
+                android:textSize="12sp"
+                android:text=" 结束： "/>
 
             <EditText android:id="@+id/time_end_et"
                 android:layout_width="115dp"
                 android:layout_height="40dp"
                 android:textSize="12sp"
-                android:hint="终止时间"
+                android:hint="结束时间"
                 android:cursorVisible="false"
                 android:focusable="false"
                 android:clickable="true" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:text=" 间隔："/>
+
+            <EditText
+                android:id="@+id/printTimeInterval_et"
+                android:layout_width="30dp"
+                android:layout_height="40dp"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:gravity="left"
+                android:inputType="number"
+                android:digits="@string/printTimeInterval_filter"
+                android:text="5"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:textSize="12sp"
+                android:textColor="@color/black"
+                android:text="分钟"/>
         </LinearLayout>
 
         <LinearLayout
@@ -124,30 +140,65 @@
             <Button android:id="@+id/query_btn"
                 android:layout_width="70dp"
                 android:layout_height="40dp"
+                style="@style/button_blue_style"
                 android:text="查询"/>
+        </LinearLayout>
+    </LinearLayout>
 
-            <Button
-                android:id="@+id/print_btn"
-                android:layout_width="70dp"
-                android:layout_height="40dp"
-                android:gravity="center"
-                android:text="@string/str_print"
-                android:visibility="gone" />
+    <LinearLayout
+        android:id="@+id/query_result_ll"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="5dp"
+        android:visibility="gone">
 
-            <TextView
-                android:id="@+id/tv_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:textColor="@color/red"
-                android:textSize="10sp"/>
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/print_btn"
+                    android:layout_width="70dp"
+                    android:layout_height="40dp"
+                    android:gravity="center"
+                    style="@style/button_blue_style"
+                    android:text="@string/str_print"/>
+
+                <Button android:id="@+id/requery_btn"
+                    android:layout_width="90dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="10dp"
+                    style="@style/button_blue_style"
+                    android:text="重新查询"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tv_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:textColor="@color/red"
+                    android:textSize="10sp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/print_str_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/black"/>
+            </LinearLayout>
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/print_str_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textColor="@color/black"/>
     </LinearLayout>
 </ScrollView>

@@ -1,8 +1,7 @@
 package com.beetech.module.utils;
 
 public class PrintSetVo {
-	private int rhFlag = 1; /* 是否打印湿度 0 打印 1不打印 */
-	private int printStats = 0; /* 打印统计数据最大值、最小值、平均值 0 打印 1 不打印 */
+	private boolean printStats; /* 打印统计数据最高、最低 */
 	private Integer colSize = 1; // 单排数据 双排数据
 	private int printTimeInterval = 5;
 	private String plateNumber;	// 车牌号
@@ -11,20 +10,12 @@ public class PrintSetVo {
 
 	}
 
-	public void setRhFlag(int rhFlag) {
-		this.rhFlag = rhFlag;
-	}
-
-	public int getPrintStats() {
+	public boolean isPrintStats() {
 		return printStats;
 	}
 
-	public void setPrintStats(int printStats) {
+	public void setPrintStats(boolean printStats) {
 		this.printStats = printStats;
-	}
-
-	public int getRhFlag() {
-		return rhFlag;
 	}
 
 	public Integer getColSize() {

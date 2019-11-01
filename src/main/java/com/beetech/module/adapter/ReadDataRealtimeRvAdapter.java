@@ -47,11 +47,12 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
         double temp = readDataRealtime.getTemp();
         double tempLower = readDataRealtime.getTempLower();
         double tempHight = readDataRealtime.getTempHight();
-
+        double ssVoltage = readDataRealtime.getSsVoltage();
         holder.tvSensorId.setText(readDataRealtime.getSensorId());
         holder.tvTemp.setText(temp+"℃");
+        holder.tvRssi.setText(readDataRealtime.getRssi()+"");
+        holder.tvSsVoltage.setText(ssVoltage+"");
         holder.tvSensorDataTime.setText(DateUtils.parseDateToString(readDataRealtime.getSensorDataTime(), DateUtils.C_MM_DD_HH_MM));
-        setText(holder, position);
 
         boolean isAlarm = true;
         boolean isTempAlarm = false;
@@ -60,6 +61,9 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
             isTempAlarm = true;
         }
         holder.tvTemp.setTextColor((isAlarm && isTempAlarm) ? Constant.COLOR_RED : Color.BLUE);
+
+        boolean isSsVoltageAlarm = ssVoltage < 2.8;
+        holder.tvSsVoltage.setTextColor((isAlarm && isSsVoltageAlarm) ? Constant.COLOR_RED : Color.BLACK);
 
         //判断是否设置了监听器
         if(mOnItemClickListener != null){
@@ -83,31 +87,6 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
         }
     }
 
-    public void setText(ViewHolder holder, final int position){
-
-        //动态设置监测点背景色
-//        holder.ll.setBackgroundColor(Constant.COLORS[position % (Constant.COLORS.length-1)]);
-//        int color = Constant.COLORS[position % (Constant.COLORS.length-1)];
-//        holder.tvSensorId.setTextColor(color);
-//        holder.tvSsVoltage.setTextColor(color);
-//        holder.tvRssi.setTextColor(color);
-//
-//        holder.tvTemp.setTextColor(color);
-//        holder.tvRh.setTextColor(color);
-
-//        holder.tvSensorDataTime.setTextColor(color);
-//        if(mList.size() <= 2){
-//            holder.tvSensorId.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
-//            holder.tvSsVoltage.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
-//            holder.tvRssi.setTextSize(TypedValue.COMPLEX_UNIT_SP,18);
-//
-//            holder.tvTemp.setTextSize(TypedValue.COMPLEX_UNIT_SP,32);
-//            holder.tvRh.setTextSize(TypedValue.COMPLEX_UNIT_SP,32);
-//
-//            holder.tvSensorDataTime.setTextSize(TypedValue.COMPLEX_UNIT_SP,16);
-//        }
-    }
-
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -116,6 +95,8 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
         public TextView tvSensorId;
         public TextView tvTemp;
         public TextView tvSensorDataTime;
+        public TextView tvRssi;
+        public TextView tvSsVoltage;
 
         public ViewHolder(View convertView) {
             super(convertView);
@@ -125,6 +106,8 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
             tvSensorId = (TextView) convertView.findViewById(R.id.tvSensorId);
             tvTemp = (TextView) convertView.findViewById(R.id.tvTemp);
             tvSensorDataTime = (TextView) convertView.findViewById(R.id.tvSensorDataTime);
+            tvRssi = (TextView) convertView.findViewById(R.id.tvRssi);
+            tvSsVoltage = (TextView) convertView.findViewById(R.id.tvSsVoltage);
         }
     }
 

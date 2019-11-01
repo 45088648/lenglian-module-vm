@@ -12,7 +12,7 @@ import org.apache.mina.core.session.IoSession;
 public class SysRequestUtils {
     private final static String TAG = SysRequestUtils.class.getSimpleName();
 
-    public static int requestSys(Context context){
+    public static int requestSys(Context context, int type){
         long runTime = System.currentTimeMillis();
 
         try{
@@ -22,7 +22,7 @@ public class SysRequestUtils {
                 return -1;
             }
 
-            SysRequestBean sysRequestBean = new SysRequestBean(queryConfigRealtime, myApp);
+            SysRequestBean sysRequestBean = new SysRequestBean(queryConfigRealtime, myApp, type);
             IoSession mSession = myApp.session;
             if(mSession == null || !mSession.isConnected()){
                 return -2;

@@ -11,14 +11,14 @@ public class SysRequestBean extends VtRequestBean{
     public SysRequestBean() {
         setCmd("SYS");
     }
-    public SysRequestBean(QueryConfigRealtime queryConfigRealtime, MyApplication myApp) {
+    public SysRequestBean(QueryConfigRealtime queryConfigRealtime, MyApplication myApp, int type) {
         this();
         body = new SysRequestBody();
         body.setImei(queryConfigRealtime.getImei());
         body.setNum(queryConfigRealtime.getDevNum());
         body.setIccid(Constant.iccid);
         body.setTime(DateUtils.parseDateToString(queryConfigRealtime.getBeginMonitorTime(), DateUtils.C_YYYYMMDDHHMMSS));
-        body.setType(1);
+        body.setType(type);
         body.setVar(Constant.verName);
     }
 

@@ -9,16 +9,17 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Spinner;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,20 +33,19 @@ import com.beetech.module.utils.DateUtils;
 import com.beetech.module.utils.EncryStrUtils;
 import com.beetech.module.utils.PrintSetVo;
 import com.beetech.module.utils.ReadDataAllPrintUtils;
+import com.beetech.module.widget.RadioGroupEx;
 import com.beetech.module.widget.time.OnDateEditClickListener;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
-public class QueryDataAllActivity extends PrintActivity {
+public class QueryDataAllActivity extends PrintActivity implements CheckBox.OnCheckedChangeListener{
     private static final String TAG = QueryDataAllActivity.class.getSimpleName();
 
     @ViewInject(R.id.tv_status)
@@ -64,21 +64,32 @@ public class QueryDataAllActivity extends PrintActivity {
     @ViewInject(R.id.query_btn)
     private Button queryBtn;
 
-    @ViewInject(R.id.sensorId_select_btn)
-    private Button sensorIdSelectBtn;
+    @ViewInject(R.id.requery_btn)
+    private Button requeryBtn;
 
-    @ViewInject(R.id.sensorId_select_tv)
-    private TextView sensorIdSelectTv;
+    @ViewInject(R.id.query_condition_ll)
+    private LinearLayout queryConditionLl;
+
+    @ViewInject(R.id.query_result_ll)
+    private LinearLayout queryResultLl;
+
+    @ViewInject(R.id.sensorId_select_rge)
+    private RadioGroupEx sensorIdSelectRge;
+    private List<CheckBox> checkBoxs = new ArrayList<CheckBox>();
 
     @ViewInject(R.id.print_str_tv)
     private TextView printStrTv;
 
-    @ViewInject(R.id.printTimeInterval)
-    private Spinner printTimeIntervalSpin;
+    @ViewInject(R.id.printTimeInterval_et)
+    private EditText printTimeIntervalEt;
 
     @ViewInject(R.id.isContainOver_cb)
     private CheckBox isContainOverCb;
     private boolean isContainOver;
+
+    @ViewInject(R.id.isContainStats_cb)
+    private CheckBox isContainStatsCb;
+    private boolean isContainStats;
 
     @ViewInject(R.id.plateNumber_et)
     private EditText plateNumberEt;
@@ -100,12 +111,7 @@ public class QueryDataAllActivity extends PrintActivity {
 
     //打印参数
     private int printTimeInterval = 5; // 打印间隔，单位：分钟
-    private List<String> printTimeIntervalList = new LinkedList<>();
-    private Map<Integer, Integer> printTimeIntervalMap = new HashMap<>();
-
-    private AlertDialog sensorIdSelectDialog;
     private List sensorIdListSelect = new LinkedList();
-    private List sensorIdList = new LinkedList();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -158,86 +164,52 @@ public class QueryDataAllActivity extends PrintActivity {
 
         mToastHandler = new ToastHandler();
 
-        int index = 0;
-        printTimeIntervalList.clear();
-        printTimeIntervalMap.clear();
-        for (int i = 5; i > 0; i--){
-            printTimeIntervalList.add(i+"");
-            printTimeIntervalMap.put(index++, i);
-        }
-        ArrayAdapter<String> printTimeIntervalAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, printTimeIntervalList);
-        printTimeIntervalAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        printTimeIntervalSpin.setAdapter(printTimeIntervalAdapter);
-
         List<ReadDataRealtime> readDataRealtimeList = myApp.readDataRealtimeSDDao.queryAll();
         if(readDataRealtimeList != null && !readDataRealtimeList.isEmpty()){
             sensorIdListSelect.clear();
             int size = readDataRealtimeList.size();
             for (int i = 0; i< size; i++){
                 ReadDataRealtime rdr = readDataRealtimeList.get(i);
-                sensorIdListSelect.add(rdr.getSensorId());
+                String sensorId = rdr.getSensorId();
+                sensorIdListSelect.add(sensorId);
+
+                CheckBox checkBox = (CheckBox) getLayoutInflater().inflate(R.layout.checkbox, null);
+                checkBox.setText(sensorId);
+                checkBox.setChecked(true);
+                checkBox.setOnCheckedChangeListener(this);
+                checkBoxs.add(checkBox);
+                sensorIdSelectRge.addView(checkBox, i);
             }
-            sensorIdSelectTv.setText(TextUtils.join(", ", sensorIdListSelect));
         }
+
         plateNumberEt.setText(devName);
     }
 
-    @OnClick(R.id.sensorId_select_btn)
-    public void sensorIdSelectBtn_onClick(View view){
-        List<ReadDataRealtime> readDataRealtimeList = myApp.readDataRealtimeSDDao.queryAll();
-
-        if(readDataRealtimeList == null || readDataRealtimeList.isEmpty()){
-            return;
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        String sensorId = buttonView.getText().toString();
+        if(isChecked){
+            if(!sensorIdListSelect.contains(sensorId)){
+                sensorIdListSelect.add(sensorId);
+            }
+        } else {
+            sensorIdListSelect.remove(sensorId);
         }
-        sensorIdList = sensorIdListSelect;
-        int size = readDataRealtimeList.size();
-        String[] sensorIds = new String[size];
-        boolean[] isCheckeds = new boolean[size];
-        for (int i = 0; i< size; i++){
-            ReadDataRealtime rdr = readDataRealtimeList.get(i);
-            String sensorId = rdr.getSensorId();
-            sensorIds[i] = sensorId;
-            isCheckeds[i] = sensorIdListSelect.contains(sensorId);
-        }
-        final String[] items = sensorIds;
-        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-        alertBuilder.setTitle("请选择打印标签");
-        alertBuilder.setMultiChoiceItems(sensorIds, isCheckeds, new DialogInterface.OnMultiChoiceClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i, boolean isChecked) {
-                String sensorId = items[i];
-                if (isChecked){
-                    if(!sensorIdList.contains(sensorId)){
-                        sensorIdList.add(sensorId);
-                    }
-                }else {
-                    sensorIdList.remove(sensorId);
-                }
-            }
-        });
-        alertBuilder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                sensorIdSelectDialog.dismiss();
-                Collections.sort(sensorIdList);
-                sensorIdListSelect = sensorIdList;
-                sensorIdSelectTv.setText(TextUtils.join(", ", sensorIdList));
-            }
-        });
-
-        alertBuilder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                sensorIdSelectDialog.dismiss();
-            }
-        });
-        sensorIdSelectDialog = alertBuilder.create();
-        sensorIdSelectDialog.show();
     }
 
     private void getPrintSet() {
-        printTimeInterval = printTimeIntervalMap.get(printTimeIntervalSpin.getSelectedItemPosition());
+        Editable printTimeIntervalEtText = printTimeIntervalEt.getText();
+        if(printTimeIntervalEtText != null) {
+            String printTimeIntervalStr = printTimeIntervalEtText.toString();
+            if(!TextUtils.isEmpty(printTimeIntervalStr) && TextUtils.isDigitsOnly(printTimeIntervalStr)){
+                int printTimeIntervalInt = Integer.valueOf(printTimeIntervalStr);
+                if(printTimeIntervalInt > 0){
+                    printTimeInterval = printTimeIntervalInt;
+                }
+            }
+        }
         isContainOver = isContainOverCb.isChecked();
+        isContainStats = isContainStatsCb.isChecked();
     }
 
     class TvUpdateThread extends Thread {
@@ -335,6 +307,7 @@ public class QueryDataAllActivity extends PrintActivity {
                 printSetVo.setColSize(2);
             }
             printSetVo.setPrintTimeInterval(printTimeInterval);
+            printSetVo.setPrintStats(isContainStats);
             printSetVo.setPlateNumber(plateNumberEt.getText().toString());
             for (ReadDataRealtime readDataRealtime : readDataRealtimeList) {
                 String sensorId = readDataRealtime.getSensorId();
@@ -373,7 +346,9 @@ public class QueryDataAllActivity extends PrintActivity {
             }
 
             printStrTv.setText(printStr);
-            printBtn.setVisibility(View.VISIBLE);
+
+            queryConditionLl.setVisibility(View.GONE);
+            queryResultLl.setVisibility(View.VISIBLE);
 
         } catch (Exception e){
             e.printStackTrace();
@@ -406,6 +381,12 @@ public class QueryDataAllActivity extends PrintActivity {
             }
 
         }).show();
+    }
+
+    @OnClick(R.id.requery_btn)
+    public void requeryBtn_onClick(View v) {
+        queryConditionLl.setVisibility(View.VISIBLE);
+        queryResultLl.setVisibility(View.GONE);
     }
 
     public void toPrint() {

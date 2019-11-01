@@ -24,4 +24,5 @@
     <string name="print_shuoming">连接打印机前请先设置开启蓝牙开关,并配对名称为“anquan365”的蓝牙打印机, 配对密码为“1234”</string>
 
     <string name="alphabet_and_number">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789</string>
+    <string name="printTimeInterval_filter">0123456789</string>
 </resources>

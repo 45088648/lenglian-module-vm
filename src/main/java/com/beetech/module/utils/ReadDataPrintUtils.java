@@ -17,7 +17,7 @@ public class ReadDataPrintUtils {
 
     public static String toPrintStr(List<ReadDataResponse> dataList, int colSize, PrintSetVo printSetVo, ReadDataRealtime readDataRealtime) {
         String space = " ";
-        int rhFlag = printSetVo.getRhFlag();
+
         Double tempDataMax = null;
         Double tempDataMin = null;
         Double tempDataSum = 0.0;
@@ -58,18 +58,6 @@ public class ReadDataPrintUtils {
                 tempDataMin = tempDataDouble;
             }
             tempDataSum += tempDataDouble;
-
-            if(rhFlag == 0){
-                double rh = readData.getRh();
-                Double rhDouble = Double.valueOf(rh);
-                if(rhMax == null || rhMax < rhMax){
-                    rhMax = rhDouble;
-                }
-                if(rhMin == null || rhMin > rhDouble){
-                    rhMin = rhDouble;
-                }
-                rhSum += rhDouble;
-            }
         }
 
         List<String> lineList = new ArrayList<>();
@@ -97,9 +85,6 @@ public class ReadDataPrintUtils {
                 lineList.add("日期: "+dateStr);
 
                 String titleStr = "时间 "+space+"温度";
-                if(rhFlag == 0){
-                    titleStr += space+"湿度";
-                }
 
                 for(int i = 0; i <  colSize - 1; i++){
                     titleStr += space + titleStr;
@@ -110,10 +95,6 @@ public class ReadDataPrintUtils {
 
             lineStringBuffer.append(timeStr.substring(11)).append(space).append(devTempDataStr);
 
-            if(rhFlag == 0){
-                String rhStr = tempFormat.format(readData.getRh());
-                lineStringBuffer.append(space).append(rhStr);
-            }
             lineStringBuffer.append(space);
 
             if(col == colSize){
@@ -145,11 +126,8 @@ public class ReadDataPrintUtils {
         if(tempLower != 0.0 && tempHight != 0.0){
             sb.append("温度阈值:").append(tempLower).append("℃~").append(tempHight).append( "℃\n");
         }
-        if(rhFlag == 0 && rhLower != 0.0 && rhHight != 0.0){
-            sb.append("湿度阈值:").append(rhLower).append("%~").append(rhHight).append("%\n");
-        }
-        int printStats = printSetVo.getPrintStats();
-        if(printStats == 0){
+        boolean isPrintStats = printSetVo.isPrintStats();
+        if(isPrintStats){
             int size = dataList.size();
             tempDataAvg = tempDataSum/size;
             rhAvg = rhSum/size;
@@ -159,13 +137,6 @@ public class ReadDataPrintUtils {
             String tempDataMinStr = tempFormat.format(tempDataMin);
             String tempDataAvgStr = tempFormat.format(tempDataAvg);
             sb.append(tempDataMaxStr).append("℃").append(space).append(tempDataMinStr).append("℃").append(space).append(tempDataAvgStr).append("℃\n");
-
-            if(rhFlag == 0 && rhMax != null){
-                String rhMaxStr = tempFormat.format(rhMax);
-                String rhMinStr = tempFormat.format(rhMin);
-                String rhAvgStr = tempFormat.format(rhAvg);
-                sb.append(rhMaxStr).append("% ").append(space).append(rhMinStr).append("% ").append(space).append(rhAvgStr).append("% \n");
-            }
         }
         sb.append("-------------------------------\n");
 
@@ -207,7 +178,6 @@ public class ReadDataPrintUtils {
 
         int colSize = 2;
         PrintSetVo printSetVo = new PrintSetVo();
-        printSetVo.setRhFlag(0);
         ReadDataRealtime readDataRealtime = new ReadDataRealtime();
         readDataRealtime.setSensorId("19030001");
         readDataRealtime.setDevName("公司大节点测试");

@@ -10,11 +10,17 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.beetech.module.activity.MainActivity;
+import com.beetech.module.activity.QueryDataAllActivity;
+import com.beetech.module.activity.RealtimeMonitorActivity;
+import com.beetech.module.activity.TempLineActivity;
+import com.beetech.module.activity.UpdateConfigActivity;
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.dao.AppLogSDDao;
 import com.beetech.module.handler.ModuleHandler;
 import com.beetech.module.thread.ThreadModuleReceive;
 import com.beetech.module.thread.ThreadTimeTask;
+import com.beetech.module.utils.ActivityUtils;
 
 /**
  * 灰色保活手段唤醒广播
@@ -65,13 +71,18 @@ public class WakeReceiver extends BroadcastReceiver {
             }
             Log.d(TAG, "threadModuleReceive = "+myApp.threadModuleReceive);
 
-//            if (!ActivityUtils.isForeground(context.getApplicationContext(), RealtimeMonitorActivity.class.getName())){
-//                Log.d(TAG, "判断监测界面是否在前台");
-//
-//                Intent dialogIntent = new Intent(context.getApplicationContext(), RealtimeMonitorActivity.class);
-//                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                context.getApplicationContext().startActivity(dialogIntent);
-//            }
+            if (!ActivityUtils.isForeground(context.getApplicationContext(), RealtimeMonitorActivity.class.getName())
+            && !ActivityUtils.isForeground(context.getApplicationContext(), QueryDataAllActivity.class.getName())
+            && !ActivityUtils.isForeground(context.getApplicationContext(), UpdateConfigActivity.class.getName())
+            && !ActivityUtils.isForeground(context.getApplicationContext(), TempLineActivity.class.getName())
+            && !ActivityUtils.isForeground(context.getApplicationContext(), MainActivity.class.getName())
+            ){
+                Log.d(TAG, "判断监测界面是否在前台");
+
+                Intent dialogIntent = new Intent(context.getApplicationContext(), RealtimeMonitorActivity.class);
+                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.getApplicationContext().startActivity(dialogIntent);
+            }
         }
     }
 
