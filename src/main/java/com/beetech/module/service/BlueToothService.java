@@ -176,7 +176,7 @@ public class BlueToothService {
 				return;
 			}
 
-			queryDataAllActivity.toast("打印数据为中");
+			queryDataAllActivity.toast("打印数据中");
 
 			//分批发送
 			int len = content.length();

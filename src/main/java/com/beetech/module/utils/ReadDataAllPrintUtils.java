@@ -5,6 +5,7 @@ import com.beetech.module.bean.ReadDataRealtime;
 import com.beetech.module.code.response.ReadDataResponse;
 import com.beetech.module.constant.Constant;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,9 +17,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import java.text.DecimalFormat;
-
 public class ReadDataAllPrintUtils {
+    private static final String TAG = ReadDataAllPrintUtils.class.getSimpleName();
 
     public static String toPrintStr(List<ReadDataRealtime> readDataRealtimeList, List<List<ReadDataResponse>> dataListAll, PrintSetVo printSetVo, QueryConfigRealtime queryConfigRealtime) {
         DecimalFormat tempFormat = new DecimalFormat("0.0");// 保留一位小数整数补.0
@@ -364,61 +364,119 @@ public class ReadDataAllPrintUtils {
 
     public static List<ReadDataResponse> filterDataList(List<ReadDataResponse> dataList, int timeInterval){
         List<ReadDataResponse> retList = new LinkedList<>();
+        if(dataList == null || dataList.isEmpty()){
+            return retList;
+        }
+
         if(timeInterval <= 0){
             retList = dataList;
 
         } else {
-            int dataListSize = dataList.size();
-            for (int i = 0; i< dataListSize; i++){
-                ReadDataResponse readDataResponse = dataList.get(i);
-                Date sensorDataTime = readDataResponse.getSensorDataTime();
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(sensorDataTime);
+            Map<String, ReadDataResponse> timeReadDataResponseMap = new HashMap<>();
+            ReadDataResponse readDataResponseFirst = dataList.get(0);
+            ReadDataResponse readDataResponseLast = dataList.get(dataList.size()-1);
 
-                int min = cal.get(Calendar.MINUTE);
-                if(min % timeInterval == 0){
-                    retList.add(readDataResponse);
-                }
+            for (ReadDataResponse readDataResponse : dataList) {
+                String time = DateUtils.parseDateToString(readDataResponse.getSensorDataTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
+                timeReadDataResponseMap.put(time, readDataResponse);
             }
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(readDataResponseFirst.getSensorDataTime());
+            Date sensorDataTimeLast = readDataResponseLast.getSensorDataTime();
+            while(cal.getTime().getTime() <= sensorDataTimeLast.getTime()){
+                String time = DateUtils.parseDateToString(cal.getTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
+                ReadDataResponse readDataResponse = timeReadDataResponseMap.get(time);
+
+                if(readDataResponse == null){
+                    //前后找一条数据补上
+                    Calendar cal1 = Calendar.getInstance();
+                    cal1.setTime(cal.getTime());
+                    Calendar cal2 = Calendar.getInstance();
+                    cal2.setTime(cal.getTime());
+
+                    for (int i = 0; i < 30; i++) {
+                        //向前找
+                        cal1.set(Calendar.MINUTE, -i);
+                        String time1 = DateUtils.parseDateToString(cal1.getTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
+//                        Log.d(TAG, "================time1="+time1);
+                        ReadDataResponse readDataResponse1 = timeReadDataResponseMap.get(time1);
+                        if(readDataResponse1 != null) {
+                            readDataResponse = readDataResponse1;
+                            break;
+                        }
+
+                        //向后找
+                        cal2.set(Calendar.MINUTE, i);
+                        String time2 = DateUtils.parseDateToString(cal2.getTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
+//                        Log.d(TAG, "================time2="+time2);
+                        ReadDataResponse readDataResponse2 = timeReadDataResponseMap.get(time2);
+                        if(readDataResponse2 != null){
+                            readDataResponse = readDataResponse2;
+                            break;
+                        }
+                    }
+
+                    if(readDataResponse != null){
+                        try{
+                            ReadDataResponse readDataResponseCopy = new ReadDataResponse();
+                            BeanPropertiesUtil.copyProperties(readDataResponse, readDataResponseCopy);
+                            readDataResponseCopy.setSensorDataTime(cal.getTime());
+                            readDataResponse = readDataResponseCopy;
+
+                            time = DateUtils.parseDateToString(readDataResponse.getSensorDataTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
+                            timeReadDataResponseMap.put(time, readDataResponse);
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                if(readDataResponse != null){
+                    if(cal.get(Calendar.MINUTE)%timeInterval == 0){
+                        retList.add(readDataResponse);
+                    }
+                }
+                cal.add(Calendar.MINUTE, 1);
+            }
+
+
         }
 
         return retList;
     }
 
     public static void main(String[] args) {
-//        List<List<ReadDataResponse>> dataListAll = new ArrayList<>();
-//        List<ReadDataResponse> dataList = new ArrayList<>();
-//        ReadDataResponse data1 = new ReadDataResponse();
-//        data1.setTemp(25.6);
-//        data1.setRh(39.6);
-//        data1.setSensorDataTime(DateUtils.parseStringToDate("2019-5-17 10:05:00", DateUtils.C_YYYY_MM_DD_HH_MM_SS));
-//        dataList.add(data1);
-//
-//        List<ReadDataResponse> dataList1 = new ArrayList<>();
-//        ReadDataResponse data2 = new ReadDataResponse();
-//        data2.setTemp(15.6);
-//        data2.setRh(37.6);
-//        data2.setSensorDataTime(DateUtils.parseStringToDate("2019-5-17 10:05:00", DateUtils.C_YYYY_MM_DD_HH_MM_SS));
-//        dataList1.add(data2);
-//
-//        List<ReadDataResponse> dataList2 = new ArrayList<>();
-//        ReadDataResponse data3 = new ReadDataResponse();
-//        data3.setTemp(21.6);
-//        data3.setRh(38.6);
-//        data3.setSensorDataTime(DateUtils.parseStringToDate("2019-5-17 10:05:00", DateUtils.C_YYYY_MM_DD_HH_MM_SS));
-//        dataList2.add(data3);
-//
-//        dataListAll.add(dataList);
-//        dataListAll.add(dataList1);
-//        dataListAll.add(dataList2);
-//
-//        PrintSetVo printSetVo = new PrintSetVo();
-//        printSetVo.setRhFlag(0);
-//        QueryConfigRealtime queryConfigRealtime = new QueryConfigRealtime();
-//        queryConfigRealtime.setDevNum("19030001");
-//        queryConfigRealtime.setDevName("公司大节点测试");
-//        String printStr = toPrintStr(dataListAll, printSetVo, queryConfigRealtime);
-//        System.out.println(printStr);
+        List<ReadDataResponse> dataList = new ArrayList<>();
+        ReadDataResponse data1 = new ReadDataResponse();
+        data1.setTemp(25.6);
+        data1.setRh(39.6);
+        data1.setSensorDataTime(DateUtils.parseStringToDate("2019-11-07 16:01:00", DateUtils.C_YYYY_MM_DD_HH_MM_SS));
+        dataList.add(data1);
+
+        ReadDataResponse data2 = new ReadDataResponse();
+        data2.setTemp(15.6);
+        data2.setRh(37.6);
+        data2.setSensorDataTime(DateUtils.parseStringToDate("2019-11-07 16:05:00", DateUtils.C_YYYY_MM_DD_HH_MM_SS));
+        dataList.add(data2);
+
+        ReadDataResponse data3 = new ReadDataResponse();
+        data3.setTemp(21.6);
+        data3.setRh(38.6);
+        data3.setSensorDataTime(DateUtils.parseStringToDate("2019-11-07 16:06:00", DateUtils.C_YYYY_MM_DD_HH_MM_SS));
+        dataList.add(data3);
+
+        ReadDataResponse data4 = new ReadDataResponse();
+        data4.setTemp(21.6);
+        data4.setRh(38.6);
+        data4.setSensorDataTime(DateUtils.parseStringToDate("2019-11-07 16:18:00", DateUtils.C_YYYY_MM_DD_HH_MM_SS));
+        dataList.add(data4);
+
+
+        List<ReadDataResponse> retList = filterDataList(dataList, 1);
+        for (ReadDataResponse rdr : retList) {
+            System.out.println(DateUtils.parseDateToString(rdr.getSensorDataTime(), DateUtils.C_YYYY_MM_DD_HH_MM_SS)+", "+rdr.getTemp());
+        }
     }
 
 }
