@@ -25,7 +25,6 @@ import android.widget.Toast;
 import com.beetech.module.R;
 import com.beetech.module.activity.MainActivity;
 import com.beetech.module.activity.RealtimeMonitorActivity;
-import com.beetech.module.activity.SynthActivity;
 import com.beetech.module.activity.UpdateConfigActivity;
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.constant.Constant;
@@ -95,8 +94,6 @@ public class RunStateFragment extends Fragment {
     @ViewInject(R.id.btnSetDataBeginTime)
     private Button btnSetDataBeginTime;
 
-    @ViewInject(R.id.btnSynth)
-    private Button btnSynth;
     @ViewInject(R.id.btnRebootApp)
     private Button btnRebootApp;
     @ViewInject(R.id.btnRet)
@@ -441,11 +438,6 @@ public class RunStateFragment extends Fragment {
             }
         });
         builder.show();
-    }
-
-    @OnClick(R.id.btnSynth)
-    public void btnSynth_OnClick(View v) {
-        startActivity(new Intent(mContext, SynthActivity.class));
     }
 
     @OnClick(R.id.btnRet)

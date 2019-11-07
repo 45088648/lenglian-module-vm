@@ -2,6 +2,7 @@ package com.beetech.module.application;
 
 import android.app.Application;
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.HandlerThread;
@@ -125,6 +126,8 @@ public class MyApplication extends Application {
 
     public MediaPlayer mMediaPlayer;
 
+    public static BluetoothAdapter adapter;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -174,6 +177,8 @@ public class MyApplication extends Application {
         Constant.IS_DEBUGGABLE = AppStateUtils.isDebuggable(this);
 //        Constant.IS_SAVE_MODULE_LOG = AppStateUtils.isDebuggable(this);
 //        Constant.IS_SAVE_SOCKET_LOG = AppStateUtils.isDebuggable(this);
+
+        adapter = BluetoothAdapter.getDefaultAdapter();
     }
 
     private void initConfig(){

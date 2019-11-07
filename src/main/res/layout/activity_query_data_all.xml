@@ -160,11 +160,11 @@
 
                 <Button
                     android:id="@+id/print_btn"
-                    android:layout_width="70dp"
+                    android:layout_width="100dp"
                     android:layout_height="40dp"
                     android:gravity="center"
                     style="@style/button_blue_style"
-                    android:text="@string/str_print"/>
+                    android:text="查找打印机"/>
 
                 <Button android:id="@+id/requery_btn"
                     android:layout_width="90dp"
@@ -177,20 +177,19 @@
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/tv_status"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp">
+                <ListView
+                    android:id="@+id/printer_lv"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="right"
-                    android:textColor="@color/red"
-                    android:textSize="10sp"/>
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
 
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp">
                 <TextView
                     android:id="@+id/print_str_tv"
                     android:layout_width="wrap_content"

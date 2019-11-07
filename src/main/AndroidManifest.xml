@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.beetech.module"
     android:versionCode="1"
-    android:versionName="1.0.27"
+    android:versionName="1.0.28"
     android:sharedUserId="android.uid.system">
 
     <uses-permission android:name="android.permission.GET_TASKS"/>
@@ -107,10 +107,6 @@
             android:finishOnTaskLaunch="false"
             android:launchMode="singleInstance"
             android:theme="@style/SingleActivityStyle" />
-
-        <activity
-            android:name=".activity.SynthActivity"
-            android:label="离在线语音合成" />
 
         <service android:enabled="true" android:name=".service.ModuleService" />
         <service android:enabled="true" android:name=".service.GPSService" />
