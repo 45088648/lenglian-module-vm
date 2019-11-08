@@ -1,6 +1,7 @@
 package com.beetech.module.activity;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,6 +19,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,14 +54,20 @@ public class QueryDataAllActivity extends Activity implements CheckBox.OnChecked
     @ViewInject(R.id.time_end_et)
     private EditText timeEndEt;
 
-    @ViewInject(R.id.print_btn)
-    private Button printBtn;
+    @ViewInject(R.id.scanLe_btn)
+    private Button scanLeBtn;
 
     @ViewInject(R.id.query_btn)
     private Button queryBtn;
 
     @ViewInject(R.id.requery_btn)
     private Button requeryBtn;
+
+    @ViewInject(R.id.progress_bar)
+    private ProgressBar mProgressBar;
+
+    @ViewInject(R.id.progress_bar_scan)
+    private ProgressBar mProgressBarScan;
 
     @ViewInject(R.id.query_condition_ll)
     private LinearLayout queryConditionLl;
@@ -87,6 +95,7 @@ public class QueryDataAllActivity extends Activity implements CheckBox.OnChecked
 
     @ViewInject(R.id.plateNumber_et)
     private EditText plateNumberEt;
+    private String plateNumber;
 
     private MyApplication myApp;
 
@@ -207,90 +216,115 @@ public class QueryDataAllActivity extends Activity implements CheckBox.OnChecked
 
     @OnClick(R.id.query_btn)
     public void queryBtn_onClick(View v) {
-        try {
+        new QueryAsyncTask().execute();
+    }
+
+    class QueryAsyncTask extends AsyncTask<String, Integer, Integer> {
+
+        @Override
+        protected void onPreExecute() {
+            mProgressBar.setVisibility(View.VISIBLE);
+
             timeBeginStr = timeBeginEt.getText().toString();
-            if (TextUtils.isEmpty(timeBeginStr)) {
-                toast("请选择开始时间");
-                return;
-            }
             timeEndStr = timeEndEt.getText().toString();
-            if (TextUtils.isEmpty(timeEndStr)) {
-                toast("请选择结束时间");
-                return;
-            }
-            Date timeBegin = DateUtils.parseStringToDate(timeBeginStr, DateUtils.C_YYYY_MM_DD_HH_MM);
-            Date timeEnd = DateUtils.parseStringToDate(timeEndStr, DateUtils.C_YYYY_MM_DD_HH_MM);
-            Log.d(TAG, "timeBeginStr = " + timeBeginStr + ", timeEndStr = " + timeEndStr);
-            final int crossDay = 30;
-            if (timeEnd.getTime() - timeBegin.getTime() > 1000L * 60 * 60 * 24 * crossDay) {
-                toast("时间范围不能超过" + crossDay + "天");
-                return;
-            }
+            plateNumber = plateNumberEt.getText().toString();
+        }
 
-            queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
-            if (queryConfigRealtime == null) {
-                toast("设备本地配置信息不存在");
-                return;
-            }
-            getPrintSet();
-            Log.d(TAG, "printTimeInterval=" + printTimeInterval);
-            toast("数据查询中");
+        @Override
+        protected Integer doInBackground(String... params) {
+            try {
+                if (TextUtils.isEmpty(timeBeginStr)) {
+                    toast("请选择开始时间");
+                    return 0;
+                }
 
-            List<ReadDataRealtime> readDataRealtimeList = myApp.readDataRealtimeSDDao.queryAll();
-            List<ReadDataRealtime> readDataRealtimeListSelect = new LinkedList<>();
-            List<List<ReadDataResponse>> dataListAll = new LinkedList<>();
-            PrintSetVo printSetVo = new PrintSetVo();
-            if (readDataRealtimeList.size() <= 2) {
-                printSetVo.setColSize(2);
-            }
-            printSetVo.setPrintTimeInterval(printTimeInterval);
-            printSetVo.setPrintStats(isContainStats);
-            printSetVo.setPlateNumber(plateNumberEt.getText().toString());
-            for (ReadDataRealtime readDataRealtime : readDataRealtimeList) {
-                String sensorId = readDataRealtime.getSensorId();
-                if(sensorIdListSelect.isEmpty() || sensorIdListSelect.contains(sensorId)){
-                    readDataRealtimeListSelect.add(readDataRealtime);
-                } else {
-                    continue;
+                if (TextUtils.isEmpty(timeEndStr)) {
+                    toast("请选择结束时间");
+                    return 0;
                 }
-                List<ReadDataResponse> dataList = myApp.readDataSDDao.queryBySensorId(sensorId, timeBegin, timeEnd, Integer.MAX_VALUE, 0);
-                List<ReadDataResponse> filterDataList = null;
-                if(isContainOver){
-                    filterDataList = dataList;
-                } else {
-                    filterDataList = ReadDataAllPrintUtils.filterDataList(dataList, printTimeInterval);
+                Date timeBegin = DateUtils.parseStringToDate(timeBeginStr, DateUtils.C_YYYY_MM_DD_HH_MM);
+                Date timeEnd = DateUtils.parseStringToDate(timeEndStr, DateUtils.C_YYYY_MM_DD_HH_MM);
+                Log.d(TAG, "timeBeginStr = " + timeBeginStr + ", timeEndStr = " + timeEndStr);
+                final int crossDay = 30;
+                if (timeEnd.getTime() - timeBegin.getTime() > 1000L * 60 * 60 * 24 * crossDay) {
+                    toast("时间范围不能超过" + crossDay + "天");
+                    return 0;
                 }
-                if(filterDataList == null || filterDataList.isEmpty()){
+                toast("数据查询中");
+                queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
+                if (queryConfigRealtime == null) {
+                    toast("设备本地配置信息不存在");
+                    return 0;
+                }
+                getPrintSet();
+                Log.d(TAG, "printTimeInterval=" + printTimeInterval);
+
+                List<ReadDataRealtime> readDataRealtimeList = myApp.readDataRealtimeSDDao.queryAll();
+                List<ReadDataRealtime> readDataRealtimeListSelect = new LinkedList<>();
+                List<List<ReadDataResponse>> dataListAll = new LinkedList<>();
+                PrintSetVo printSetVo = new PrintSetVo();
+                if (readDataRealtimeList.size() <= 2) {
+                    printSetVo.setColSize(2);
+                }
+                printSetVo.setPrintTimeInterval(printTimeInterval);
+                printSetVo.setPrintStats(isContainStats);
+                printSetVo.setPlateNumber(plateNumber);
+                for (ReadDataRealtime readDataRealtime : readDataRealtimeList) {
+                    String sensorId = readDataRealtime.getSensorId();
+                    if(sensorIdListSelect.isEmpty() || sensorIdListSelect.contains(sensorId)){
+                        readDataRealtimeListSelect.add(readDataRealtime);
+                    } else {
+                        continue;
+                    }
+                    List<ReadDataResponse> dataList = myApp.readDataSDDao.queryBySensorId(sensorId, timeBegin, timeEnd, Integer.MAX_VALUE, 0);
+                    List<ReadDataResponse> filterDataList = null;
+                    if(isContainOver){
+                        filterDataList = dataList;
+                    } else {
+                        filterDataList = ReadDataAllPrintUtils.filterDataList(dataList, printTimeInterval);
+                    }
+                    if(filterDataList == null || filterDataList.isEmpty()){
+                        toast("数据为空，请稍后再试");
+                        return 0;
+                    }
+                    dataListAll.add(filterDataList);
+                }
+                if(dataListAll != null && !dataListAll.isEmpty()){
+                    if(isContainOver){
+                        printStr = ReadDataAllPrintUtils.toPrintStrOver(readDataRealtimeListSelect, dataListAll, printSetVo, queryConfigRealtime);
+                    } else {
+                        printStr = ReadDataAllPrintUtils.toPrintStr(readDataRealtimeListSelect, dataListAll, printSetVo, queryConfigRealtime);
+                    }
+                } else {
                     toast("数据为空，请稍后再试");
-                    return;
+                    return 0;
                 }
-                dataListAll.add(filterDataList);
+
+
+
+            } catch (Exception e){
+                e.printStackTrace();
+                Log.d(TAG, "查询异常", e);
+                toast("查询异常，请稍后再试");
             }
-            if(dataListAll != null && !dataListAll.isEmpty()){
-                if(isContainOver){
-                    printStr = ReadDataAllPrintUtils.toPrintStrOver(readDataRealtimeListSelect, dataListAll, printSetVo, queryConfigRealtime);
-                } else {
-                    printStr = ReadDataAllPrintUtils.toPrintStr(readDataRealtimeListSelect, dataListAll, printSetVo, queryConfigRealtime);
-                }
-            } else {
-                toast("数据为空，请稍后再试");
-                return;
+            return 1;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            mProgressBar.setVisibility(View.INVISIBLE);
+
+            if (result == 1) {
+                printStrTv.setText(printStr);
+
+                queryConditionLl.setVisibility(View.GONE);
+                queryResultLl.setVisibility(View.VISIBLE);
             }
-
-            printStrTv.setText(printStr);
-
-            queryConditionLl.setVisibility(View.GONE);
-            queryResultLl.setVisibility(View.VISIBLE);
-
-        } catch (Exception e){
-            e.printStackTrace();
-            Log.d(TAG, "查询异常", e);
-            toast("查询异常，请稍后再试");
         }
     }
 
-    @OnClick(R.id.print_btn)
-    public void printBtn_onClick(View v) {
+    @OnClick(R.id.scanLe_btn)
+    public void scanLeBtn_onClick(View v) {
         if(TextUtils.isEmpty(printStr)){
             toast("无打印数据，请先查询数据");
             return;
@@ -307,17 +341,35 @@ public class QueryDataAllActivity extends Activity implements CheckBox.OnChecked
     }
 
     @Override
+    protected void onStop() {
+        Log.d(TAG, " onStop");
+        super.onStop();
+
+        blueToothService.stopScanLe();
+    }
+
+    @Override
     protected void onDestroy() {
         Log.d(TAG, " onDestroy");
         super.onDestroy();
     }
 
+    private Toast toast = null;
     private Handler handlerToast = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             Object toastMsg = msg.obj;
             if(toastMsg != null){
-                Toast.makeText(QueryDataAllActivity.this, toastMsg.toString(), Toast.LENGTH_SHORT).show();
+                if(toast == null){
+                    toast = Toast.makeText(QueryDataAllActivity.this, toastMsg.toString(), Toast.LENGTH_SHORT);
+                }else{
+                    toast.setText(toastMsg.toString());
+                    toast.setDuration(Toast.LENGTH_SHORT);
+                }
+                toast.show();
+            }
+            if(mProgressBar.getVisibility() == View.VISIBLE){
+                mProgressBar.setVisibility(View.INVISIBLE);
             }
             super.handleMessage(msg);
         }
@@ -344,4 +396,9 @@ public class QueryDataAllActivity extends Activity implements CheckBox.OnChecked
     public String getPrintStr() {
         return printStr;
     }
+
+    public ProgressBar getmProgressBarScan() {
+        return mProgressBarScan;
+    }
+
 }

@@ -13,6 +13,7 @@ import android.content.Context;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.beetech.module.activity.QueryDataAllActivity;
@@ -31,6 +32,7 @@ public class BlueToothService {
 	private QueryDataAllActivity queryDataAllActivity;
 
 	private static final String NAME = "ble_anquan365";
+	public static int scanState = 0;
 	private BluetoothLeScanner scanner = null;
 	public Map<String, BluetoothDevice> printerMap = new HashMap<>();
 
@@ -65,7 +67,7 @@ public class BlueToothService {
 		printerMap.clear();
 		queryDataAllActivity.getPrinterListViewAdapter().notifyDataSetChanged();
 		scanner = myApp.adapter.getBluetoothLeScanner();
-		scanner.startScan(leCallback);
+		startScanLe();
 	}
 
 	ScanCallback leCallback = new ScanCallback() {
@@ -82,6 +84,7 @@ public class BlueToothService {
 				queryDataAllActivity.getPrinterList().add(printer);
 				printerMap.put(printer, device);
 				queryDataAllActivity.getPrinterListViewAdapter().notifyDataSetChanged();
+                stopScanLe();
 			}
 		}
 
@@ -92,8 +95,22 @@ public class BlueToothService {
 		}
 	};
 
+	public void startScanLe() {
+		if(scanState == 0) {
+			queryDataAllActivity.getmProgressBarScan().setVisibility(View.VISIBLE);
+			scanner.startScan(leCallback);
+			scanState = 1;
+		}
+	}
+
 	public void stopScanLe() {
-		scanner.stopScan(leCallback);
+		if(scanState == 1){
+			scanner.stopScan(leCallback);
+			if(queryDataAllActivity.getmProgressBarScan().getVisibility() == View.VISIBLE){
+				queryDataAllActivity.getmProgressBarScan().setVisibility(View.INVISIBLE);
+			}
+			scanState = 0;
+		}
 	}
 
 	public void print(String printer){
@@ -157,7 +174,7 @@ public class BlueToothService {
 		}
 	}
 
-
+	public static int batchWriteSize = 10;
 	class PrintThread extends Thread {
 		BluetoothGatt bluetoothGatt = null;
 		BluetoothGattCharacteristic bluetoothGattCharacteristicPrint = null;
@@ -180,10 +197,10 @@ public class BlueToothService {
 
 			//分批发送
 			int len = content.length();
-			int page = len%10 == 0 ? len/10 : (len/10 + 1);
+			int page = len % batchWriteSize == 0 ? len / batchWriteSize : (len / batchWriteSize + 1);
 			for (int i = 1; i <= page; i++) {
-				int beginIndex = (i-1)*10;
-				int endIndex = i*10;
+				int beginIndex = (i-1) * batchWriteSize;
+				int endIndex = i * batchWriteSize;
 				String contentPage = "";
 				if(endIndex > len -1){
 					contentPage = content.substring(beginIndex);
@@ -193,7 +210,7 @@ public class BlueToothService {
 //                Log.d(TAG, "contentPage========================"+contentPage);
 				bluetoothGattCharacteristicPrint.setValue(contentPage.getBytes(Charset.forName("GB2312")));
 				bluetoothGatt.writeCharacteristic(bluetoothGattCharacteristicPrint);
-				SystemClock.sleep(10);
+				SystemClock.sleep(40);
 			}
 			bluetoothGattCharacteristicPrint.setValue(new byte[]{0x0a});
 			bluetoothGatt.writeCharacteristic(bluetoothGattCharacteristicPrint);
@@ -219,26 +236,13 @@ public class BlueToothService {
 
 		@Override
 		public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-			String value = parseBytesToHexString(characteristic.getValue());
-			Log.d(TAG,gatt.getDevice().getName() + " recieved " + value);
+			Log.d(TAG,gatt.getDevice().getName() + " recieved ");
 		}
 
 		@Override
 		public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-			String response = parseBytesToHexString(characteristic.getValue());
-			Log.d(TAG,  "The response is "+ response);
+			Log.d(TAG,  "The response is ");
 		}
 
 	};
-
-	private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
-	public static String parseBytesToHexString(byte... bytes) {
-		char[] hexChars = new char[bytes.length * 2];
-		for (int j = 0; j < bytes.length; j++) {
-			int v = bytes[j] & 0xFF;
-			hexChars[j * 2] = hexArray[v >>> 4];
-			hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-		}
-		return new String(hexChars);
-	}
 }
