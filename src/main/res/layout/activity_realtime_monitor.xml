@@ -222,53 +222,38 @@
         android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:background="@drawable/corners_shape2"
+        android:gravity="center"
         android:orientation="vertical">
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center">
+        <Button
+            android:id="@+id/btn_beginMonitor"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:layout_marginTop="5dp"
+            style="@style/button_blue_style"
+            android:text="开始监控" />
 
-            <Button
-                android:id="@+id/btn_beginMonitor"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:textSize="18sp"
-                android:layout_marginTop="5dp"
-                style="@style/button_blue_style"
-                android:text="开始监控" />
-        </TableRow>
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center">
+        <Button
+            android:id="@+id/btn_endMonitor"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:layout_marginTop="10dp"
+            style="@style/button_blue_style"
+            android:text="结束监控"/>
 
-            <Button
-                android:id="@+id/btn_endMonitor"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:textSize="18sp"
-                android:layout_marginTop="5dp"
-                style="@style/button_blue_style"
-                android:text="结束监控"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center">
-            <Button
-                android:id="@+id/btn_print"
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:textSize="18sp"
-                android:layout_marginTop="5dp"
-                style="@style/button_blue_style"
-                android:text="打印数据"/>
-        </TableRow>
+        <Button
+            android:id="@+id/btn_print"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:layout_marginTop="10dp"
+            style="@style/button_blue_style"
+            android:text="打印数据"/>
 
     </LinearLayout>
 </RelativeLayout>

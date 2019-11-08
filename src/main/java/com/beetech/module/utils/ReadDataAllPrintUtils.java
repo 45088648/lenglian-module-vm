@@ -1,5 +1,7 @@
 package com.beetech.module.utils;
 
+import android.util.Log;
+
 import com.beetech.module.bean.QueryConfigRealtime;
 import com.beetech.module.bean.ReadDataRealtime;
 import com.beetech.module.code.response.ReadDataResponse;
@@ -375,6 +377,7 @@ public class ReadDataAllPrintUtils {
             Map<String, ReadDataResponse> timeReadDataResponseMap = new HashMap<>();
             ReadDataResponse readDataResponseFirst = dataList.get(0);
             ReadDataResponse readDataResponseLast = dataList.get(dataList.size()-1);
+            Log.d(TAG, "================sensorId="+readDataResponseFirst.getSensorId());
 
             for (ReadDataResponse readDataResponse : dataList) {
                 String time = DateUtils.parseDateToString(readDataResponse.getSensorDataTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
@@ -385,55 +388,59 @@ public class ReadDataAllPrintUtils {
             cal.setTime(readDataResponseFirst.getSensorDataTime());
             Date sensorDataTimeLast = readDataResponseLast.getSensorDataTime();
             while(cal.getTime().getTime() <= sensorDataTimeLast.getTime()){
-                String time = DateUtils.parseDateToString(cal.getTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
-                ReadDataResponse readDataResponse = timeReadDataResponseMap.get(time);
+                if(cal.get(Calendar.MINUTE) % timeInterval == 0){
+                    String time = DateUtils.parseDateToString(cal.getTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
+                    ReadDataResponse readDataResponse = timeReadDataResponseMap.get(time);
 
-                if(readDataResponse == null){
-                    //前后找一条数据补上
-                    Calendar cal1 = Calendar.getInstance();
-                    cal1.setTime(cal.getTime());
-                    Calendar cal2 = Calendar.getInstance();
-                    cal2.setTime(cal.getTime());
+                    if(readDataResponse == null){
+                        Log.d(TAG, "================time="+time+"无数据");
 
-                    for (int i = 0; i < 30; i++) {
-                        //向前找
-                        cal1.set(Calendar.MINUTE, -i);
-                        String time1 = DateUtils.parseDateToString(cal1.getTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
-//                        Log.d(TAG, "================time1="+time1);
-                        ReadDataResponse readDataResponse1 = timeReadDataResponseMap.get(time1);
-                        if(readDataResponse1 != null) {
-                            readDataResponse = readDataResponse1;
-                            break;
+                        //前后找一条数据补上
+                        Calendar cal1 = Calendar.getInstance();
+                        cal1.setTime(cal.getTime());
+                        Calendar cal2 = Calendar.getInstance();
+                        cal2.setTime(cal.getTime());
+
+                        for (int i = 1; i < 30; i++) {
+                            //向前找
+                            cal1.add(Calendar.MINUTE, -i);
+                            String time1 = DateUtils.parseDateToString(cal1.getTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
+                            Log.d(TAG, i+"================time1="+time1);
+                            ReadDataResponse readDataResponse1 = timeReadDataResponseMap.get(time1);
+                            if(readDataResponse1 != null) {
+                                Log.d(TAG, i+"================向前找到="+readDataResponse1.getSensorDataTime());
+                                readDataResponse = readDataResponse1;
+                                break;
+                            }
+
+                            //向后找
+                            cal2.add(Calendar.MINUTE, i);
+                            String time2 = DateUtils.parseDateToString(cal2.getTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
+                            Log.d(TAG, i+"================time2="+time2);
+                            ReadDataResponse readDataResponse2 = timeReadDataResponseMap.get(time2);
+                            if(readDataResponse2 != null){
+                                Log.d(TAG, i+"================向后找到="+readDataResponse2.getSensorDataTime());
+                                readDataResponse = readDataResponse2;
+                                break;
+                            }
                         }
 
-                        //向后找
-                        cal2.set(Calendar.MINUTE, i);
-                        String time2 = DateUtils.parseDateToString(cal2.getTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
-//                        Log.d(TAG, "================time2="+time2);
-                        ReadDataResponse readDataResponse2 = timeReadDataResponseMap.get(time2);
-                        if(readDataResponse2 != null){
-                            readDataResponse = readDataResponse2;
-                            break;
+                        if(readDataResponse != null){
+                            try{
+                                ReadDataResponse readDataResponseCopy = new ReadDataResponse();
+                                BeanPropertiesUtil.copyProperties(readDataResponse, readDataResponseCopy);
+                                readDataResponseCopy.setSensorDataTime(cal.getTime());
+                                readDataResponse = readDataResponseCopy;
+
+    //                            time = DateUtils.parseDateToString(readDataResponse.getSensorDataTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
+    //                            timeReadDataResponseMap.put(time, readDataResponse);
+                            } catch (Exception e){
+                                e.printStackTrace();
+                            }
                         }
                     }
 
                     if(readDataResponse != null){
-                        try{
-                            ReadDataResponse readDataResponseCopy = new ReadDataResponse();
-                            BeanPropertiesUtil.copyProperties(readDataResponse, readDataResponseCopy);
-                            readDataResponseCopy.setSensorDataTime(cal.getTime());
-                            readDataResponse = readDataResponseCopy;
-
-                            time = DateUtils.parseDateToString(readDataResponse.getSensorDataTime(), DateUtils.C_YYYY_MM_DD_HH_MM);
-                            timeReadDataResponseMap.put(time, readDataResponse);
-                        } catch (Exception e){
-                            e.printStackTrace();
-                        }
-                    }
-                }
-
-                if(readDataResponse != null){
-                    if(cal.get(Calendar.MINUTE)%timeInterval == 0){
                         retList.add(readDataResponse);
                     }
                 }
