@@ -106,7 +106,18 @@ public class ThreadTimeTask extends HandlerThread {
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {
-                            myApp.moduleHandler.sendEmptyMessage(7);
+                            Log.d(TAG, "myApp.moduleHandler.sendEmptyMessage(7)");
+                            try {
+                                long currentTimeMillis = System.currentTimeMillis();
+                                long responseTimeInterval = currentTimeMillis - myApp.readDataResponseTime; // 接收传感器数据时间和当前时间间隔
+                                //首次或接收传感器数据时间超时
+                                if(myApp.readDataResponseTime == 0 || responseTimeInterval > Constant.readDataResponseTimeOut){
+                                    myApp.moduleHandler.sendEmptyMessage(7);
+                                }
+                            }catch (Exception e){
+                                e.printStackTrace();
+                                Log.e(TAG, "myApp.moduleHandler.sendEmptyMessage(7) 异常", e);
+                            }
                         }
                     });
                 }

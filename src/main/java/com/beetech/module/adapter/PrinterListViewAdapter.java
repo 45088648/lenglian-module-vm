@@ -66,7 +66,7 @@ public class PrinterListViewAdapter extends BaseAdapter {
         viewHolder.connectBt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                queryDataAllActivity.toast("打印");
+                queryDataAllActivity.showLoading();
                 queryDataAllActivity.getBlueToothService().print(printer);
             }
         });

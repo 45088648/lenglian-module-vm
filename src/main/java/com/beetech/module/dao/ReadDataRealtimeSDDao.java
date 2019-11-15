@@ -1,7 +1,9 @@
 package com.beetech.module.dao;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
+
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.bean.ReadDataRealtime;
 import com.beetech.module.bean.vt.NodeParamData;
@@ -9,8 +11,9 @@ import com.beetech.module.bean.vt.NodeParamResponseBean;
 import com.beetech.module.bean.vt.NodeParamResponseBeanData;
 import com.beetech.module.code.response.ReadDataResponse;
 import com.beetech.module.greendao.dao.ReadDataRealtimeDao;
-import java.util.List;
+
 import java.util.Date;
+import java.util.List;
 
 public class ReadDataRealtimeSDDao {
 
@@ -155,6 +158,11 @@ public class ReadDataRealtimeSDDao {
 
             for (NodeParamData npd : nps) {
                 String sensorId = npd.getNum();
+                String th = npd.getTh();
+                String tl = npd.getTl();
+                String hh = npd.getHh();
+                String hl = npd.getHl();
+                String sc = npd.getSc();
                 ReadDataRealtime readDataRealtime = myApp.daoSession.getReadDataRealtimeDao().queryBuilder()
                         .where(ReadDataRealtimeDao.Properties.SensorId.eq(sensorId)).unique();
 
@@ -163,12 +171,21 @@ public class ReadDataRealtimeSDDao {
                 }
                 readDataRealtime.setDevName(npd.getName());
                 readDataRealtime.setDevGroupName(npd.getGn());
-                readDataRealtime.setTempHight(Double.valueOf(npd.getTh()));
-                readDataRealtime.setTempLower(Double.valueOf(npd.getTl()));
-                readDataRealtime.setRhHight(Double.valueOf(npd.getHh()));
-                readDataRealtime.setRhLower(Double.valueOf(npd.getHl()));
-                readDataRealtime.setDevSendCycle(Integer.valueOf(npd.getSc()));
-                readDataRealtime.setAlarmFlag(npd.getAf());
+                if(!TextUtils.isEmpty(th)) {
+                    readDataRealtime.setTempHight(Double.valueOf(th));
+                }
+                if(!TextUtils.isEmpty(tl)) {
+                    readDataRealtime.setTempLower(Double.valueOf(npd.getTl()));
+                }
+                if(!TextUtils.isEmpty(hh)){
+                    readDataRealtime.setRhHight(Double.valueOf(hh));
+                }
+                if(!TextUtils.isEmpty(hl)) {
+                    readDataRealtime.setRhLower(Double.valueOf(hl));
+                }
+                if(!TextUtils.isEmpty(sc)) {
+                    readDataRealtime.setDevSendCycle(Integer.valueOf(sc));
+                }
                 myApp.daoSession.getReadDataRealtimeDao().updateInTx(readDataRealtime);
             }
         } catch (Exception e){

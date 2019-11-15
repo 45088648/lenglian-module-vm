@@ -55,4 +55,11 @@
         <item name="android:minWidth">0dp</item>
         <item name="android:minHeight">0dp</item>
     </style>
+
+    <style name="CustomDialog" parent="Theme.AppCompat.Dialog">
+        <!-- dialog  宽度与屏幕比例-->
+        <item name="android:windowMinWidthMinor">80%</item>
+        <!-- dialog 背景颜色，默认是白色-->
+        <item name="android:colorBackground">@android:color/transparent</item>
+    </style>
 </resources>

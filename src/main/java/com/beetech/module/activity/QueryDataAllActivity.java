@@ -19,7 +19,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +32,7 @@ import com.beetech.module.service.BlueToothService;
 import com.beetech.module.utils.DateUtils;
 import com.beetech.module.utils.PrintSetVo;
 import com.beetech.module.utils.ReadDataAllPrintUtils;
+import com.beetech.module.view.LoadingDialog;
 import com.beetech.module.widget.RadioGroupEx;
 import com.beetech.module.widget.time.OnDateEditClickListener;
 import com.lidroid.xutils.ViewUtils;
@@ -62,12 +62,6 @@ public class QueryDataAllActivity extends Activity implements CheckBox.OnChecked
 
     @ViewInject(R.id.requery_btn)
     private Button requeryBtn;
-
-    @ViewInject(R.id.progress_bar)
-    private ProgressBar mProgressBar;
-
-    @ViewInject(R.id.progress_bar_scan)
-    private ProgressBar mProgressBarScan;
 
     @ViewInject(R.id.query_condition_ll)
     private LinearLayout queryConditionLl;
@@ -213,17 +207,35 @@ public class QueryDataAllActivity extends Activity implements CheckBox.OnChecked
         isContainOver = isContainOverCb.isChecked();
         isContainStats = isContainStatsCb.isChecked();
     }
-
+    private LoadingDialog loading;
     @OnClick(R.id.query_btn)
     public void queryBtn_onClick(View v) {
+        showLoading();
         new QueryAsyncTask().execute();
+    }
+
+    public void showLoading(){
+        loading = new LoadingDialog(this,R.style.CustomDialog);
+        loading.show();
+        new Handler().postDelayed(new Runnable() {//定义延时任务模仿网络请求
+            @Override
+            public void run() {
+                hideLoading();
+            }
+        }, 30000);
+    }
+
+    public void hideLoading(){
+        if(loading != null && loading.isShowing()) {
+            loading.dismiss();
+        }
     }
 
     class QueryAsyncTask extends AsyncTask<String, Integer, Integer> {
 
         @Override
         protected void onPreExecute() {
-            mProgressBar.setVisibility(View.VISIBLE);
+            queryBtn.setVisibility(View.GONE);
 
             timeBeginStr = timeBeginEt.getText().toString();
             timeEndStr = timeEndEt.getText().toString();
@@ -250,7 +262,7 @@ public class QueryDataAllActivity extends Activity implements CheckBox.OnChecked
                     toast("时间范围不能超过" + crossDay + "天");
                     return 0;
                 }
-                toast("数据查询中");
+
                 queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
                 if (queryConfigRealtime == null) {
                     toast("设备本地配置信息不存在");
@@ -262,6 +274,7 @@ public class QueryDataAllActivity extends Activity implements CheckBox.OnChecked
                 List<ReadDataRealtime> readDataRealtimeList = myApp.readDataRealtimeSDDao.queryAll();
                 List<ReadDataRealtime> readDataRealtimeListSelect = new LinkedList<>();
                 List<List<ReadDataResponse>> dataListAll = new LinkedList<>();
+                List<List<ReadDataResponse>> filterDataListAll = new LinkedList<>();
                 PrintSetVo printSetVo = new PrintSetVo();
                 if (readDataRealtimeList.size() <= 2) {
                     printSetVo.setColSize(2);
@@ -269,6 +282,9 @@ public class QueryDataAllActivity extends Activity implements CheckBox.OnChecked
                 printSetVo.setPrintTimeInterval(printTimeInterval);
                 printSetVo.setPrintStats(isContainStats);
                 printSetVo.setPlateNumber(plateNumber);
+
+                Date beginTime = null;
+                Date endTime = null;
                 for (ReadDataRealtime readDataRealtime : readDataRealtimeList) {
                     String sensorId = readDataRealtime.getSensorId();
                     if(sensorIdListSelect.isEmpty() || sensorIdListSelect.contains(sensorId)){
@@ -277,30 +293,40 @@ public class QueryDataAllActivity extends Activity implements CheckBox.OnChecked
                         continue;
                     }
                     List<ReadDataResponse> dataList = myApp.readDataSDDao.queryBySensorId(sensorId, timeBegin, timeEnd, Integer.MAX_VALUE, 0);
-                    List<ReadDataResponse> filterDataList = null;
-                    if(isContainOver){
-                        filterDataList = dataList;
-                    } else {
-                        filterDataList = ReadDataAllPrintUtils.filterDataList(dataList, printTimeInterval);
+                    if(dataList != null && !dataList.isEmpty()){
+                        int size = dataList.size();
+                        Date beginTimeFirst = dataList.get(0).getSensorDataTime();
+                        Date endTimeLast = dataList.get(size-1).getSensorDataTime();
+                        if(beginTime == null || beginTimeFirst.getTime() < beginTime.getTime()){
+                            beginTime = beginTimeFirst;
+                        }
+                        if(endTime == null || endTimeLast.getTime() > endTime.getTime()){
+                            endTime = endTimeLast;
+                        }
+                        dataListAll.add(dataList);
                     }
-                    if(filterDataList == null || filterDataList.isEmpty()){
-                        toast("数据为空，请稍后再试");
-                        return 0;
-                    }
-                    dataListAll.add(filterDataList);
                 }
-                if(dataListAll != null && !dataListAll.isEmpty()){
-                    if(isContainOver){
-                        printStr = ReadDataAllPrintUtils.toPrintStrOver(readDataRealtimeListSelect, dataListAll, printSetVo, queryConfigRealtime);
-                    } else {
-                        printStr = ReadDataAllPrintUtils.toPrintStr(readDataRealtimeListSelect, dataListAll, printSetVo, queryConfigRealtime);
-                    }
-                } else {
+
+                if(dataListAll == null || dataListAll.isEmpty()){
                     toast("数据为空，请稍后再试");
                     return 0;
                 }
 
+                for (List<ReadDataResponse> dataList : dataListAll) {
+                    List<ReadDataResponse> filterDataList = null;
+                    if (isContainOver) {
+                        filterDataList = dataList;
+                    } else {
+                        filterDataList = ReadDataAllPrintUtils.filterDataList(dataList, printTimeInterval, beginTime, endTime);
+                    }
+                    filterDataListAll.add(filterDataList);
+                }
 
+                if(isContainOver){
+                    printStr = ReadDataAllPrintUtils.toPrintStrOver(readDataRealtimeListSelect, dataListAll, printSetVo, queryConfigRealtime);
+                } else {
+                    printStr = ReadDataAllPrintUtils.toPrintStr(readDataRealtimeListSelect, filterDataListAll, printSetVo, queryConfigRealtime);
+                }
 
             } catch (Exception e){
                 e.printStackTrace();
@@ -312,8 +338,9 @@ public class QueryDataAllActivity extends Activity implements CheckBox.OnChecked
 
         @Override
         protected void onPostExecute(Integer result) {
-            mProgressBar.setVisibility(View.INVISIBLE);
+            queryBtn.setVisibility(View.VISIBLE);
 
+            hideLoading();
             if (result == 1) {
                 printStrTv.setText(printStr);
 
@@ -368,9 +395,6 @@ public class QueryDataAllActivity extends Activity implements CheckBox.OnChecked
                 }
                 toast.show();
             }
-            if(mProgressBar.getVisibility() == View.VISIBLE){
-                mProgressBar.setVisibility(View.INVISIBLE);
-            }
             super.handleMessage(msg);
         }
     };
@@ -395,10 +419,6 @@ public class QueryDataAllActivity extends Activity implements CheckBox.OnChecked
 
     public String getPrintStr() {
         return printStr;
-    }
-
-    public ProgressBar getmProgressBarScan() {
-        return mProgressBarScan;
     }
 
 }

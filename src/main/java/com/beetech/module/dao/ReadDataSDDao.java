@@ -295,7 +295,7 @@ public class ReadDataSDDao {
                 return;
             }
             readDataResponse.setResponseFlag(readDataResponse.getResponseFlag()+1);
-            readDataResponse.setWriteTime(new Date());
+            readDataResponse.setResponseTime(new Date());
             myApp.daoSession.getReadDataResponseDao().updateInTx(readDataResponse);
         } catch (Exception e){
             e.printStackTrace();

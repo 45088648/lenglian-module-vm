@@ -13,7 +13,6 @@ import android.content.Context;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.beetech.module.activity.QueryDataAllActivity;
@@ -40,6 +39,7 @@ public class BlueToothService {
 		this.context = queryDataAllActivity;
 		this.queryDataAllActivity = queryDataAllActivity;
 		this.myApp = (MyApplication) queryDataAllActivity.getApplicationContext();
+		scanner = myApp.adapter.getBluetoothLeScanner();
 	}
 
 	public boolean isOpen() {
@@ -57,16 +57,15 @@ public class BlueToothService {
 	// 扫描蓝牙设备
 	public void scanDevice() {
 		if(isOpen()){
-
 		}
 		if (myApp.adapter.isDiscovering()) {
 			myApp.adapter.cancelDiscovery();
 		}
-
 		queryDataAllActivity.getPrinterList().clear();
 		printerMap.clear();
 		queryDataAllActivity.getPrinterListViewAdapter().notifyDataSetChanged();
-		scanner = myApp.adapter.getBluetoothLeScanner();
+		queryDataAllActivity.showLoading();
+
 		startScanLe();
 	}
 
@@ -82,9 +81,10 @@ public class BlueToothService {
 
 				String printer = name+"("+address+")";
 				queryDataAllActivity.getPrinterList().add(printer);
-				printerMap.put(printer, device);
 				queryDataAllActivity.getPrinterListViewAdapter().notifyDataSetChanged();
+				printerMap.put(printer, device);
                 stopScanLe();
+				queryDataAllActivity.hideLoading();
 			}
 		}
 
@@ -97,7 +97,6 @@ public class BlueToothService {
 
 	public void startScanLe() {
 		if(scanState == 0) {
-			queryDataAllActivity.getmProgressBarScan().setVisibility(View.VISIBLE);
 			scanner.startScan(leCallback);
 			scanState = 1;
 		}
@@ -106,15 +105,15 @@ public class BlueToothService {
 	public void stopScanLe() {
 		if(scanState == 1){
 			scanner.stopScan(leCallback);
-			if(queryDataAllActivity.getmProgressBarScan().getVisibility() == View.VISIBLE){
-				queryDataAllActivity.getmProgressBarScan().setVisibility(View.INVISIBLE);
-			}
 			scanState = 0;
 		}
 	}
+	BluetoothDevice device = null;
+	BluetoothGatt bluetoothGatt = null;
 
 	public void print(String printer){
-		BluetoothDevice device = printerMap.get(printer);
+
+		device = printerMap.get(printer);
 		if(device != null){
 
 			stopScanLe();
@@ -122,6 +121,7 @@ public class BlueToothService {
 			Log.d(TAG, "bluetoothGatt=========="+bluetoothGatt);
 			if(bluetoothGatt == null){
 				queryDataAllActivity.toast("连接创建失败，请重试");
+				queryDataAllActivity.hideLoading();
 				return;
 			}
 			BluetoothGattService bluetoothGattServicePrint = null;
@@ -139,6 +139,7 @@ public class BlueToothService {
 
 			if(bluetoothGattServices == null || bluetoothGattServices.isEmpty()){
 				queryDataAllActivity.toast("未查询到打印服务，请重试");
+				queryDataAllActivity.hideLoading();
 				return;
 			}
 			for (BluetoothGattService bluetoothGattService : bluetoothGattServices) {
@@ -168,6 +169,7 @@ public class BlueToothService {
 
 			if(bluetoothGattCharacteristicPrint == null) {
 				queryDataAllActivity.toast("未查询到打印服务，请重试");
+				queryDataAllActivity.hideLoading();
 				return;
 			}
 			new PrintThread(bluetoothGatt, bluetoothGattCharacteristicPrint).start();
@@ -193,8 +195,6 @@ public class BlueToothService {
 				return;
 			}
 
-			queryDataAllActivity.toast("打印数据中");
-
 			//分批发送
 			int len = content.length();
 			int page = len % batchWriteSize == 0 ? len / batchWriteSize : (len / batchWriteSize + 1);
@@ -214,7 +214,14 @@ public class BlueToothService {
 			}
 			bluetoothGattCharacteristicPrint.setValue(new byte[]{0x0a});
 			bluetoothGatt.writeCharacteristic(bluetoothGattCharacteristicPrint);
-
+			queryDataAllActivity.hideLoading();
+			try {
+				if (bluetoothGatt != null) {
+					bluetoothGatt.disconnect();
+				}
+			}catch (Exception e){
+				e.printStackTrace();
+			}
 			//测试发数据 end
 		}
 	}
