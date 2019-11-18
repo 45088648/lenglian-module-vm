@@ -56,16 +56,17 @@ import com.beetech.module.service.JobProtectService;
 import com.beetech.module.service.ModuleService;
 import com.beetech.module.service.RemoteService;
 import com.beetech.module.utils.BeginMonitorUtils;
-import com.beetech.module.utils.SoundLedAlarmUtils;
 import com.beetech.module.utils.DateUtils;
 import com.beetech.module.utils.DevStateUtils;
 import com.beetech.module.utils.EndMonitorUtils;
 import com.beetech.module.utils.NetUtils;
 import com.beetech.module.utils.ServiceAliveUtils;
+import com.beetech.module.utils.SoundLedAlarmUtils;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -83,7 +84,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
     private RecyclerView rvReadDataRealtime;
 
     private ReadDataRealtimeSDDao readDataRealtimeSDDao;
-    private List<ReadDataRealtime> readDataRealtimeList;
+    private List<ReadDataRealtime> readDataRealtimeListRefresh = new ArrayList<>();
 
     private ReadDataRealtimeRvAdapter readDataRealtimeRvAdapter;
     int spanCount = 1;
@@ -180,12 +181,26 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             mTelephonyManager.listen(mListener, PhoneStatListener.LISTEN_SIGNAL_STRENGTHS);
         }
 
-        rvReadDataRealtime = (RecyclerView)findViewById(R.id.rvReadDataRealtimeData);
         if(readDataRealtimeSDDao == null){
             readDataRealtimeSDDao = new ReadDataRealtimeSDDao(this);
         }
 
         rvReadDataRealtime.addItemDecoration(new GridSpacingItemDecoration(spanCount, spacing, true));
+        readDataRealtimeRvAdapter = new ReadDataRealtimeRvAdapter(readDataRealtimeListRefresh);
+        readDataRealtimeRvAdapter.setOnItemLongClickListener(new ReadDataRealtimeRvAdapter.OnItemLongClickListener() {
+            @Override
+            public void onItemLongClick(View view, int position) {
+                ReadDataRealtime readDataRealtime = readDataRealtimeListRefresh.get(position);
+                Intent intent=new  Intent(RealtimeMonitorActivity.this, TempLineActivity.class);
+                intent.putExtra("sensorId",readDataRealtime.getSensorId());
+                startActivity(intent);
+            }
+        });
+
+        GridLayoutManager mGridLayoutManager = new GridLayoutManager(this, spanCount);
+        mGridLayoutManager.setOrientation(LinearLayout.VERTICAL);
+        rvReadDataRealtime.setLayoutManager(mGridLayoutManager);
+        rvReadDataRealtime.setAdapter(readDataRealtimeRvAdapter);
 
         //定时刷新
         handlerRefresh.removeCallbacks(runnableRefresh);
@@ -234,24 +249,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
     }
 
     public void refreshReadDataRealtimeRv(){
-        readDataRealtimeRvAdapter = new ReadDataRealtimeRvAdapter(readDataRealtimeList);
-        readDataRealtimeRvAdapter.setOnItemLongClickListener(new ReadDataRealtimeRvAdapter.OnItemLongClickListener() {
-            @Override
-            public void onItemLongClick(View view, int position) {
-                ReadDataRealtime readDataRealtime = readDataRealtimeList.get(position);
-                Intent intent=new  Intent(RealtimeMonitorActivity.this, TempLineActivity.class);
-                intent.putExtra("sensorId",readDataRealtime.getSensorId());
-                startActivity(intent);
-            }
-        });
-
-        GridLayoutManager mGridLayoutManager = new GridLayoutManager(this, spanCount);
-        mGridLayoutManager.setOrientation(LinearLayout.VERTICAL);
-        rvReadDataRealtime.setLayoutManager(mGridLayoutManager);
-
-        rvReadDataRealtime.setAdapter(readDataRealtimeRvAdapter);
         readDataRealtimeRvAdapter.notifyDataSetChanged();
-
         refreshState();
     }
 
@@ -343,7 +341,9 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
         @Override
         protected Integer doInBackground(String... params) {
             try{
-                readDataRealtimeList = readDataRealtimeSDDao.queryAll();
+                List<ReadDataRealtime> readDataRealtimeList = readDataRealtimeSDDao.queryAll();
+                readDataRealtimeListRefresh.clear();
+                readDataRealtimeListRefresh.addAll(readDataRealtimeList);
             } catch (Exception e){
                 e.printStackTrace();
                 Log.d(TAG, "刷新数据异常");

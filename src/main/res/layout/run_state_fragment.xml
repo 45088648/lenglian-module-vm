@@ -135,6 +135,7 @@
             android:layout_width="0.0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:visibility="gone"
             android:text="模块释放" />
 
         <Button
@@ -142,7 +143,23 @@
             android:layout_width="0.0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:visibility="gone"
             android:text="模块上电" />
+
+
+        <Button
+            android:id="@+id/btnStartAlarm"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="开启报警" />
+
+        <Button
+            android:id="@+id/btnStopAlarm"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="关闭报警" />
 
         <Button
             android:id="@+id/btnVersionUpdate"

@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.bean.ReadDataRealtime;
-import com.beetech.module.constant.Constant;
 import com.beetech.module.dao.ReadDataRealtimeSDDao;
 
 import java.util.ArrayList;
@@ -37,43 +36,36 @@ public class SoundLedAlarmUtils {
 
             int alarmSize = readDataRealtimeListAlarm.size();
             Log.d(TAG, "alarmSize=" + alarmSize);
-            if (alarmSize > 0 && Constant.alarmLightFlag) {
-                try {
-                    myApp.powerLED.on();
-                    Log.d(TAG, "LED on");
-                    myApp.mMediaPlayer.start();
+            if(alarmSize > 0){
 
+                try {
+                    myApp.mMediaPlayer.start();
                     //延迟3秒关闭
                     myApp.timer.schedule(new TimerTask() {
                         @Override
                         public void run() {
                             try {
-                                myApp.powerLED.off();
-                                Log.d(TAG, "LED off");
-                                myApp.mMediaPlayer.start();
+                                if (myApp.mMediaPlayer.isPlaying()) {
+                                    myApp.mMediaPlayer.stop();
+                                }
                             } catch (Exception e) {
                                 e.printStackTrace();
-                                Log.e(TAG, "LED 关灯异常", e);
-                                myApp.mMediaPlayer.stop();
+                                Log.e(TAG, "mMediaPlayer 关闭异常", e);
                             }
                         }
-                    }, 3 * 1000L);
+                    }, 10*1000L);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.e(TAG, "LED 开灯异常", e);
+                    Log.e(TAG, "mMediaPlayer 播放异常", e);
                 }
-
             } else {
                 try {
-                    myApp.powerLED.off();
-                    Log.d(TAG, "LED off");
                     if (myApp.mMediaPlayer.isPlaying()) {
                         myApp.mMediaPlayer.stop();
                     }
-
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.e(TAG, "LED 关灯异常", e);
+                    Log.e(TAG, "mMediaPlayer 关闭异常", e);
                 }
             }
         } catch (Exception e) {

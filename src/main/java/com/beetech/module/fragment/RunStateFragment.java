@@ -89,6 +89,12 @@ public class RunStateFragment extends Fragment {
     @ViewInject(R.id.btnModuleInit)
     private Button btnModuleInit;
 
+    @ViewInject(R.id.btnStartAlarm)
+    private Button btnStartAlarm;
+
+    @ViewInject(R.id.btnStopAlarm)
+    private Button btnStopAlarm;
+
     @ViewInject(R.id.btnSetTime)
     private Button btnSetTime;
     @ViewInject(R.id.btnSetDataBeginTime)
@@ -405,6 +411,26 @@ public class RunStateFragment extends Fragment {
             }
         });
         builder.show();
+    }
+
+    @OnClick(R.id.btnStopAlarm)
+    public void btnStopAlarm_OnClick(View v) {
+        if(Constant.alarmFlag) {
+            Constant.alarmFlag = false;
+            Toast.makeText(getContext(), "关闭报警", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "报警已关闭", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @OnClick(R.id.btnStartAlarm)
+    public void btnStartAlarm_OnClick(View v) {
+        if(!Constant.alarmFlag) {
+            Constant.alarmFlag = true;
+            Toast.makeText(getContext(), "开启报警", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "报警已开启", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @OnClick(R.id.btnSetTime)
