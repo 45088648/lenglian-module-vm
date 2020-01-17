@@ -26,13 +26,13 @@ public class MyHandler extends IoHandlerAdapter {
 
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-        Log.d(TAG, ConnectUtils.stringNowTime() + " : 客户端调用exceptionCaught："+cause.getMessage());
+        Log.d(TAG, "exceptionCaught："+cause.getMessage());
         cause.printStackTrace();
     }
 
     @Override
     public void messageReceived(IoSession session, Object message) throws Exception {
-        Log.d(TAG,  "接收到服务器端消息：" + message.toString());
+        Log.d(TAG,  "messageReceived：" + message.toString());
 
         String msg = message.toString();
         if(msg != null && !msg.isEmpty()){
@@ -102,27 +102,27 @@ public class MyHandler extends IoHandlerAdapter {
 
     @Override
     public void messageSent(IoSession session, Object message) throws Exception {
-        Log.d(TAG, ConnectUtils.stringNowTime() + " : 客户端调用messageSent" + message.toString());
+        Log.d(TAG, "messageSent：" + message.toString());
     }
 
     @Override
     public void sessionClosed(IoSession session) throws Exception {
-        Log.d(TAG, ConnectUtils.stringNowTime() + " : 客户端调用sessionClosed");
+        Log.d(TAG, "sessionClosed："+session);
     }
 
     @Override
     public void sessionCreated(IoSession session) throws Exception {
-        Log.d(TAG, ConnectUtils.stringNowTime() + " : 客户端调用sessionCreated");
+        Log.d(TAG, "sessionCreated："+session);
         session.getConfig().setBothIdleTime(ConnectUtils.IDLE_TIME);
     }
 
     @Override
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-        Log.d(TAG, ConnectUtils.stringNowTime() + " : 客户端调用sessionIdle");
+        Log.d(TAG, "sessionIdle："+session);
     }
 
     @Override
     public void sessionOpened(IoSession session) throws Exception {
-        Log.d(TAG, ConnectUtils.stringNowTime() + " : 客户端调用sessionOpened");
+        Log.d(TAG, "sessionOpened："+session);
     }
 }

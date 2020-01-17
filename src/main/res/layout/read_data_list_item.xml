@@ -10,7 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="2"
         android:gravity="center"
-        android:text="TextView" />
+        android:textSize="@dimen/log"
+        android:text="" />
 
     <TextView
         android:id="@+id/tvSensorId"
@@ -18,7 +19,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="3"
         android:gravity="center"
-        android:text="TextView" />
+        android:textSize="@dimen/log"
+        android:text="" />
 
     <TextView
         android:id="@+id/tvSerialNo"
@@ -26,7 +28,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="2"
         android:gravity="center"
-        android:text="TextView" />
+        android:textSize="@dimen/log"
+        android:text="" />
 
     <TextView
         android:id="@+id/tvTemp"
@@ -34,7 +37,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="2"
         android:gravity="center"
-        android:text="TextView" />
+        android:textSize="@dimen/log"
+        android:text="" />
 
     <TextView
         android:id="@+id/tvRh"
@@ -42,7 +46,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="2"
         android:gravity="center"
-        android:text="TextView" />
+        android:textSize="@dimen/log"
+        android:text="" />
 
     <TextView
         android:id="@+id/tvSsVoltage"
@@ -50,7 +55,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="2"
         android:gravity="center"
-        android:text="TextView" />
+        android:textSize="@dimen/log"
+        android:text="" />
 
     <TextView
         android:id="@+id/tvRssi"
@@ -58,7 +64,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="2"
         android:gravity="center"
-        android:text="TextView" />
+        android:textSize="@dimen/log"
+        android:text="" />
 
     <TextView
         android:id="@+id/tvSensorDataTime"
@@ -66,7 +73,17 @@
         android:layout_height="wrap_content"
         android:layout_weight="3"
         android:gravity="center"
-        android:text="TextView" />
+        android:textSize="@dimen/logtime"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/tvSsTransfTime"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:gravity="center"
+        android:textSize="@dimen/logtime"
+        android:text="" />
 
     <TextView
         android:id="@+id/tvGwTime"
@@ -74,7 +91,35 @@
         android:layout_height="wrap_content"
         android:layout_weight="3"
         android:gravity="center"
-        android:text="TextView" />
+        android:textSize="@dimen/logtime"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/tvWait1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="@dimen/logtime"
+        android:text=""/>
+
+    <TextView
+        android:id="@+id/tvWait2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="@dimen/logtime"
+        android:text=""/>
+
+    <TextView
+        android:id="@+id/tvErrorcode"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:textSize="@dimen/logtime"
+        android:text=""/>
 
     <TextView
         android:id="@+id/tvSendFlag"
@@ -82,7 +127,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="TextView" />
+        android:textSize="@dimen/log"
+        android:text="" />
 
     <TextView
         android:id="@+id/tvResponseFlag"
@@ -90,6 +136,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="TextView" />
+        android:textSize="@dimen/log"
+        android:text="" />
 
 </LinearLayout>

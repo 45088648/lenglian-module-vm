@@ -2,4 +2,7 @@
 <resources>
     <dimen name="spacing">2dp</dimen>
 
+    <dimen name="log">10sp</dimen>
+    <dimen name="logtime">8sp</dimen>
+    <dimen name="buttonText">12sp</dimen>
 </resources>

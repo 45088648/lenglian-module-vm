@@ -44,15 +44,20 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
     public void onBindViewHolder(ViewHolder holder, final int position) {
         ReadDataRealtime readDataRealtime = mList.get(position);
 
-        double temp = readDataRealtime.getTemp();
+        Double temp = readDataRealtime.getTemp();
         double tempLower = readDataRealtime.getTempLower();
         double tempHight = readDataRealtime.getTempHight();
-        double ssVoltage = readDataRealtime.getSsVoltage();
+        Integer rssi = readDataRealtime.getRssi();
+        Double ssVoltage = readDataRealtime.getSsVoltage();
+        Integer wait2 = readDataRealtime.getWaitSentSize2();
+        String sensorDataTime = DateUtils.parseDateToString(readDataRealtime.getSensorDataTime(), DateUtils.C_MM_DD_HH_MM);
+
         holder.tvSensorId.setText(readDataRealtime.getSensorId());
-        holder.tvTemp.setText(temp+"℃");
-        holder.tvRssi.setText(readDataRealtime.getRssi()+"");
-        holder.tvSsVoltage.setText(ssVoltage+"");
-        holder.tvSensorDataTime.setText(DateUtils.parseDateToString(readDataRealtime.getSensorDataTime(), DateUtils.C_MM_DD_HH_MM));
+        holder.tvTemp.setText(new StringBuilder(temp.toString()).append("℃"));
+        holder.tvRssi.setText(new StringBuilder(rssi.toString()).toString());
+        holder.tvSsVoltage.setText(new StringBuilder(ssVoltage.toString()));
+        holder.tvWait2.setText(new StringBuilder(wait2.toString()));
+        holder.tvSensorDataTime.setText(new StringBuilder(sensorDataTime));
 
         boolean isAlarm = true;
         boolean isTempAlarm = false;
@@ -97,6 +102,7 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
         public TextView tvSensorDataTime;
         public TextView tvRssi;
         public TextView tvSsVoltage;
+        public TextView tvWait2;
 
         public ViewHolder(View convertView) {
             super(convertView);
@@ -108,6 +114,7 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
             tvSensorDataTime = (TextView) convertView.findViewById(R.id.tvSensorDataTime);
             tvRssi = (TextView) convertView.findViewById(R.id.tvRssi);
             tvSsVoltage = (TextView) convertView.findViewById(R.id.tvSsVoltage);
+            tvWait2 = (TextView) convertView.findViewById(R.id.tvWait2);
         }
     }
 

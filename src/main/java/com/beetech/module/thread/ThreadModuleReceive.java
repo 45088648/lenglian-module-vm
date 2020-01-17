@@ -149,12 +149,9 @@ public class ThreadModuleReceive extends HandlerThread {
             BaseResponse response = ResponseFactory.unpack(packBuf);
             if(response instanceof ReadDataResponse){
                 ReadDataResponse readDataResponse = (ReadDataResponse)response;
-                myApp.readDataResponseError = readDataResponse.getError();
-                myApp.readDataResponseWaitSentSize1 = readDataResponse.getWaitSentSize1(); // 待发1, Sensor RAM队列中待发数据的数量为26条。
-                myApp.readDataResponseWaitSentSize2 = readDataResponse.getWaitSentSize2(); // 待发2, Sensor Flash队列中待发数据的数量为0条。
-                myApp.readDataResponseErrorcode = readDataResponse.getErrorcode(); // Errorcode, 记录flash发送错误的次数
+                int readDataResponseError = readDataResponse.getError();
 
-                if(myApp.readDataResponseError == 0){
+                if(readDataResponseError == 0){
                     if(isMontorData(readDataResponse)) {
                         try {
                             myApp.readDataSDDao.save(readDataResponse);
@@ -180,15 +177,14 @@ public class ThreadModuleReceive extends HandlerThread {
                 myApp.readDataResponseTime = System.currentTimeMillis();
                 Log.d(TAG, "myApp.readDataResponseTime="+myApp.readDataResponseTime);
 
-                if(myApp.readDataResponseError == 0){
+                if(readDataResponseError == 0){
                     myApp.serialNo = readDataResponse.getSerialNo();
-
-                    Log.d(TAG, "ReadNextUtils.readNext " + myApp.serialNo);
-                    Log.d(TAG, "立即读下一条数据");
-                    myApp.moduleHandler.sendEmptyMessageDelayed(7, 200);
+                    if(Constant.isReadNextTime() && Constant.IS_READ_NEXT) {
+                        Log.d(TAG, "readNext，serialNo = " + myApp.serialNo);
+                        myApp.moduleHandler.sendEmptyMessageDelayed(7, 0);
+                    }
                 } else {
-                    Log.d(TAG, "延迟3秒再从头读数");
-                    myApp.moduleHandler.sendEmptyMessageDelayed(7, 3000);
+                    Log.d(TAG, "readNext，serialNo = " + myApp.serialNo + ", error = " + readDataResponseError);
                 }
             }
 
@@ -199,7 +195,7 @@ public class ThreadModuleReceive extends HandlerThread {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                toastSb.append("查询本地配置反馈：").append(DateUtils.parseDateToString(queryConfigResponse.getCalendar(), DateUtils.C_YYYY_MM_DD_HH_MM_SS));
+                toastSb.append("查询本地配置：").append(DateUtils.parseDateToString(queryConfigResponse.getCalendar(), DateUtils.C_YYYY_MM_DD_HH_MM_SS));
             }
 
             if(response instanceof DeleteHistoryDataResponse){
@@ -211,7 +207,7 @@ public class ThreadModuleReceive extends HandlerThread {
             if(response instanceof SetDataBeginTimeResponse){
                 SetDataBeginTimeResponse setDataBeginTimeResponse = (SetDataBeginTimeResponse)response;
                 myApp.setDataBeginTime = setDataBeginTimeResponse.getDataBeginTime();
-                toastSb.append("设置数据开始时间反馈：").append(DateUtils.parseDateToString(myApp.setDataBeginTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS)+"~"+setDataBeginTimeResponse.getError());
+                toastSb.append("数据开始时间：").append(DateUtils.parseDateToString(myApp.setDataBeginTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS)+"~"+setDataBeginTimeResponse.getError());
             }
 
             if(response instanceof SetTimeResponse){
@@ -221,7 +217,7 @@ public class ThreadModuleReceive extends HandlerThread {
             if(response instanceof UpdateSSParamResponse){
                 UpdateSSParamResponse updateSSParamResponse = (UpdateSSParamResponse)response;
                 if(toastSb.length()==0){
-                    toastSb.append("修改SS时间参数反馈：");
+                    toastSb.append("修改SS时间参数：");
                 }
                 toastSb.append(updateSSParamResponse.getSensorId()).append("~").append(updateSSParamResponse.getError()).append(" ");
             }

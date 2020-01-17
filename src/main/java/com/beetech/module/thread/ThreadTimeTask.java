@@ -102,7 +102,7 @@ public class ThreadTimeTask extends HandlerThread {
                 }
 
                 //向串口发读数据报文，从第35秒开始读取
-                if(num != 0 && second == 35){
+                if(num != 0 && second == Constant.beginReadSecond && Constant.IS_READ_NEXT){
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {

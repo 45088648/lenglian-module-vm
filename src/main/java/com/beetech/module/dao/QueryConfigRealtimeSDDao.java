@@ -75,10 +75,7 @@ public class QueryConfigRealtimeSDDao {
             }
 
             queryConfigRealtime.update(queryConfigResponse);
-            myApp.customer = queryConfigResponse.getCustomer();
-            myApp.pattern = queryConfigResponse.getPattern();
-            myApp.bps = queryConfigResponse.getBps();
-            myApp.channel = queryConfigResponse.getChannel();
+
             myApp.daoSession.getQueryConfigRealtimeDao().updateInTx(queryConfigRealtime);
 
         } catch (Exception e) {

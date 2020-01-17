@@ -12,8 +12,6 @@ public class ConnectUtils {
     public static int PORT = 36002;//端口号
     public static final int IDLE_TIME = 60*10;//客户端10分钟内没有向服务端发送数据
 
-    public static final int TIMEOUT = 5;//设置连接超时时间,超过5s还没连接上便抛出异常
-
     /**
      * 获取当前时间
      *

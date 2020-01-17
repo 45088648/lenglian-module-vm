@@ -1,8 +1,11 @@
 package com.beetech.module.application;
 
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.Application;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
+import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.HandlerThread;
@@ -48,6 +51,7 @@ import org.apache.mina.core.session.IoSession;
 import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 
 public class MyApplication extends Application {
@@ -74,10 +78,7 @@ public class MyApplication extends Application {
     public static int bps; // 传输速率
     public static int channel; // 频段
     public int serialNo = 0;
-    public int readDataResponseError = 0;
-    public int readDataResponseWaitSentSize1; // 待发1, Sensor RAM队列中待发数据的数量为26条。
-    public int readDataResponseWaitSentSize2; // 待发2, Sensor Flash队列中待发数据的数量为0条。
-    public int readDataResponseErrorcode; // Errorcode, 记录flash发送错误的次数
+
     public long readDataResponseTime;
     public long moduleReceiveDataTime;
     public Date setDataBeginTime;
@@ -131,6 +132,33 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+
+        String processName = getProcessName(this, android.os.Process.myPid());
+        Log.d(TAG, "processName="+processName);
+        if (!TextUtils.isEmpty(processName) && processName.equals(Constant.REAL_PACKAGE_NAME)) {
+            initApp();
+        }
+    }
+
+    /**
+     * @return null may be returned if the specified process not found
+     */
+    public static String getProcessName(Context cxt, int pid) {
+        ActivityManager am = (ActivityManager) cxt.getSystemService(Context.ACTIVITY_SERVICE);
+        List<RunningAppProcessInfo> runningApps = am.getRunningAppProcesses();
+        if (runningApps == null) {
+            return null;
+        }
+        for (RunningAppProcessInfo procInfo : runningApps) {
+            if (procInfo.pid == pid) {
+                return procInfo.processName;
+            }
+        }
+        return null;
+    }
+
+    public void initApp(){
         toastHandler = new ToastHandler(this);
         appException = CrashHandler.getInstance();
         appException.init(getApplicationContext());
@@ -146,7 +174,7 @@ public class MyApplication extends Application {
 
         phoneInfoUtils = new PhoneInfoUtils(this);
         //Android Pad VT VM
-        Constant.verName = "APVV"+APKVersionCodeUtils.getVerName(this);
+        Constant.verName = "APVV"+ APKVersionCodeUtils.getVerName(this);
 //        Constant.imei = MobileInfoUtil.getIMEI(this);
 //        Constant.devNum = phoneInfoUtils.getNativePhoneNumber();
 //        Constant.iccid = phoneInfoUtils.getIccid();
@@ -211,10 +239,7 @@ public class MyApplication extends Application {
                 if(!TextUtils.isEmpty(gwId)){
                     this.gwId = gwId;
                 }
-                customer = queryConfigRealtime.getCustomer();
-                pattern = queryConfigRealtime.getPattern();
-                bps = queryConfigRealtime.getBps();
-                channel = queryConfigRealtime.getChannel();
+
                 Log.d(TAG, "HOST = " + ConnectUtils.HOST +", PORT = " + ConnectUtils.PORT);
 
                 monitorState = queryConfigRealtime.getMonitorState();

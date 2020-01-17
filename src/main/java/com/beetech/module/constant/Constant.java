@@ -1,14 +1,30 @@
 package com.beetech.module.constant;
 
 import android.graphics.Color;
+import android.util.Log;
 
+import java.util.Calendar;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Constant {
 
+    public final static String REAL_PACKAGE_NAME = "com.beetech.module";
+
     public final static int module = 4;
     public final static int baudrate = 115200;
+    public final static int beginReadSecond = 35; // 从第几秒开始读数据
+
+    public static boolean isReadNextTime(){
+        boolean isReadNextTime = true;
+        Calendar cal = Calendar.getInstance();
+        int second = cal.get(Calendar.SECOND);
+        if(second > 0 && second < Constant.beginReadSecond){ // 0 - beginReadSecond 给模块和标签通信用
+            isReadNextTime = false;
+        }
+        Log.d("Constant", "isReadNextTime: "+isReadNextTime+", second="+second);
+        return isReadNextTime;
+    }
 
     /**
      * 定时唤醒的时间间隔
@@ -57,6 +73,7 @@ public class Constant {
     public static boolean IS_UP_APP_LOG = true; //是否上传APP日志
     public static boolean IS_DEBUGGABLE = false; //是否调试模式
     public static boolean IS_TTSS_TOAST = false; //百度语音是否toast
+    public static boolean IS_READ_NEXT = true; //是否读取下一条数据
 
     public static boolean alarmFlag = true; //是否报警
 

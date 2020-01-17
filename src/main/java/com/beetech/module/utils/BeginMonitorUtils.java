@@ -37,7 +37,7 @@ public class BeginMonitorUtils {
             if(!myApp.locationService.isStart()){
                 myApp.locationService.start();
             }
-            myApp.appLogSDDao.save("开始监控"+DateUtils.parseDateToString(myApp.beginMonitorTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS));
+            myApp.appLogSDDao.save("开始监控，"+DateUtils.parseDateToString(myApp.beginMonitorTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS));
 
             //发送SYS报文
             new Thread(new Runnable() {

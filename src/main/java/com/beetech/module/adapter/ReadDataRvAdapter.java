@@ -47,8 +47,12 @@ public class ReadDataRvAdapter extends RecyclerView.Adapter<ReadDataRvAdapter.Vi
         holder.tvRh.setText(readData.getRh()+"");
         holder.tvSsVoltage.setText(readData.getSsVoltage()+"");
         holder.tvRssi.setText(readData.getRssi()+"");
-        holder.tvSensorDataTime.setText(DateUtils.parseDateToString(readData.getSensorDataTime(), DateUtils.C_YYYY_MM_DD_HH_MM_SS));
-        holder.tvGwTime.setText(DateUtils.parseDateToString(readData.getGwTime(), DateUtils.C_MM_DD_HH_MM_SS));
+        holder.tvSensorDataTime.setText(DateUtils.parseDateToString(readData.getSensorDataTime(), DateUtils.C_YYMMDDHHMMSS));
+        holder.tvSsTransfTime.setText(DateUtils.parseDateToString(readData.getSsTransfTime(), DateUtils.C_YYMMDDHHMMSS));
+        holder.tvGwTime.setText(DateUtils.parseDateToString(readData.getGwTime(), DateUtils.C_YYMMDDHHMMSS));
+        holder.tvWait1.setText(readData.getWaitSentSize1()+"");
+        holder.tvWait2.setText(readData.getWaitSentSize2()+"");
+        holder.tvErrorcode.setText(readData.getErrorcode()+"");
         holder.tvSendFlag.setText(readData.getSendFlag()+"");
         holder.tvResponseFlag.setText(readData.getResponseFlag()+"");
     }
@@ -63,8 +67,12 @@ public class ReadDataRvAdapter extends RecyclerView.Adapter<ReadDataRvAdapter.Vi
         public TextView tvSsVoltage;
         public TextView tvRssi;
         public TextView tvSensorDataTime;
+        public TextView tvSsTransfTime;
         public TextView tvGwTime;
         public TextView tvSendFlag;
+        public TextView tvWait1;
+        public TextView tvWait2;
+        public TextView tvErrorcode;
         public TextView tvResponseFlag;
 
         public ViewHolder(View convertView) {
@@ -78,7 +86,11 @@ public class ReadDataRvAdapter extends RecyclerView.Adapter<ReadDataRvAdapter.Vi
             tvSsVoltage = (TextView) convertView.findViewById(R.id.tvSsVoltage);
             tvRssi = (TextView) convertView.findViewById(R.id.tvRssi);
             tvSensorDataTime = (TextView) convertView.findViewById(R.id.tvSensorDataTime);
+            tvSsTransfTime = (TextView) convertView.findViewById(R.id.tvSsTransfTime);
             tvGwTime = (TextView) convertView.findViewById(R.id.tvGwTime);
+            tvWait1 = (TextView) convertView.findViewById(R.id.tvWait1);
+            tvWait2 = (TextView) convertView.findViewById(R.id.tvWait2);
+            tvErrorcode = (TextView) convertView.findViewById(R.id.tvErrorcode);
             tvSendFlag = (TextView) convertView.findViewById(R.id.tvSendFlag);
             tvResponseFlag = (TextView) convertView.findViewById(R.id.tvResponseFlag);
         }

@@ -26,17 +26,17 @@ public class AppStateUtils {
         try {
             MyApplication myApp = (MyApplication)context.getApplicationContext();
 
-            stateSb.append("APP版本:").append(Constant.verName).append(" ");
+            stateSb.append("APP版本: ").append(Constant.verName).append(" ");
             stateSb.append("ModuleService: ").append(ServiceAliveUtils.isServiceRunning(context,Constant.className_moduleService) ? "运行" : "未运行") .append(" ");
 
-            stateSb.append("网络：").append(NetUtils.network_type_name.get(myApp.netWorkType)).append(" ");
-            stateSb.append("信号：").append(myApp.signalStrength).append(" dbm").append(" ");
-            stateSb.append("USB:").append(myApp.usbConnected ? "接通":"断开").append(" ");
-            stateSb.append("充电:").append(ChargingUtils.isCharging(myApp) ? "是":"否").append(" ");
+            stateSb.append("网络: ").append(NetUtils.network_type_name.get(myApp.netWorkType)).append(" ");
+            stateSb.append("信号: ").append(myApp.signalStrength).append(" dbm").append(" ");
+            stateSb.append("USB: ").append(myApp.usbConnected ? "接通":"断开").append(" ");
+            stateSb.append("充电: ").append(ChargingUtils.isCharging(myApp) ? "是":"否").append(" ");
             stateSb.append("\n");
 
-            stateSb.append("IMEI：").append(Constant.imei).append(" ");
-            stateSb.append("ICCID：").append(Constant.iccid).append(" ");
+            stateSb.append("IMEI: ").append(Constant.imei).append(" ");
+            stateSb.append("ICCID: ").append(Constant.iccid).append(" ");
             stateSb.append(" ").append(Constant.IS_SAVE_MODULE_LOG);
             stateSb.append(" ").append(Constant.IS_SAVE_SOCKET_LOG).append(" ");
             stateSb.append(" ").append(Constant.IS_UP_APP_LOG).append(" ");
@@ -46,38 +46,38 @@ public class AppStateUtils {
 
             String moduleName = myApp.module+"";
             moduleName = moduleName.substring(moduleName.lastIndexOf(".")+1);
-            stateSb.append("模块：").append(moduleName.equals("")? "空" : moduleName).append(" ");
+            stateSb.append("模块: ").append(moduleName.equals("")? "空" : moduleName).append(" ");
             stateSb.append(myApp.initResult ? "上电" : "释放").append(" ").append(DateUtils.parseDateToString(new Date(myApp.initTime), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
-            stateSb.append("读：").append(DateUtils.parseDateToString(new Date(myApp.lastReadTime), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
-            stateSb.append("写：").append(DateUtils.parseDateToString(new Date(myApp.lastWriteTime), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
-            stateSb.append("\n");
-            stateSb.append("数据标志：").append(myApp.readDataResponseError).append(" ");
-            stateSb.append("时间：").append(DateUtils.parseDateToString(new Date(myApp.readDataResponseTime), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
-            stateSb.append("RAM待发：").append(myApp.readDataResponseWaitSentSize1).append(" ");
-            stateSb.append("Flash待发：").append(myApp.readDataResponseWaitSentSize2).append(" ");
-            stateSb.append("Flash错误：").append(myApp.readDataResponseErrorcode).append(" ");
+            stateSb.append("读: ").append(DateUtils.parseDateToString(new Date(myApp.lastReadTime), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
+            stateSb.append("写: ").append(DateUtils.parseDateToString(new Date(myApp.lastWriteTime), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
             stateSb.append("\n");
 
             QueryConfigRealtime queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
             if(queryConfigRealtime != null){
-                stateSb.append("GWID：").append(queryConfigRealtime.getGwId()).append(" ");
-                stateSb.append("客户码：").append(myApp.customer).append(" ");
-                stateSb.append("工作模式：").append(myApp.pattern).append(" ");
-                stateSb.append("传输速率：").append(myApp.bps).append(" ");
-                stateSb.append("频段：").append(myApp.channel).append(" ");
-                stateSb.append("硬件：").append(queryConfigRealtime.getHardVer()).append(" ");
-                stateSb.append("软件：").append(queryConfigRealtime.getSoftVer()).append(" ");
+                stateSb.append("GWID: ").append(queryConfigRealtime.getGwId()).append(" ");
+                stateSb.append("客户码: ").append(queryConfigRealtime.getCustomer()).append(" ");
+                stateSb.append("工作模式: ").append(queryConfigRealtime.getPattern()).append(" ");
+                stateSb.append("传输速率: ").append(queryConfigRealtime.getBps()).append(" ");
+                stateSb.append("频段: ").append(queryConfigRealtime.getChannel()).append(" ");
+                stateSb.append("硬件: ").append(queryConfigRealtime.getHardVer()).append(" ");
+                stateSb.append("软件: ").append(queryConfigRealtime.getSoftVer()).append(" ");
+
+                stateSb.append("\n");
+                stateSb.append("RAM: ").append(queryConfigRealtime.getRamData()).append(" ");
+                stateSb.append("front: ").append(queryConfigRealtime.getFront()).append(" ");
+                stateSb.append("rear: ").append(queryConfigRealtime.getRear()).append(" ");
+                stateSb.append("pflash: ").append(queryConfigRealtime.getPflashLength()).append(" ");
                 stateSb.append("\n");
             }
             if(myApp.setDataBeginTime != null){
-                stateSb.append("数据开始时间：").append(DateUtils.parseDateToString(myApp.setDataBeginTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
+                stateSb.append("数据开始时间: ").append(DateUtils.parseDateToString(myApp.setDataBeginTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
             }
             stateSb.append("\n");
             if(myApp.frontDeleteResponse != null){
                 stateSb.append("DeleteResponse(").append(" ");
-                stateSb.append("front：").append(myApp.frontDeleteResponse).append(" ");
-                stateSb.append("rear：").append(myApp.rearDeleteResponse).append(" ");
-                stateSb.append("pflashLength：").append(myApp.pflashLengthDeleteResponse).append(" ");
+                stateSb.append("front: ").append(myApp.frontDeleteResponse).append(" ");
+                stateSb.append("rear: ").append(myApp.rearDeleteResponse).append(" ");
+                stateSb.append("pflashLength: ").append(myApp.pflashLengthDeleteResponse).append(" ");
                 stateSb.append(")\n");
             }
 
@@ -86,7 +86,7 @@ public class AppStateUtils {
 
             locationServiceName = locationServiceName.substring(locationServiceName.lastIndexOf(".")+1);
 
-            stateSb.append("定位：").append(locationServiceName).append(" ");
+            stateSb.append("定位: ").append(locationServiceName).append(" ");
             if(locationService != null){
                 stateSb.append(locationService.isStart() ? "启动" : "关闭").append(" ");
             }
@@ -108,17 +108,19 @@ public class AppStateUtils {
 //                stateSb.append("\n");
 //            }
 
+            stateSb.append("服务器："+ ConnectUtils.HOST +":"+ConnectUtils.PORT);
+            stateSb.append("\n");
             IoSession mSession = myApp.session;
-            stateSb.append("会话：").append(mSession).append("\n");
+            stateSb.append("会话: ").append(mSession).append("\n");
             if(mSession != null){
-                stateSb.append("连接：").append(mSession.isConnected() ? "连通" : "断开").append(" ");
-                stateSb.append("创建：").append(DateUtils.parseDateToString(new Date(mSession.getCreationTime()), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
-                stateSb.append("IO：").append(DateUtils.parseDateToString(new Date(mSession.getLastIoTime()), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
-                stateSb.append("Idle：").append(DateUtils.parseDateToString(new Date(mSession.getLastBothIdleTime()), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
+                stateSb.append("连接: ").append(mSession.isConnected() ? "连通" : "断开").append(" ");
+                stateSb.append("创建: ").append(DateUtils.parseDateToString(new Date(mSession.getCreationTime()), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
+                stateSb.append("IO: ").append(DateUtils.parseDateToString(new Date(mSession.getLastIoTime()), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
+                stateSb.append("Idle: ").append(DateUtils.parseDateToString(new Date(mSession.getLastBothIdleTime()), DateUtils.C_YYYY_MM_DD_HH_MM_SS)).append(" ");
             }
             stateSb.append("\n");
 
-            stateSb.append("模块操作：").append(myApp.moduleHandlerThread);
+            stateSb.append("模块操作: ").append(myApp.moduleHandlerThread);
             if(myApp.moduleHandlerThread != null){
                 stateSb.append(" ").append(myApp.moduleHandlerThread.isAlive() ? "alive" : "");
             }
