@@ -10,6 +10,7 @@ import com.beetech.module.application.MyApplication;
 import com.beetech.module.bean.QueryConfigRealtime;
 
 import java.util.Date;
+import java.util.TimerTask;
 
 public class BeginMonitorUtils {
     private final static String TAG = BeginMonitorUtils.class.getSimpleName();
@@ -82,15 +83,37 @@ public class BeginMonitorUtils {
         final MyApplication myApp = (MyApplication)context.getApplicationContext();
 
         try{
+
+            Log.d(TAG, "isSetDataBeginTimeByBoot="+myApp.isSetDataBeginTimeByBoot);
+            if(myApp.isSetDataBeginTimeByBoot) {
+                //延迟一段时间等模块初始化上电
+                myApp.timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "开机自启动，延迟10s设置数据开始时间");
+
+                        //设置数据开始时间
+                        Message msg = new Message();
+                        msg.what = 9;
+                        myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
+                    }
+                }, 10000);
+            }
+
             myApp.monitorState = 1;
             QueryConfigRealtime queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
             if(queryConfigRealtime != null){
                 Date beginMonitorTime = queryConfigRealtime.getBeginMonitorTime();
-                if(beginMonitorTime == null){
+                if(myApp.isSetDataBeginTimeByBoot){
                     myApp.beginMonitorTime = new Date();
                     queryConfigRealtime.setBeginMonitorTime(myApp.beginMonitorTime);
                 } else {
-                    myApp.beginMonitorTime = beginMonitorTime;
+                    if (beginMonitorTime == null) {
+                        myApp.beginMonitorTime = new Date();
+                        queryConfigRealtime.setBeginMonitorTime(myApp.beginMonitorTime);
+                    } else {
+                        myApp.beginMonitorTime = beginMonitorTime;
+                    }
                 }
                 queryConfigRealtime.setMonitorState(myApp.monitorState);
                 myApp.queryConfigRealtimeSDDao.update(queryConfigRealtime);
@@ -128,7 +151,7 @@ public class BeginMonitorUtils {
                 }
             }).start();
 
-            myApp.appLogSDDao.save("开机开始监控"+DateUtils.parseDateToString(myApp.beginMonitorTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS));
+            myApp.appLogSDDao.save("开机开始监控，"+DateUtils.parseDateToString(myApp.beginMonitorTime, DateUtils.C_YYYY_MM_DD_HH_MM_SS));
             Toast.makeText(context, "开机开始监控", Toast.LENGTH_SHORT).show();
 
         } catch (Exception e){

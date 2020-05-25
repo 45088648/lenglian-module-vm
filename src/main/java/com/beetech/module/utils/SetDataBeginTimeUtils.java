@@ -24,6 +24,7 @@ public class SetDataBeginTimeUtils {
 
                 boolean sendResult = module.send(buf);
                 myApp.lastWriteTime = System.currentTimeMillis();
+                myApp.appLogSDDao.save("设置数据开始时间");
                 if(Constant.IS_SAVE_MODULE_LOG) {
                     try{
                         myApp.moduleBufSDDao.save(buf, 0, setDataBeginTimeRequest.getCmd(), sendResult); // 保存串口通信数据

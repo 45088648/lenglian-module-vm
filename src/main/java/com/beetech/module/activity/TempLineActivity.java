@@ -66,7 +66,7 @@ public class TempLineActivity extends Activity {
         readDataResponseList = readDataSDDao.query(sensorId, 20, 0);
 
         if(readDataResponseList == null || readDataResponseList.isEmpty()){
-            Toast.makeText(this, TAG+", 无数据", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "无数据", Toast.LENGTH_SHORT).show();
             return;
         }
 

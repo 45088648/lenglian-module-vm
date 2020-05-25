@@ -3,9 +3,10 @@ package com.beetech.module.bean;
 import com.beetech.module.code.response.QueryConfigResponse;
 
 import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
-import java.util.Date;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.Id;
+
+import java.util.Date;
 
 /**
  * 本地配置实时数据
@@ -71,6 +72,9 @@ public class QueryConfigRealtime {
     private String alarmInterval; //报警时间间隔： -1 不限制
     private String equipType;//设备型号
 
+    private boolean isSetDataBeginTimeByBoot = true; //开机自启动监控，设置数据开始时间
+    private boolean alarmFlag = true; //是否本地声音报警
+
     public QueryConfigRealtime(){}
 
     public void update(QueryConfigResponse queryConfigResponse) {
@@ -93,7 +97,7 @@ public class QueryConfigRealtime {
         this.gwId = queryConfigResponse.getGwId();
     }
 
-    @Generated(hash = 1696840765)
+    @Generated(hash = 36056915)
     public QueryConfigRealtime(Long _id, String hardVer, String softVer,
             String customer, int debug, int category, int interval, Date calendar,
             int pattern, int bps, int channel, int ramData, int front, int rear,
@@ -108,7 +112,8 @@ public class QueryConfigRealtime {
             String extPowerAlarmFlag, String unqualifyRecordFlag,
             String nextUpdateFlag, String updateUrl, String destination,
             String orderNo, String receiver, String company, String devTypeFlag,
-            String alarmInterval, String equipType) {
+            String alarmInterval, String equipType,
+            boolean isSetDataBeginTimeByBoot, boolean alarmFlag) {
         this._id = _id;
         this.hardVer = hardVer;
         this.softVer = softVer;
@@ -160,6 +165,8 @@ public class QueryConfigRealtime {
         this.devTypeFlag = devTypeFlag;
         this.alarmInterval = alarmInterval;
         this.equipType = equipType;
+        this.isSetDataBeginTimeByBoot = isSetDataBeginTimeByBoot;
+        this.alarmFlag = alarmFlag;
     }
 
     public Long get_id() {
@@ -599,5 +606,29 @@ public class QueryConfigRealtime {
 
     public void setEquipType(String equipType) {
         this.equipType = equipType;
+    }
+
+    public boolean isSetDataBeginTimeByBoot() {
+        return isSetDataBeginTimeByBoot;
+    }
+
+    public void setSetDataBeginTimeByBoot(boolean setDataBeginTimeByBoot) {
+        isSetDataBeginTimeByBoot = setDataBeginTimeByBoot;
+    }
+
+    public boolean getIsSetDataBeginTimeByBoot() {
+        return this.isSetDataBeginTimeByBoot;
+    }
+
+    public void setIsSetDataBeginTimeByBoot(boolean isSetDataBeginTimeByBoot) {
+        this.isSetDataBeginTimeByBoot = isSetDataBeginTimeByBoot;
+    }
+
+    public boolean getAlarmFlag() {
+        return this.alarmFlag;
+    }
+
+    public void setAlarmFlag(boolean alarmFlag) {
+        this.alarmFlag = alarmFlag;
     }
 }

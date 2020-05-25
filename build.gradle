@@ -74,7 +74,7 @@ android {
 
 /*针对greenDao的一些配置*/
 greendao {
-    schemaVersion 2 //数据库版本号
+    schemaVersion 3 //数据库版本号
     daoPackage 'com.beetech.module.greendao.dao'//设置DaoMaster、MyReadDataSendEntityDaoSession、Dao包名
     targetGenDir 'src/main/java'//设置DaoMaster、MyReadDataSendEntityDaoSession、Dao目录
 }
@@ -105,5 +105,7 @@ dependencies {
     implementation files('libs/nineoldandroids-2.4.0.jar')
     implementation files('libs/anrwatchdog-1.4.0.jar')
     implementation fileTree(include: ['*.jar','*.aar'], dir: 'libs')
+
+    implementation files('libs/CwSpecialFunc.aar')
 }
 

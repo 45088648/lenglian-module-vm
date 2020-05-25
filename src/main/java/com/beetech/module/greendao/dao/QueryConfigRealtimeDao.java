@@ -75,6 +75,8 @@ public class QueryConfigRealtimeDao extends AbstractDao<QueryConfigRealtime, Lon
         public final static Property DevTypeFlag = new Property(48, String.class, "devTypeFlag", false, "DEV_TYPE_FLAG");
         public final static Property AlarmInterval = new Property(49, String.class, "alarmInterval", false, "ALARM_INTERVAL");
         public final static Property EquipType = new Property(50, String.class, "equipType", false, "EQUIP_TYPE");
+        public final static Property IsSetDataBeginTimeByBoot = new Property(51, boolean.class, "isSetDataBeginTimeByBoot", false, "IS_SET_DATA_BEGIN_TIME_BY_BOOT");
+        public final static Property AlarmFlag = new Property(52, boolean.class, "alarmFlag", false, "ALARM_FLAG");
     }
 
 
@@ -140,7 +142,9 @@ public class QueryConfigRealtimeDao extends AbstractDao<QueryConfigRealtime, Lon
                 "\"COMPANY\" TEXT," + // 47: company
                 "\"DEV_TYPE_FLAG\" TEXT," + // 48: devTypeFlag
                 "\"ALARM_INTERVAL\" TEXT," + // 49: alarmInterval
-                "\"EQUIP_TYPE\" TEXT);"); // 50: equipType
+                "\"EQUIP_TYPE\" TEXT," + // 50: equipType
+                "\"IS_SET_DATA_BEGIN_TIME_BY_BOOT\" INTEGER NOT NULL ," + // 51: isSetDataBeginTimeByBoot
+                "\"ALARM_FLAG\" INTEGER NOT NULL );"); // 52: alarmFlag
     }
 
     /** Drops the underlying database table. */
@@ -351,6 +355,8 @@ public class QueryConfigRealtimeDao extends AbstractDao<QueryConfigRealtime, Lon
         if (equipType != null) {
             stmt.bindString(51, equipType);
         }
+        stmt.bindLong(52, entity.getIsSetDataBeginTimeByBoot() ? 1L: 0L);
+        stmt.bindLong(53, entity.getAlarmFlag() ? 1L: 0L);
     }
 
     @Override
@@ -555,6 +561,8 @@ public class QueryConfigRealtimeDao extends AbstractDao<QueryConfigRealtime, Lon
         if (equipType != null) {
             stmt.bindString(51, equipType);
         }
+        stmt.bindLong(52, entity.getIsSetDataBeginTimeByBoot() ? 1L: 0L);
+        stmt.bindLong(53, entity.getAlarmFlag() ? 1L: 0L);
     }
 
     @Override
@@ -615,7 +623,9 @@ public class QueryConfigRealtimeDao extends AbstractDao<QueryConfigRealtime, Lon
             cursor.isNull(offset + 47) ? null : cursor.getString(offset + 47), // company
             cursor.isNull(offset + 48) ? null : cursor.getString(offset + 48), // devTypeFlag
             cursor.isNull(offset + 49) ? null : cursor.getString(offset + 49), // alarmInterval
-            cursor.isNull(offset + 50) ? null : cursor.getString(offset + 50) // equipType
+            cursor.isNull(offset + 50) ? null : cursor.getString(offset + 50), // equipType
+            cursor.getShort(offset + 51) != 0, // isSetDataBeginTimeByBoot
+            cursor.getShort(offset + 52) != 0 // alarmFlag
         );
         return entity;
     }
@@ -673,6 +683,8 @@ public class QueryConfigRealtimeDao extends AbstractDao<QueryConfigRealtime, Lon
         entity.setDevTypeFlag(cursor.isNull(offset + 48) ? null : cursor.getString(offset + 48));
         entity.setAlarmInterval(cursor.isNull(offset + 49) ? null : cursor.getString(offset + 49));
         entity.setEquipType(cursor.isNull(offset + 50) ? null : cursor.getString(offset + 50));
+        entity.setIsSetDataBeginTimeByBoot(cursor.getShort(offset + 51) != 0);
+        entity.setAlarmFlag(cursor.getShort(offset + 52) != 0);
      }
     
     @Override

@@ -121,6 +121,56 @@ public class QueryConfigRealtimeSDDao {
         }
     }
 
+    public void updateByIsSetDataBeginTimeByBoot(boolean isSetDataBeginTimeByBoot) throws Exception{
+        long startTimeInMills = System.currentTimeMillis();
+        try{
+
+
+            List<QueryConfigRealtime> list = myApp.daoSession.getQueryConfigRealtimeDao().queryBuilder().limit(1).list();
+            if(list == null || list.isEmpty()){
+                return;
+            }
+
+            QueryConfigRealtime queryConfigRealtime = list.get(0);
+            if(queryConfigRealtime != null){
+                queryConfigRealtime.setIsSetDataBeginTimeByBoot(isSetDataBeginTimeByBoot);
+                queryConfigRealtime.setUpdateTime(new Date());
+                myApp.daoSession.getQueryConfigRealtimeDao().updateInTx(queryConfigRealtime);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            Log.e(TAG, "updateByIsSetDataBeginTimeByBoot异常", e);
+            throw e;
+        } finally {
+            Log.d(TAG, "updateByIsSetDataBeginTimeByBoot耗时：" + (System.currentTimeMillis() - startTimeInMills));
+        }
+    }
+
+    public void updateByAlarmFlag(boolean alarmFlag) throws Exception{
+        long startTimeInMills = System.currentTimeMillis();
+        try{
+            Log.d(TAG, "alarmFlag="+alarmFlag);
+
+            List<QueryConfigRealtime> list = myApp.daoSession.getQueryConfigRealtimeDao().queryBuilder().limit(1).list();
+            if(list == null || list.isEmpty()){
+                return;
+            }
+
+            QueryConfigRealtime queryConfigRealtime = list.get(0);
+            if(queryConfigRealtime != null){
+                queryConfigRealtime.setAlarmFlag(alarmFlag);
+                queryConfigRealtime.setUpdateTime(new Date());
+                myApp.daoSession.getQueryConfigRealtimeDao().updateInTx(queryConfigRealtime);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+            Log.e(TAG, "updateByAlarmFlag异常", e);
+            throw e;
+        } finally {
+            Log.d(TAG, "updateByAlarmFlag耗时：" + (System.currentTimeMillis() - startTimeInMills));
+        }
+    }
+
     public void updateBySmsSt(String smsContent) throws Exception{
         long startTimeInMills = System.currentTimeMillis();
         try{

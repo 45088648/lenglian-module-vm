@@ -236,6 +236,7 @@ public class ThreadModuleReceive extends HandlerThread {
                 Message toastMsg = new Message();
                 toastMsg.obj = toastSb.toString();
                 myApp.toastHandler.sendMessage(toastMsg);
+                myApp.appLogSDDao.save(toastSb.toString());
             }catch (Exception e){
                 e.printStackTrace();
                 Log.e("提示消息异常", e.getMessage());

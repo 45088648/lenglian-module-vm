@@ -96,14 +96,37 @@
             android:layout_width="0.0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="删除已存历史数据" />
+            android:text="删除已存历史数据"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/btnSetDataBeginTime"
             android:layout_width="0.0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="设置数据开始时间" />
+            android:text="设置数据开始时间"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnShutDownDevice"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="关机"/>
+
+        <Button
+            android:id="@+id/btnRebootDevice"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="重启设备"/>
+
+        <Button
+            android:id="@+id/btnSetLauncherClass"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="设置开机启动"/>
 
     </TableRow>
 
@@ -117,11 +140,19 @@
         android:paddingRight="5dp">
 
         <Button
+            android:id="@+id/btnSetSysLauncher"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="恢复系统默认页面"/>
+
+        <Button
             android:id="@+id/btnUpdateSSParam"
             android:layout_width="0.0dip"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:text="修改SS时间阈值" />
+            android:text="修改SS时间阈值"
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/btnTruncateAll"
@@ -167,6 +198,29 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="版本更新" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp">
+        <Button
+            android:id="@+id/btnIsSetDataBeginTimeByBootTrue"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="开启开机设置数据开始时间" />
+
+        <Button
+            android:id="@+id/btnIsSetDataBeginTimeByBootFalse"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="关闭开机设置数据开始时间" />
     </TableRow>
 
     <TableRow

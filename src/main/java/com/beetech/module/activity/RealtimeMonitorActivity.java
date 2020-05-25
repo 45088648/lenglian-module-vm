@@ -149,7 +149,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
             appLogSDDao = new AppLogSDDao(this);
         }
 
-        appLogSDDao.save(TAG + " onCreate");
+//        appLogSDDao.save(TAG + " onCreate");
         startModuleService();
 
         myApp = (MyApplication) getApplication();
@@ -349,7 +349,7 @@ public class RealtimeMonitorActivity extends AppCompatActivity {
                 Log.d(TAG, "刷新数据异常");
             }
 
-            if(Constant.alarmFlag && myApp.monitorState == 1){
+            if(myApp.alarmFlag && myApp.monitorState == 1){
                 try{
                     SoundLedAlarmUtils.checkAlarm(myApp);
                 } catch (Exception e){

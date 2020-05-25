@@ -63,7 +63,7 @@ public class ModuleService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "---->onCreate");
+//        Log.d(TAG, "---->onCreate");
 
         //  服务保活 start
         startGuardService();
@@ -134,6 +134,9 @@ public class ModuleService extends Service {
 
         if(myApp.powerLED == null){
             myApp.powerLED = PowerLED.getInstance();
+            myApp.powerLED.off();
+            myApp.powerLEDFlag = 0;
+
             Log.d(TAG, "myApp.powerLED getInstance");
         }
 
@@ -244,7 +247,7 @@ public class ModuleService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        appLogSDDao.save(TAG+" onStartCommand");
+//        appLogSDDao.save(TAG+" onStartCommand");
 
         // 绑定建立链接
         bindService(new Intent(this, RemoteService.class), mServiceConnection, Context.BIND_IMPORTANT);
@@ -254,7 +257,7 @@ public class ModuleService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "---->onDestroy");
-        appLogSDDao.save(TAG+" onDestroy");
+//        appLogSDDao.save(TAG+" onDestroy");
         super.onDestroy();
 
         Intent intent = new Intent(ConnectReceiver.ACTION);

@@ -35,6 +35,7 @@ import com.beetech.module.update.view.CommonProgressDialog;
 import com.beetech.module.utils.AppStateUtils;
 import com.beetech.module.utils.NodeParamUtils;
 import com.beetech.module.utils.RestartUtils;
+import com.chainway.libs.mylibrary.CwSpecialFunc;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -107,6 +108,19 @@ public class RunStateFragment extends Fragment {
 
     @ViewInject(R.id.btnVersionUpdate)
     private Button btnVersionUpdate;
+
+    @ViewInject(R.id.btnShutDownDevice)
+    private Button btnShutDownDevice;
+
+    @ViewInject(R.id.btnRebootDevice)
+    private Button btnRebootDevice;
+
+    @ViewInject(R.id.btnSetSysLauncher)
+    private Button btnSetSysLauncher;
+
+    @ViewInject(R.id.btnSetLauncherClass)
+    private Button btnSetLauncherClass;
+
     private CommonProgressDialog pBar;
 
     private ReadDataRealtimeSDDao readDataRealtimeSDDao;
@@ -415,22 +429,74 @@ public class RunStateFragment extends Fragment {
 
     @OnClick(R.id.btnStopAlarm)
     public void btnStopAlarm_OnClick(View v) {
-        if(Constant.alarmFlag) {
-            Constant.alarmFlag = false;
+        if(myApp.alarmFlag) {
+            myApp.alarmFlag = false;
+            try {
+                myApp.queryConfigRealtimeSDDao.updateByAlarmFlag(myApp.alarmFlag);
+            }catch (Exception e){
+                e.printStackTrace();
+                Log.e(TAG, "updateByAlarmFlag 异常, "+e.getMessage());
+            }
             Toast.makeText(getContext(), "关闭报警", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getContext(), "报警已关闭", Toast.LENGTH_SHORT).show();
         }
+        myApp.appLogSDDao.save("关闭报警");
     }
 
     @OnClick(R.id.btnStartAlarm)
     public void btnStartAlarm_OnClick(View v) {
-        if(!Constant.alarmFlag) {
-            Constant.alarmFlag = true;
+        if(!myApp.alarmFlag) {
+            myApp.alarmFlag = true;
+            try {
+                myApp.queryConfigRealtimeSDDao.updateByAlarmFlag(myApp.alarmFlag);
+            }catch (Exception e){
+                e.printStackTrace();
+                Log.e(TAG, "updateByAlarmFlag 异常, "+e.getMessage());
+            }
             Toast.makeText(getContext(), "开启报警", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getContext(), "报警已开启", Toast.LENGTH_SHORT).show();
         }
+        myApp.appLogSDDao.save("开启报警");
+    }
+
+    @OnClick(R.id.btnIsSetDataBeginTimeByBootTrue)
+    public void btnIsSetDataBeginTimeByBootTrue_OnClick(View v) {
+        if(!myApp.isSetDataBeginTimeByBoot) {
+            myApp.isSetDataBeginTimeByBoot = true;
+            try {
+                Log.d(TAG, "isSetDataBeginTimeByBoot="+myApp.isSetDataBeginTimeByBoot);
+                myApp.queryConfigRealtimeSDDao.updateByIsSetDataBeginTimeByBoot(myApp.isSetDataBeginTimeByBoot);
+            }catch (Exception e){
+                e.printStackTrace();
+                Log.e(TAG, "updateByIsSetDataBeginTimeByBoot 异常, "+e.getMessage());
+            }
+            Toast.makeText(getContext(), "开启开机设置数据开始时间", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "开机设置数据开始时间已开启", Toast.LENGTH_SHORT).show();
+        }
+
+        myApp.appLogSDDao.save("开启开机设置数据开始时间");
+    }
+
+    @OnClick(R.id.btnIsSetDataBeginTimeByBootFalse)
+    public void btnIsSetDataBeginTimeByBootFalse_OnClick(View v) {
+        if(myApp.isSetDataBeginTimeByBoot) {
+            myApp.isSetDataBeginTimeByBoot = false;
+            try {
+                Log.d(TAG, "isSetDataBeginTimeByBoot="+myApp.isSetDataBeginTimeByBoot);
+                myApp.queryConfigRealtimeSDDao.updateByIsSetDataBeginTimeByBoot(myApp.isSetDataBeginTimeByBoot);
+            }catch (Exception e){
+                e.printStackTrace();
+                Log.e(TAG, "updateByIsSetDataBeginTimeByBoot 异常, "+e.getMessage());
+            }
+            Toast.makeText(getContext(), "关闭开机设置数据开始时间", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "开机设置数据开始时间已关闭", Toast.LENGTH_SHORT).show();
+        }
+
+        myApp.appLogSDDao.save("关闭开机设置数据开始时间");
     }
 
     @OnClick(R.id.btnSetTime)
@@ -502,7 +568,6 @@ public class RunStateFragment extends Fragment {
         builder.show();
     }
 
-
     @OnClick(R.id.btnVersionUpdate)
     public void btnVersionUpdate_OnClick(View v) {
         Log.d(TAG, "btnVersionUpdate_OnClick");
@@ -512,6 +577,147 @@ public class RunStateFragment extends Fragment {
             e.printStackTrace();
             Log.e(TAG, "btnVersionUpdate_OnClick 异常", e);
         }
+    }
+
+    @OnClick(R.id.btnShutDownDevice)
+    public void btnShutDownDevice_OnClick(final View v) {
+        Log.d(TAG, "btnShutDownDevice_OnClick");
+        AlertDialog.Builder builder = new  AlertDialog.Builder(mContext);
+        builder.setMessage("确定要关机吗？");
+        builder.setTitle("提示");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                v.setClickable(false);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "CwSpecialFunc.getInstance().shutDownDevice");
+                        try {
+                            CwSpecialFunc.getInstance().shutDownDevice();//关机
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.e(TAG, "btnShutDownDevice_OnClick 异常", e);
+                        }
+                    }
+                }).start();
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+    @OnClick(R.id.btnRebootDevice)
+    public void btnRebootDevice_OnClick(final View v) {
+        Log.d(TAG, "btnRebootDevice_OnClick");
+
+        AlertDialog.Builder builder = new  AlertDialog.Builder(mContext);
+        builder.setMessage("确定要重启吗？");
+        builder.setTitle("提示");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                v.setClickable(false);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "CwSpecialFunc.getInstance().rebootDevice");
+                        try {
+                            CwSpecialFunc.getInstance().rebootDevice();//重启设备
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.e(TAG, "btnRebootDevice_OnClick 异常", e);
+                        }
+                    }
+                }).start();
+                dialog.dismiss();
+            }
+        }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+    @OnClick(R.id.btnSetSysLauncher)
+    public void btnSetSysLauncher_OnClick(View v) {
+        Log.d(TAG, "btnSetSysLauncher_OnClick");
+        AlertDialog.Builder builder = new  AlertDialog.Builder(mContext);
+        builder.setMessage("确定要恢复系统默认页面吗？");
+        builder.setTitle("提示");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "CwSpecialFunc.getInstance().setSysLauncher");
+                        try {
+                            CwSpecialFunc.getInstance().setDownStatusEnable(true);//恢复下拉菜单
+                            CwSpecialFunc.getInstance().setHomeKeyEnable(true);   //恢复HOME按键
+                            CwSpecialFunc.getInstance().setMenuKeyEnable(true);   //恢复菜单按键
+                            CwSpecialFunc.getInstance().setSysLauncher(); //恢复系统默认页面，方法一
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.e(TAG, "btnSetSysLauncher_OnClick 异常", e);
+                        }
+                    }
+                }).start();
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+    @OnClick(R.id.btnSetLauncherClass)
+    public void btnSetLauncherClass_OnClick(View v) {
+        Log.d(TAG, "btnSetLauncherClass_OnClick");
+        AlertDialog.Builder builder = new  AlertDialog.Builder(mContext);
+        builder.setMessage("确定要设置开机启动吗？");
+        builder.setTitle("提示");
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "CwSpecialFunc.getInstance().setLauncherClass");
+                        try {
+                            CwSpecialFunc.getInstance().setDownStatusEnable(false);//禁止下拉菜单
+                            CwSpecialFunc.getInstance().setHomeKeyEnable(false);   //禁止HOME按键
+                            CwSpecialFunc.getInstance().setMenuKeyEnable(false);   //禁止菜单按键
+
+                            String packageName = myApp.getPackageName();
+                            String className = packageName.concat(".activity.RealtimeMonitorActivity");
+                            Log.d(TAG, "packageName = "+packageName+", className = "+className);
+                            CwSpecialFunc.getInstance().setLauncherClass(packageName, className);//开机默认启动Activity
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.e(TAG, "btnSetLauncherClass_OnClick 异常", e);
+                        }
+                    }
+                }).start();
+                dialog.dismiss();
+            }
+        });
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     /**

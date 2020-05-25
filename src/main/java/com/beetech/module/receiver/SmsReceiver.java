@@ -22,6 +22,7 @@ import com.beetech.module.utils.DateUtils;
 import com.beetech.module.utils.DeleteHistoryDataUtils;
 import com.beetech.module.utils.ModuleUtils;
 import com.beetech.module.utils.NodeParamUtils;
+import com.chainway.libs.mylibrary.CwSpecialFunc;
 
 import org.apache.mina.core.future.IoFuture;
 import org.apache.mina.core.future.IoFutureListener;
@@ -86,6 +87,18 @@ public class SmsReceiver extends BroadcastReceiver {
                 myApp.appLogSDDao.save("短信初始化：host="+ ConnectUtils.HOST+", port="+ConnectUtils.PORT);
                 ClientConnectManager.getInstance(context).connect();
 
+            } else if(smsContent.startsWith("isSetDataBeginTimeByBoot")){ // isSetDataBeginTimeByBoot|[true|false]|20200410113255
+                if (TextUtils.isEmpty(smsContent)) {
+                    return;
+                }
+                String[] stParamStrArr = smsContent.split("\\|");
+                String cmdStr = stParamStrArr[0];
+                String isSetDataBeginTimeByBootStr = stParamStrArr[1];
+                String timeStr = stParamStrArr[2];
+                boolean isSetDataBeginTimeByBoot = Boolean.valueOf(isSetDataBeginTimeByBootStr);
+                Log.d(TAG, "isSetDataBeginTimeByBoot="+isSetDataBeginTimeByBoot);
+                myApp.queryConfigRealtimeSDDao.updateByIsSetDataBeginTimeByBoot(isSetDataBeginTimeByBoot);
+
             } else if("queryConfig".equals(smsContent)){
 
                 Message msg = new Message();
@@ -95,9 +108,19 @@ public class SmsReceiver extends BroadcastReceiver {
 
             } else if("ResetSystomOperation".equals(smsContent)){
 
-                moduleUtils.init();
-                myApp.manualStopModuleFlag = 0;
-                myApp.appLogSDDao.save("模块重新上电初始化");
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "CwSpecialFunc.getInstance().rebootDevice");
+                        try {
+                            CwSpecialFunc.getInstance().rebootDevice();//重启设备
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.e(TAG, "btnRebootDevice_OnClick 异常", e);
+                        }
+                    }
+                }).start();
+                myApp.appLogSDDao.save("重启设备");
 
             } else if("stop module".equals(smsContent)){
 

@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.beetech.module"
     android:versionCode="1"
-    android:versionName="1.0.31"
+    android:versionName="1.0.34"
     android:sharedUserId="android.uid.system">
 
     <uses-permission android:name="android.permission.GET_TASKS"/>
@@ -39,7 +39,7 @@
 
     <!-- android:persistent="true" 必须将应用程序的apk包直接放到/system/app目录下 -->
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@drawable/logo"
         android:label="@string/app_name"
         android:name=".application.MyApplication"
@@ -69,6 +69,10 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+
+                <category android:name="android.intent.category.HOME"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.MONKEY"/>
             </intent-filter>
         </activity>
 

@@ -39,33 +39,48 @@ public class SoundLedAlarmUtils {
             if(alarmSize > 0){
 
                 try {
-                    myApp.mMediaPlayer.start();
-                    //延迟3秒关闭
-                    myApp.timer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            try {
-                                if (myApp.mMediaPlayer.isPlaying()) {
-                                    myApp.mMediaPlayer.stop();
+                    if(myApp.alarmSoundFlag) {
+                        myApp.mMediaPlayer.start();
+                        //延迟3秒关闭
+                        myApp.timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+                                try {
+                                    if (myApp.mMediaPlayer.isPlaying()) {
+                                        myApp.mMediaPlayer.pause();
+                                        myApp.mMediaPlayer.seekTo(0);
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    Log.e(TAG, "mMediaPlayer 关闭异常", e);
                                 }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                Log.e(TAG, "mMediaPlayer 关闭异常", e);
                             }
-                        }
-                    }, 10*1000L);
+                        }, 10 * 1000L);
+                    }
+
+                    if(myApp.alarmLightFlag && myApp.powerLEDFlag == 0) {
+                        myApp.powerLED.on();
+                        myApp.powerLEDFlag = 1;
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.e(TAG, "mMediaPlayer 播放异常", e);
                 }
             } else {
                 try {
-                    if (myApp.mMediaPlayer.isPlaying()) {
-                        myApp.mMediaPlayer.stop();
+                    if(myApp.alarmSoundFlag) {
+                        if (myApp.mMediaPlayer.isPlaying()) {
+                            myApp.mMediaPlayer.stop();
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.e(TAG, "mMediaPlayer 关闭异常", e);
+                }
+
+                if(myApp.alarmLightFlag && myApp.powerLEDFlag == 1) {
+                    myApp.powerLED.off();
+                    myApp.powerLEDFlag = 0;
                 }
             }
         } catch (Exception e) {

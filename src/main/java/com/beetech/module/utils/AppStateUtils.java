@@ -142,6 +142,8 @@ public class AppStateUtils {
             }
             stateSb.append("\n");
 
+            stateSb.append("isSetDataBeginTimeByBoot: "+myApp.isSetDataBeginTimeByBoot).append("\n");
+            stateSb.append("alarmFlag: "+myApp.alarmFlag).append("\n");
         } catch (Exception e) {
             e.printStackTrace();
         }

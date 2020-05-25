@@ -75,11 +75,6 @@ public class Constant {
     public static boolean IS_TTSS_TOAST = false; //百度语音是否toast
     public static boolean IS_READ_NEXT = true; //是否读取下一条数据
 
-    public static boolean alarmFlag = true; //是否报警
-
-    public static boolean alarmSoundFlag = true; //是否声音报警
-    public static boolean alarmLightFlag = true; //是否灯光报警
-
     public final static String className_GPSService = "com.beetech.module.service.GPSService";
     public final static String className_moduleService = "com.beetech.module.service.ModuleService";
     public final static String className_guardService = "com.beetech.module.service.GuardService";

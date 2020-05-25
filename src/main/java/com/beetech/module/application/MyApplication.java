@@ -42,6 +42,8 @@ import com.beetech.module.utils.AppStateUtils;
 import com.beetech.module.utils.MobileInfoUtil;
 import com.beetech.module.utils.ModuleUtils;
 import com.beetech.module.utils.PhoneInfoUtils;
+import com.beetech.module.utils.StringUtils;
+import com.chainway.libs.mylibrary.CwSpecialFunc;
 import com.github.anrwatchdog.ANRError;
 import com.github.anrwatchdog.ANRWatchDog;
 import com.rscja.deviceapi.Module;
@@ -57,6 +59,7 @@ import java.util.Timer;
 public class MyApplication extends Application {
     private final static String TAG = MyApplication.class.getSimpleName();
     public PowerLED powerLED;
+    public static int powerLEDFlag = 0; //0 关闭；1 开启
     public Module module;
     public boolean initResult; //模块上电初始化结果
     public int manualStopModuleFlag = 0; // 手动模块断电释放标记：0：未断电 1：断电
@@ -129,6 +132,11 @@ public class MyApplication extends Application {
 
     public static BluetoothAdapter adapter;
 
+    public boolean isSetDataBeginTimeByBoot = false; //开机自启动监控，设置数据开始时间
+    public boolean alarmFlag = true; //是否报警
+    public static boolean alarmSoundFlag = true; //是否声音报警
+    public static boolean alarmLightFlag = true; //是否灯光报警
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -159,6 +167,31 @@ public class MyApplication extends Application {
     }
 
     public void initApp(){
+        try{
+            CwSpecialFunc.getInstance().init(this); //初始化
+            CwSpecialFunc.getInstance().setOnInitFinish(new CwSpecialFunc.OnInitFinish() {
+                @Override
+                public void ready() {
+                    try {
+                        CwSpecialFunc.getInstance().setDownStatusEnable(false);//禁止下拉菜单
+                        CwSpecialFunc.getInstance().setHomeKeyEnable(false);   //禁止HOME按键
+                        CwSpecialFunc.getInstance().setMenuKeyEnable(false);   //禁止菜单按键
+                        String packageName = getPackageName();
+                        String className = packageName.concat(".activity.RealtimeMonitorActivity");
+                        Log.d(TAG, "开机默认启动Activity，packageName = "+packageName+", className = "+className);//开机默认启动Activity
+                        Log.d(TAG, "set config of CwSpecialFunc");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void free() {
+                }
+            });
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         toastHandler = new ToastHandler(this);
         appException = CrashHandler.getInstance();
         appException.init(getApplicationContext());
@@ -221,7 +254,10 @@ public class MyApplication extends Application {
 
             Constant.imei = imei;
 //            Constant.phoneNumber = phoneInfoUtils.getNativePhoneNumber();
-            Constant.iccid = phoneInfoUtils.getIccid();
+            String iccid = phoneInfoUtils.getIccid();
+            if(!StringUtils.isBlank(iccid)) {
+                Constant.iccid = iccid.toUpperCase();
+            }
 
             QueryConfigRealtime queryConfigRealtime = queryConfigRealtimeSDDao.queryLast();
             if(queryConfigRealtime == null){
@@ -229,6 +265,8 @@ public class MyApplication extends Application {
                 queryConfigRealtime.setImei(imei);
                 queryConfigRealtime.setDevServerIp(ConnectUtils.HOST);
                 queryConfigRealtime.setDevServerPort(ConnectUtils.PORT);
+                queryConfigRealtime.setIsSetDataBeginTimeByBoot(false);
+                queryConfigRealtime.setAlarmFlag(true);
                 queryConfigRealtimeSDDao.save(queryConfigRealtime);
 
             } else {
@@ -247,6 +285,9 @@ public class MyApplication extends Application {
                 endMonitorTime = queryConfigRealtime.getEndMonitorTime();
                 Constant.devNum = queryConfigRealtime.getDevNum();
                 Constant.devName = queryConfigRealtime.getDevName();
+                isSetDataBeginTimeByBoot = queryConfigRealtime.isSetDataBeginTimeByBoot();
+                alarmFlag = queryConfigRealtime.getAlarmFlag();
+                Log.d(TAG, "isSetDataBeginTimeByBoot="+isSetDataBeginTimeByBoot);
             }
         } catch (Exception e) {
             e.printStackTrace();
