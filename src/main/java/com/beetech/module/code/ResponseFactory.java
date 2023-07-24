@@ -1,5 +1,7 @@
 package com.beetech.module.code;
 
+import android.util.Log;
+
 import com.beetech.module.code.response.DeleteHistoryDataResponse;
 import com.beetech.module.code.response.QueryConfigResponse;
 import com.beetech.module.code.response.ReadDataResponse;
@@ -10,14 +12,16 @@ import com.beetech.module.code.response.UpdateSSParamResponse;
 import com.beetech.module.utils.ByteUtilities;
 
 public class ResponseFactory {
+	private final static String TAG = ResponseFactory.class.getSimpleName();
 
 	public static BaseResponse getResponse(byte[] buf) {
 		if(buf == null || buf.length < 4) {
 			return null;
 		}
 		int cmd = ByteUtilities.toUnsignedInt(buf[3]);
+		Log.v(TAG,"cmd="+cmd);
 		switch (cmd) {
-			case 1:
+			case 0X0E:
 				return new QueryConfigResponse(buf);
 
 			case 2:

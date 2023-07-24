@@ -1,12 +1,11 @@
 <component name="libraryTable">
   <library name="Gradle: android.arch.paging:runtime:1.0.0-alpha3@aar">
     <CLASSES>
-      <root url="jar://D:/AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/runtime-1.0.0-alpha3.aar/619404a43d2f1a1ca25386e3f60ed8ec/jars/classes.jar!/" />
-      <root url="file://D:/AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/runtime-1.0.0-alpha3.aar/619404a43d2f1a1ca25386e3f60ed8ec/res" />
+      <root url="jar://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/runtime-1.0.0-alpha3.aar/619404a43d2f1a1ca25386e3f60ed8ec/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/runtime-1.0.0-alpha3.aar/619404a43d2f1a1ca25386e3f60ed8ec/res" />
+      <root url="file://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/runtime-1.0.0-alpha3.aar/619404a43d2f1a1ca25386e3f60ed8ec/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://D:/AndroidStudioCache/.gradle/caches/modules-2/files-2.1/android.arch.paging/runtime/1.0.0-alpha3/80827cdf7dfbab8fd343beea56612e0b0fb0f112/runtime-1.0.0-alpha3-sources.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>

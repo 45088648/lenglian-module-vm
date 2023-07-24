@@ -1,12 +1,11 @@
 <component name="libraryTable">
   <library name="Gradle: com.qianwen:update-app:3.5.2@aar">
     <CLASSES>
-      <root url="jar://D:/AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/update-app-3.5.2.aar/f9fa38e92e4bdf6f18f1b5f48f93f335/jars/classes.jar!/" />
-      <root url="file://D:/AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/update-app-3.5.2.aar/f9fa38e92e4bdf6f18f1b5f48f93f335/res" />
+      <root url="jar://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/update-app-3.5.2.aar/f9fa38e92e4bdf6f18f1b5f48f93f335/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/update-app-3.5.2.aar/f9fa38e92e4bdf6f18f1b5f48f93f335/res" />
+      <root url="file://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/update-app-3.5.2.aar/f9fa38e92e4bdf6f18f1b5f48f93f335/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://D:/AndroidStudioCache/.gradle/caches/modules-2/files-2.1/com.qianwen/update-app/3.5.2/177ef36b46ef2185a5b03ef9dbc9b7580cba256b/update-app-3.5.2-sources.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>

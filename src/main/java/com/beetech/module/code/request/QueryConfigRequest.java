@@ -8,7 +8,7 @@ public class QueryConfigRequest extends BaseRequest {
 	public QueryConfigRequest() {
 		super();
 		setPackLen(Integer.valueOf("05", 16));
-		setCmd(Integer.valueOf("01", 16));
+		setCmd(CMD_QUERY_CONFIG);
 		pack();
 	}
 

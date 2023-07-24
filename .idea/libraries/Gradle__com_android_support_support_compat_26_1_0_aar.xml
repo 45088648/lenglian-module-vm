@@ -1,12 +1,11 @@
 <component name="libraryTable">
   <library name="Gradle: com.android.support:support-compat:26.1.0@aar">
     <CLASSES>
-      <root url="jar://D:/AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/support-compat-26.1.0.aar/220d2d9fa77bbdec9460cda45553fa7b/jars/classes.jar!/" />
-      <root url="file://D:/AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/support-compat-26.1.0.aar/220d2d9fa77bbdec9460cda45553fa7b/res" />
+      <root url="jar://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/support-compat-26.1.0.aar/220d2d9fa77bbdec9460cda45553fa7b/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/support-compat-26.1.0.aar/220d2d9fa77bbdec9460cda45553fa7b/res" />
+      <root url="file://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/support-compat-26.1.0.aar/220d2d9fa77bbdec9460cda45553fa7b/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://D:/AndroidStudioCache/.gradle/caches/modules-2/files-2.1/com.android.support/support-compat/26.1.0/73bfdb5cca1949a51219d3676700996990ea3b52/support-compat-26.1.0-sources.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>

@@ -1,12 +1,11 @@
 <component name="libraryTable">
   <library name="Gradle: android.arch.lifecycle:extensions:1.0.0-beta2@aar">
     <CLASSES>
-      <root url="jar://D:/AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/extensions-1.0.0-beta2.aar/b79d595cc95985104db03e6dfea9ee8e/jars/classes.jar!/" />
-      <root url="file://D:/AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/extensions-1.0.0-beta2.aar/b79d595cc95985104db03e6dfea9ee8e/res" />
+      <root url="jar://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/extensions-1.0.0-beta2.aar/b79d595cc95985104db03e6dfea9ee8e/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/extensions-1.0.0-beta2.aar/b79d595cc95985104db03e6dfea9ee8e/res" />
+      <root url="file://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/extensions-1.0.0-beta2.aar/b79d595cc95985104db03e6dfea9ee8e/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://D:/AndroidStudioCache/.gradle/caches/modules-2/files-2.1/android.arch.lifecycle/extensions/1.0.0-beta2/ad50785276e5d2e822fd4c6fc6683d5bef57b3e9/extensions-1.0.0-beta2-sources.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>

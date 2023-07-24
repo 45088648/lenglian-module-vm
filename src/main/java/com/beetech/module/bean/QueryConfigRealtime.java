@@ -26,12 +26,16 @@ public class QueryConfigRealtime {
     private int pattern; //工作模式
     private int bps; // 传输速率
     private int channel; // 频段
+    private int txPower; // 发射功率
+    private int forwardFlag; // 转发策略
+
     private int ramData; // RAM数据
     private int front; // pflash 循环队列的读指针，最大值是1023
     private int rear; // pflash 循环队列的写指针，最大值是1023
     private int pflashLength; // pflash 循环队列中已存数据的数目，最大值是1023。
     private int sendOk; // 数据包发送成功标识位： 0 = 失败； 1 = 成功； other = 未定义
     private double gwVoltage; //计算公式：U = x*4/1023, 单位：V，其中，x = byte1*256+byte2
+    private int bindCount;
     public String gwId; // 网关序列号(小模块网关编号 )
     public String imei;
 
@@ -78,6 +82,7 @@ public class QueryConfigRealtime {
     public QueryConfigRealtime(){}
 
     public void update(QueryConfigResponse queryConfigResponse) {
+        this.gwId = queryConfigResponse.getGwId();
         this.hardVer = queryConfigResponse.getHardVer();
         this.softVer = queryConfigResponse.getSoftVer();
         this.customer = queryConfigResponse.getCustomer();
@@ -88,16 +93,18 @@ public class QueryConfigRealtime {
         this.pattern = queryConfigResponse.getPattern();
         this.bps = queryConfigResponse.getBps();
         this.channel = queryConfigResponse.getChannel();
+        this.txPower = queryConfigResponse.getTxPower();
+        this.forwardFlag = queryConfigResponse.getForwardFlag();
         this.ramData = queryConfigResponse.getRamData();
         this.front = queryConfigResponse.getFront();
         this.rear = queryConfigResponse.getRear();
         this.pflashLength = queryConfigResponse.getPflashLength();
         this.sendOk = queryConfigResponse.getSendOk();
         this.gwVoltage = queryConfigResponse.getGwVoltage();
-        this.gwId = queryConfigResponse.getGwId();
+        this.bindCount = queryConfigResponse.getBindCount();
+        updateTime = new Date();
     }
 
-    @Generated(hash = 36056915)
     public QueryConfigRealtime(Long _id, String hardVer, String softVer,
             String customer, int debug, int category, int interval, Date calendar,
             int pattern, int bps, int channel, int ramData, int front, int rear,
@@ -131,6 +138,82 @@ public class QueryConfigRealtime {
         this.pflashLength = pflashLength;
         this.sendOk = sendOk;
         this.gwVoltage = gwVoltage;
+        this.gwId = gwId;
+        this.imei = imei;
+        this.devServerIp = devServerIp;
+        this.devNum = devNum;
+        this.devServerPort = devServerPort;
+        this.devEncryption = devEncryption;
+        this.updateTime = updateTime;
+        this.monitorState = monitorState;
+        this.beginMonitorTime = beginMonitorTime;
+        this.endMonitorTime = endMonitorTime;
+        this.devName = devName;
+        this.userName = userName;
+        this.devSendCycle = devSendCycle;
+        this.devAutosend = devAutosend;
+        this.tempLower = tempLower;
+        this.tempHight = tempHight;
+        this.batteryLower = batteryLower;
+        this.sysDatetime = sysDatetime;
+        this.rhLower = rhLower;
+        this.rhHight = rhHight;
+        this.tempAlarmFlag = tempAlarmFlag;
+        this.rhAlarmFlag = rhAlarmFlag;
+        this.batteryAlarmFlag = batteryAlarmFlag;
+        this.extPowerAlarmFlag = extPowerAlarmFlag;
+        this.unqualifyRecordFlag = unqualifyRecordFlag;
+        this.nextUpdateFlag = nextUpdateFlag;
+        this.updateUrl = updateUrl;
+        this.destination = destination;
+        this.orderNo = orderNo;
+        this.receiver = receiver;
+        this.company = company;
+        this.devTypeFlag = devTypeFlag;
+        this.alarmInterval = alarmInterval;
+        this.equipType = equipType;
+        this.isSetDataBeginTimeByBoot = isSetDataBeginTimeByBoot;
+        this.alarmFlag = alarmFlag;
+    }
+
+    @Generated(hash = 84147624)
+    public QueryConfigRealtime(Long _id, String hardVer, String softVer,
+            String customer, int debug, int category, int interval, Date calendar,
+            int pattern, int bps, int channel, int txPower, int forwardFlag,
+            int ramData, int front, int rear, int pflashLength, int sendOk,
+            double gwVoltage, int bindCount, String gwId, String imei,
+            String devServerIp, String devNum, int devServerPort,
+            String devEncryption, Date updateTime, int monitorState,
+            Date beginMonitorTime, Date endMonitorTime, String devName,
+            String userName, String devSendCycle, String devAutosend,
+            String tempLower, String tempHight, String batteryLower,
+            String sysDatetime, String rhLower, String rhHight,
+            String tempAlarmFlag, String rhAlarmFlag, String batteryAlarmFlag,
+            String extPowerAlarmFlag, String unqualifyRecordFlag,
+            String nextUpdateFlag, String updateUrl, String destination,
+            String orderNo, String receiver, String company, String devTypeFlag,
+            String alarmInterval, String equipType,
+            boolean isSetDataBeginTimeByBoot, boolean alarmFlag) {
+        this._id = _id;
+        this.hardVer = hardVer;
+        this.softVer = softVer;
+        this.customer = customer;
+        this.debug = debug;
+        this.category = category;
+        this.interval = interval;
+        this.calendar = calendar;
+        this.pattern = pattern;
+        this.bps = bps;
+        this.channel = channel;
+        this.txPower = txPower;
+        this.forwardFlag = forwardFlag;
+        this.ramData = ramData;
+        this.front = front;
+        this.rear = rear;
+        this.pflashLength = pflashLength;
+        this.sendOk = sendOk;
+        this.gwVoltage = gwVoltage;
+        this.bindCount = bindCount;
         this.gwId = gwId;
         this.imei = imei;
         this.devServerIp = devServerIp;
@@ -276,6 +359,25 @@ public class QueryConfigRealtime {
         this.channel = channel;
     }
 
+    public int getTxPower() {
+        return txPower;
+    }
+
+    public void setTxPower(int txPower) {
+        this.txPower = txPower;
+    }
+
+    public int getForwardFlag() {
+        return forwardFlag;
+    }
+
+    public void setForwardFlag(int forwardFlag) {
+        this.forwardFlag = forwardFlag;
+    }
+
+    public boolean isAlarmFlag() {
+        return alarmFlag;
+    }
 
     public int getRamData() {
         return ramData;
@@ -334,6 +436,14 @@ public class QueryConfigRealtime {
 
     public void setGwVoltage(double gwVoltage) {
         this.gwVoltage = gwVoltage;
+    }
+
+    public int getBindCount() {
+        return bindCount;
+    }
+
+    public void setBindCount(int bindCount) {
+        this.bindCount = bindCount;
     }
 
     public String getGwId() {

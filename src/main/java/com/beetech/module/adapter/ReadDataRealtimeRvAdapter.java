@@ -42,53 +42,57 @@ public class ReadDataRealtimeRvAdapter extends RecyclerView.Adapter<ReadDataReal
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-        ReadDataRealtime readDataRealtime = mList.get(position);
+        try {
+            ReadDataRealtime readDataRealtime = mList.get(position);
 
-        Double temp = readDataRealtime.getTemp();
-        double tempLower = readDataRealtime.getTempLower();
-        double tempHight = readDataRealtime.getTempHight();
-        Integer rssi = readDataRealtime.getRssi();
-        Double ssVoltage = readDataRealtime.getSsVoltage();
-        Integer wait2 = readDataRealtime.getWaitSentSize2();
-        String sensorDataTime = DateUtils.parseDateToString(readDataRealtime.getSensorDataTime(), DateUtils.C_MM_DD_HH_MM);
+            Double temp = readDataRealtime.getTemp();
+            double tempLower = readDataRealtime.getTempLower();
+            double tempHight = readDataRealtime.getTempHight();
+            Integer rssi = readDataRealtime.getRssi();
+            Double ssVoltage = readDataRealtime.getSsVoltage();
+            Integer wait2 = readDataRealtime.getWaitSentSize2();
+            String sensorDataTime = DateUtils.parseDateToString(readDataRealtime.getSensorDataTime(), DateUtils.C_MM_DD_HH_MM);
 
-        holder.tvSensorId.setText(readDataRealtime.getSensorId());
-        holder.tvTemp.setText(new StringBuilder(temp.toString()).append("℃"));
-        holder.tvRssi.setText(new StringBuilder(rssi.toString()).toString());
-        holder.tvSsVoltage.setText(new StringBuilder(ssVoltage.toString()));
-        holder.tvWait2.setText(new StringBuilder(wait2.toString()));
-        holder.tvSensorDataTime.setText(new StringBuilder(sensorDataTime));
+            holder.tvSensorId.setText(readDataRealtime.getSensorId());
+            holder.tvTemp.setText(new StringBuilder(temp.toString()).append("℃"));
+            holder.tvRssi.setText(new StringBuilder(rssi.toString()).toString());
+            holder.tvSsVoltage.setText(new StringBuilder(ssVoltage.toString()));
+            holder.tvWait2.setText(new StringBuilder(wait2.toString()));
+            holder.tvSensorDataTime.setText(new StringBuilder(sensorDataTime));
 
-        boolean isAlarm = true;
-        boolean isTempAlarm = false;
+            boolean isAlarm = true;
+            boolean isTempAlarm = false;
 
-        if(tempHight != 0 && tempHight != 0 && (temp > tempHight || temp < tempLower)){
-            isTempAlarm = true;
-        }
-        holder.tvTemp.setTextColor((isAlarm && isTempAlarm) ? Constant.COLOR_RED : Color.BLUE);
+            if(tempHight != 0 && tempHight != 0 && (temp > tempHight || temp < tempLower)){
+                isTempAlarm = true;
+            }
+            holder.tvTemp.setTextColor((isAlarm && isTempAlarm) ? Constant.COLOR_RED : Color.BLUE);
 
-        boolean isSsVoltageAlarm = ssVoltage < 2.8;
-        holder.tvSsVoltage.setTextColor((isAlarm && isSsVoltageAlarm) ? Constant.COLOR_RED : Color.BLACK);
+            boolean isSsVoltageAlarm = ssVoltage < 2.8;
+            holder.tvSsVoltage.setTextColor((isAlarm && isSsVoltageAlarm) ? Constant.COLOR_RED : Color.BLACK);
 
-        //判断是否设置了监听器
-        if(mOnItemClickListener != null){
-            //为ItemView设置监听器
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mOnItemClickListener.onItemClick(v,position); // 2
-                }
-            });
-        }
-        if(mOnItemLongClickListener != null){
-            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    mOnItemLongClickListener.onItemLongClick(v, position);
-                    //返回true 表示消耗了事件 事件不会继续传递
-                    return true;
-                }
-            });
+            //判断是否设置了监听器
+            if(mOnItemClickListener != null){
+                //为ItemView设置监听器
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mOnItemClickListener.onItemClick(v,position); // 2
+                    }
+                });
+            }
+            if(mOnItemLongClickListener != null){
+                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        mOnItemLongClickListener.onItemLongClick(v, position);
+                        //返回true 表示消耗了事件 事件不会继续传递
+                        return true;
+                    }
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

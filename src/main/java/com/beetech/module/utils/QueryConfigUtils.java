@@ -18,7 +18,8 @@ public class QueryConfigUtils {
 
             QueryConfigRequest queryConfigRequest = new QueryConfigRequest();
             byte[] buf = queryConfigRequest.getBuf();
-            Log.d(TAG, "queryConfigRequest.buf="+ ByteUtilities.asHex(buf).toUpperCase());
+            String bufHex = ByteUtilities.asHex(buf).toUpperCase();
+            Log.v(TAG, "queryConfigRequest.buf="+ bufHex);
 
             Module module = myApp.module;
             if (module != null && myApp.initResult) {

@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.bean.QueryConfigRealtime;
+import com.beetech.module.code.CommonBase;
 import com.beetech.module.code.request.UpdateConfigRequest;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.utils.ByteUtilities;
@@ -59,7 +60,7 @@ public class ModuleHandler extends Handler {
                 break;
 
 
-            case 1:// 查询本地配置
+            case CommonBase.CMD_QUERY_CONFIG:// 查询本地配置
                 Log.d(TAG, threadName + ", QueryConfigUtils.queryConfig");
                 try{
                     final boolean sendResult = QueryConfigUtils.queryConfig(myApp);
@@ -112,7 +113,7 @@ public class ModuleHandler extends Handler {
                 }
                 break;
 
-            case 84:
+            case CommonBase.CMD_UPDATE_CONFIG:
                 try {
                     QueryConfigRealtime queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
                     if (queryConfigRealtime == null) {
@@ -126,6 +127,8 @@ public class ModuleHandler extends Handler {
                     updateConfigRequest.setPattern(myApp.pattern);
                     updateConfigRequest.setBps(myApp.bps);
                     updateConfigRequest.setChannel(myApp.channel);
+                    updateConfigRequest.setTxPower(myApp.txPower);
+                    updateConfigRequest.setForwardFlag(myApp.forwardFlag);
                     updateConfigRequest.pack();
                     byte[] buf = updateConfigRequest.getBuf();
                     Log.d(TAG, "updateConfigRequest.buf="+ ByteUtilities.asHex(buf).toUpperCase());

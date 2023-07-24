@@ -27,6 +27,7 @@ import com.beetech.module.activity.MainActivity;
 import com.beetech.module.activity.RealtimeMonitorActivity;
 import com.beetech.module.activity.UpdateConfigActivity;
 import com.beetech.module.application.MyApplication;
+import com.beetech.module.code.CommonBase;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.dao.BaseSDDaoUtils;
 import com.beetech.module.dao.ReadDataRealtimeSDDao;
@@ -159,7 +160,7 @@ public class RunStateFragment extends Fragment {
     @OnClick(R.id.btnQueryConfig)
     public void btnQueryConfig_onClick(View v) {
         Message msg = new Message();
-        msg.what = 1;
+        msg.what = CommonBase.CMD_QUERY_CONFIG;
         myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
     }
 

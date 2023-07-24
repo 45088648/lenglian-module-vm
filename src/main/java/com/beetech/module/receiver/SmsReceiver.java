@@ -3,8 +3,10 @@ package com.beetech.module.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Message;
-import android.telephony.gsm.SmsMessage;
+import android.provider.Telephony;
+import android.telephony.SmsMessage;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -15,6 +17,7 @@ import com.beetech.module.bean.vt.VtStateRequestBean;
 import com.beetech.module.bean.vt.VtStateRequestBeanUtils;
 import com.beetech.module.client.ClientConnectManager;
 import com.beetech.module.client.ConnectUtils;
+import com.beetech.module.code.CommonBase;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.dao.BaseSDDaoUtils;
 import com.beetech.module.utils.AppStateUtils;
@@ -28,6 +31,7 @@ import org.apache.mina.core.future.IoFuture;
 import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.session.IoSession;
+import org.apache.mina.proxy.utils.ByteUtilities;
 
 import java.util.Date;
 
@@ -48,34 +52,38 @@ public class SmsReceiver extends BroadcastReceiver {
         baseSDDaoUtils = new BaseSDDaoUtils(myApp);
 
         //[1]获取发短信送的号码  和内容
-        Object[] objects = (Object[]) intent.getExtras().get("pdus");
-        for (Object pdu : objects) {
-            //[2]获取smsmessage实例
-            SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) pdu);
-            //[3]获取发送短信的内容
-            String body = smsMessage.getMessageBody();
-            Date date = new Date(smsMessage.getTimestampMillis());//时间
-
-            //[4]获取发送者
-            String address = smsMessage.getOriginatingAddress();
-            String receiveTime = DateUtils.parseDateToString(date, DateUtils.C_YYYY_MM_DD_HH_MM_SS);
-            String logContent = "短信:" + body + "，" + address+"，"+receiveTime;
-            Log.e(TAG, logContent);
-            myApp.appLogSDDao.save(logContent);
-
-            final String smsContent = body.replaceAll("【.+?】", "").trim();
-            if(TextUtils.isEmpty(smsContent)){
-                return;
-            }
-
-            new Thread(){
-                @Override
-                public void run() {
-                    parseSmsContent(smsContent, myApp);
-                }
-            }.start();
-
+        //[2]获取smsmessage实例
+        android.telephony.SmsMessage smsMessage;
+        if (Build.VERSION.SDK_INT >= 19) { //KITKAT
+            android.telephony.SmsMessage[] msgs = Telephony.Sms.Intents.getMessagesFromIntent(intent);
+            smsMessage = msgs[0];
+        } else {
+            Object[] pdus = (Object[]) intent.getExtras().get("pdus");
+            String pduHex = ByteUtilities.asHex((byte[]) pdus[0]);
+            Log.v(TAG, "pduHex="+pduHex);
+            smsMessage = SmsMessage.createFromPdu((byte[]) pdus[0]);
         }
+        //[3]获取发送短信的内容
+        String body = smsMessage.getMessageBody();
+        Date date = new Date(smsMessage.getTimestampMillis());//时间
+
+        //[4]获取发送者
+        String address = smsMessage.getOriginatingAddress();
+        String receiveTime = DateUtils.parseDateToString(date, DateUtils.C_YYYY_MM_DD_HH_MM_SS);
+        String logContent = "短信:" + body + "，" + address+"，"+receiveTime;
+        Log.v(TAG, logContent);
+
+        final String smsContent = body.replaceAll("【.+?】", "").trim();
+        if(TextUtils.isEmpty(smsContent)){
+            return;
+        }
+
+        new Thread(){
+            @Override
+            public void run() {
+                parseSmsContent(smsContent, myApp);
+            }
+        }.start();
     }
 
     public void parseSmsContent(String smsContent, Context context){
@@ -102,9 +110,40 @@ public class SmsReceiver extends BroadcastReceiver {
             } else if("queryConfig".equals(smsContent)){
 
                 Message msg = new Message();
-                msg.what = 1;
+                msg.what = CommonBase.CMD_QUERY_CONFIG;
                 myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
                 myApp.appLogSDDao.save("短信查询本地配置");
+
+            }  else if(smsContent.startsWith("updateConfig")){
+                Log.v(TAG, "updateConfig");
+                String[] paramStrArr = smsContent.substring("updateConfig".length()+1).split("\\|");
+                String customer = paramStrArr[0];
+                int debug = Integer.valueOf(paramStrArr[1]);
+                int category = Integer.valueOf(paramStrArr[2]);
+                int pattern = Integer.valueOf(paramStrArr[3]);
+                int bps = Integer.valueOf(paramStrArr[4]);
+                int channel = Integer.valueOf(paramStrArr[5]);
+                int txPower = Integer.valueOf(paramStrArr[6]);
+                int forwardFlag = Integer.valueOf(paramStrArr[7]);
+                Log.d(TAG, "customer=" + customer + ", debug=" + debug+ ", category=" + category + ", pattern=" + pattern + ", bps=" + bps + ", channel=" + channel + ", txPower=" + txPower + ", forwardFlag=" + forwardFlag);
+
+                if(!TextUtils.isEmpty(customer)) {
+                    myApp.customer = customer;
+                    myApp.pattern = pattern;
+                    myApp.bps = bps;
+                    myApp.channel = channel;
+                    myApp.txPower = txPower;
+                    myApp.forwardFlag = forwardFlag;
+                    myApp.debug = debug;
+                    myApp.category = category;
+
+                    Message msg = new Message();
+                    msg.what = CommonBase.CMD_UPDATE_CONFIG;
+                    myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
+                    String contentLog = "更新本地配置，customer=" + customer + ", pattern=" + pattern + ", bps=" + bps +", txPower=" +txPower+", channel=" + channel+ ", forwardFlag=" + forwardFlag+", debug="+debug;
+                    Log.v(TAG, contentLog);
+                    myApp.appLogSDDao.save(contentLog);
+                }
 
             } else if("ResetSystomOperation".equals(smsContent)){
 

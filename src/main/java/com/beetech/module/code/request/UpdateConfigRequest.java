@@ -16,29 +16,32 @@ public class UpdateConfigRequest extends BaseRequest {
 	private int pattern = 1; //工作模式
 	private int bps = 1; // 传输速率
 	private int channel = 4;
-	private byte[] reserved = new byte[]{0, 0, 0, 0};
+	private int txPower = 15; // 发射功率
+	private int forwardFlag = 0; // 转发策略
+	private byte[] reserved = new byte[]{0, 0};
 
 	public UpdateConfigRequest(QueryConfigRealtime queryConfigRealtime) {
 		super();
 		setPackLen(Integer.valueOf("1B", 16));
-		setCmd(Integer.valueOf("84", 16));
+		setCmd(CMD_UPDATE_CONFIG);
 		setGwId(queryConfigRealtime.getGwId());
 		this.newGwId = queryConfigRealtime.getGwId();
 		this.hardVer = queryConfigRealtime.getHardVer();
 		this.customer = queryConfigRealtime.getCustomer();
-//		this.debug = queryConfigRealtime.getDebug();
-		this.debug = 02;
+		this.debug = queryConfigRealtime.getDebug();
 		this.category = queryConfigRealtime.getCategory();
 		this.interval = queryConfigRealtime.getInterval();
 		this.pattern = queryConfigRealtime.getPattern();
 		this.bps = queryConfigRealtime.getBps();
 		this.channel = queryConfigRealtime.getChannel();
+		this.txPower = queryConfigRealtime.getTxPower();
+		this.forwardFlag = queryConfigRealtime.getForwardFlag();
 	}
 
 	public UpdateConfigRequest(String gwId) {
 		super();
-		setPackLen(Integer.valueOf("12", 16));
-		setCmd(Integer.valueOf("02", 16));
+		setPackLen(Integer.valueOf("1B", 16));
+		setCmd(CMD_UPDATE_CONFIG);
 		setGwId(gwId);
 		pack();
 	}
@@ -74,6 +77,8 @@ public class UpdateConfigRequest extends BaseRequest {
 		ByteUtilities.intToNetworkByteOrder(pattern, buf , start, 1); start = start+1;
 		ByteUtilities.intToNetworkByteOrder(bps, buf , start, 1); start = start+1;
 		ByteUtilities.intToNetworkByteOrder(channel, buf , start, 1); start = start+1;
+		ByteUtilities.intToNetworkByteOrder(txPower, buf , start, 1); start = start+1;
+		ByteUtilities.intToNetworkByteOrder(forwardFlag, buf , start, 1); start = start+1;
 		for (byte b : reserved) {
 			Arrays.fill(buf, start, ++start, b);
 		}
@@ -151,5 +156,21 @@ public class UpdateConfigRequest extends BaseRequest {
 
 	public void setChannel(int channel) {
 		this.channel = channel;
+	}
+
+	public int getTxPower() {
+		return txPower;
+	}
+
+	public void setTxPower(int txPower) {
+		this.txPower = txPower;
+	}
+
+	public int getForwardFlag() {
+		return forwardFlag;
+	}
+
+	public void setForwardFlag(int forwardFlag) {
+		this.forwardFlag = forwardFlag;
 	}
 }

@@ -1,6 +1,6 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="450dp"
-    android:layout_height="300dp"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:background="@color/white">
 
     <LinearLayout
@@ -28,16 +28,46 @@
 
             <EditText
                 android:id="@+id/customer_et"
-                android:layout_width="120dp"
+                android:layout_width="80dp"
                 android:layout_height="40dp"
                 android:textSize="12dp"
-                android:digits="@string/alphabet_and_number"/>
+                android:maxLength="4"
+                android:digits="@string/customer"/>
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="DEBUG"/>
+
+            <EditText
+                android:id="@+id/debug_et"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:digits="@string/number"
+                android:textSize="12dp"
+                android:maxLength="2"
+                android:inputType="number"/>
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="分类码"/>
+
+            <EditText
+                android:id="@+id/category_et"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:digits="@string/number"
+                android:textSize="12dp"
+                android:maxLength="2"
+                android:inputType="number"/>
         </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
+
             <TextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
@@ -46,17 +76,13 @@
 
             <EditText
                 android:id="@+id/pattern_et"
-                android:layout_width="120dp"
+                android:layout_width="80dp"
                 android:layout_height="40dp"
-                android:digits="0123456789"
+                android:digits="@string/number"
                 android:textSize="12dp"
+                android:maxLength="2"
                 android:inputType="number"/>
-        </LinearLayout>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
             <TextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
@@ -65,17 +91,13 @@
 
             <EditText
                 android:id="@+id/bps_et"
-                android:layout_width="120dp"
+                android:layout_width="80dp"
                 android:layout_height="40dp"
-                android:digits="0123456789"
+                android:digits="@string/number"
                 android:textSize="12dp"
+                android:maxLength="2"
                 android:inputType="number"/>
-        </LinearLayout>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
             <TextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
@@ -84,11 +106,67 @@
 
             <EditText
                 android:id="@+id/channel_et"
-                android:layout_width="120dp"
+                android:layout_width="80dp"
                 android:layout_height="40dp"
-                android:digits="0123456789"
+                android:digits="@string/number"
                 android:textSize="12dp"
+                android:maxLength="2"
                 android:inputType="number"/>
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="发射功率"/>
+
+            <EditText
+                android:id="@+id/txPower_et"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:digits="@string/number"
+                android:textSize="12dp"
+                android:maxLength="2"
+                android:inputType="number"/>
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:visibility="gone"
+                android:text="转发策略"/>
+            <RadioGroup
+                android:id="@+id/zfRadioGroup"
+                android:visibility="gone"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:textColor="@color/black"
+                    android:checked="true"
+                    android:id="@+id/zfAll"
+                    android:text="全部"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <RadioButton
+                    android:textColor="@color/black"
+                    android:id="@+id/zfBanding"
+                    android:layout_marginLeft="10px"
+                    android:text="绑定"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RadioGroup>
+
+            <Button
+                android:layout_marginLeft="20px"
+                android:id="@+id/bandSetBtn"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:visibility="gone"
+                android:text="绑定标签"/>
         </LinearLayout>
 
         <LinearLayout

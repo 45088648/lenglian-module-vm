@@ -1,12 +1,11 @@
 <component name="libraryTable">
   <library name="Gradle: android.arch.persistence:db:1.1.1@aar">
     <CLASSES>
-      <root url="jar://D:/AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/db-1.1.1.aar/960fbfdcfe49de37f5b394f280bebd0b/jars/classes.jar!/" />
-      <root url="file://D:/AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/db-1.1.1.aar/960fbfdcfe49de37f5b394f280bebd0b/res" />
+      <root url="jar://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/db-1.1.1.aar/960fbfdcfe49de37f5b394f280bebd0b/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/db-1.1.1.aar/960fbfdcfe49de37f5b394f280bebd0b/res" />
+      <root url="file://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/db-1.1.1.aar/960fbfdcfe49de37f5b394f280bebd0b/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://D:/AndroidStudioCache/.gradle/caches/modules-2/files-2.1/android.arch.persistence/db/1.1.1/f248f3c30720922f8e6d8e159b1ac1e8e94b5c43/db-1.1.1-sources.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>

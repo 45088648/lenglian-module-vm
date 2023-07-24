@@ -10,6 +10,7 @@ import java.util.Date;
 public class QueryConfigResponse extends BaseResponse {
 
 	private Long _id;
+	private String gwId; // 网关序列号(小模块网关编号 )
 	private String hardVer; // 硬件版本
 	private String softVer; // 软件版本
 	private String customer; //客户码
@@ -20,13 +21,15 @@ public class QueryConfigResponse extends BaseResponse {
 	private int pattern; //工作模式
 	private int bps; // 传输速率
 	private int channel; // 频段
+	private int txPower; // 发射功率
+	private int forwardFlag; // 转发策略
 	private int ramData; // RAM数据
 	private int front; // pflash 循环队列的读指针，最大值是1023
 	private int rear; // pflash 循环队列的写指针，最大值是1023
 	private int pflashLength; // pflash 循环队列中已存数据的数目，最大值是1023。
 	private int sendOk; // 数据包发送成功标识位： 0 = 失败； 1 = 成功； other = 未定义
 	private double gwVoltage; //计算公式：U = x*4/1023, 单位：V，其中，x = byte1*256+byte2
-	private String gwId; // 网关序列号(小模块网关编号 )
+	private int bindCount; // 绑定数量	标准模式下，绑定设备的数量，取值范围：0到64。
 	private Date inputTime;
 
     public QueryConfigResponse(){}
@@ -61,6 +64,9 @@ public class QueryConfigResponse extends BaseResponse {
 		this.pattern = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
 		this.bps = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
 		this.channel = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
+		this.txPower = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
+		this.forwardFlag = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
+		start = start + 2;
 		this.ramData = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
 		this.front = ByteUtilities.makeIntFromByte2(buf, start); start = start + 2;
 		this.rear = ByteUtilities.makeIntFromByte2(buf, start); start = start + 2;
@@ -71,6 +77,8 @@ public class QueryConfigResponse extends BaseResponse {
 		byte gwVoltageByte1 = buf[start+1];
 		BigDecimal gwVoltageBd = new BigDecimal((ByteUtilities.toUnsignedInt(gwVoltageByte0)*256+ByteUtilities.toUnsignedInt(gwVoltageByte1))*1.0/4/1023);
 		this.gwVoltage = gwVoltageBd.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue(); start = start + 2;
+		this.bindCount = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
+		start = start + 1;
 		this.crc  = ByteUtilities.makeIntFromByte2(buf, start); start = start + 2;
 		this.end  = ByteUtilities.makeIntFromByte2(buf, start); start = start + 2;
 		
@@ -257,5 +265,29 @@ public class QueryConfigResponse extends BaseResponse {
 
 	public void setInputTime(Date inputTime) {
 		this.inputTime = inputTime;
+	}
+
+	public int getTxPower() {
+		return txPower;
+	}
+
+	public void setTxPower(int txPower) {
+		this.txPower = txPower;
+	}
+
+	public int getForwardFlag() {
+		return forwardFlag;
+	}
+
+	public void setForwardFlag(int forwardFlag) {
+		this.forwardFlag = forwardFlag;
+	}
+
+	public int getBindCount() {
+		return bindCount;
+	}
+
+	public void setBindCount(int bindCount) {
+		this.bindCount = bindCount;
 	}
 }

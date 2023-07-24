@@ -77,9 +77,13 @@ public class MyApplication extends Application {
 
     public String gwId = "00000000";
     public static String customer;
-    public static int pattern; //工作模式
-    public static int bps; // 传输速率
-    public static int channel; // 频段
+    public int debug = 0; // debug
+    public int category = 0; // 分类码
+    public int pattern = 3; //工作模式
+    public int bps = 0; // 传输速率
+    public int channel = 4; // 频段
+    public int txPower = 15; // 发射功率
+    public int forwardFlag = 0; // 转发策略
     public int serialNo = 0;
 
     public long readDataResponseTime;

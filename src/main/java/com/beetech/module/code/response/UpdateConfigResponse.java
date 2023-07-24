@@ -3,8 +3,6 @@ package com.beetech.module.code.response;
 import com.beetech.module.code.BaseResponse;
 import com.beetech.module.utils.ByteUtilities;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.Date;
 
 public class UpdateConfigResponse extends BaseResponse {
@@ -19,6 +17,8 @@ public class UpdateConfigResponse extends BaseResponse {
 	private int pattern; //工作模式
 	private int bps; // 传输速率
 	private int channel; // 频段
+	private int txPower; // 发射功率
+	private int forwardFlag; // 转发策略
 	private byte[] reserved;
 	private Date inputTime;
 
@@ -55,8 +55,10 @@ public class UpdateConfigResponse extends BaseResponse {
 		this.pattern = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
 		this.bps = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
 		this.channel = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
+		this.txPower = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
+		this.forwardFlag = ByteUtilities.toUnsignedInt(buf[start]); start = start + 1;
 
-		reserved = new byte[]{buf[start], buf[start+1], buf[start+2], buf[start+3]}; start = start + 4;
+		reserved = new byte[]{buf[start], buf[start+1]}; start = start + 2;
 
 		this.crc  = ByteUtilities.makeIntFromByte2(buf, start); start = start + 2;
 		this.end  = ByteUtilities.makeIntFromByte2(buf, start); start = start + 2;
@@ -145,6 +147,30 @@ public class UpdateConfigResponse extends BaseResponse {
 
 	public void setBps(int bps) {
 		this.bps = bps;
+	}
+
+	public int getChannel() {
+		return channel;
+	}
+
+	public void setChannel(int channel) {
+		this.channel = channel;
+	}
+
+	public int getTxPower() {
+		return txPower;
+	}
+
+	public void setTxPower(int txPower) {
+		this.txPower = txPower;
+	}
+
+	public int getForwardFlag() {
+		return forwardFlag;
+	}
+
+	public void setForwardFlag(int forwardFlag) {
+		this.forwardFlag = forwardFlag;
 	}
 
 	public String getGwId() {

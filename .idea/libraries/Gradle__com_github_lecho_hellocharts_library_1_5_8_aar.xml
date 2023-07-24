@@ -1,12 +1,11 @@
 <component name="libraryTable">
   <library name="Gradle: com.github.lecho:hellocharts-library:1.5.8@aar">
     <CLASSES>
-      <root url="jar://D:/AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/hellocharts-library-1.5.8.aar/454b18281f4efdd551055a40782e736c/jars/classes.jar!/" />
-      <root url="file://D:/AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/hellocharts-library-1.5.8.aar/454b18281f4efdd551055a40782e736c/res" />
+      <root url="jar://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/hellocharts-library-1.5.8.aar/454b18281f4efdd551055a40782e736c/jars/classes.jar!/" />
+      <root url="file://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/hellocharts-library-1.5.8.aar/454b18281f4efdd551055a40782e736c/res" />
+      <root url="file://$PROJECT_DIR$/../../../AndroidStudioCache/.gradle/caches/transforms-1/files-1.1/hellocharts-library-1.5.8.aar/454b18281f4efdd551055a40782e736c/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://D:/AndroidStudioCache/.gradle/caches/modules-2/files-2.1/com.github.lecho/hellocharts-library/1.5.8/51798d4793c333553a68292ee3a47b4758c2ec47/hellocharts-library-1.5.8-sources.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>

@@ -25,4 +25,7 @@
 
     <string name="alphabet_and_number">abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789</string>
     <string name="printTimeInterval_filter">0123456789</string>
+
+    <string name="customer">abcdef0123456789</string>
+    <string name="number">0123456789</string>
 </resources>

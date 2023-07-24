@@ -9,12 +9,14 @@ import android.util.Log;
 
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.code.BaseResponse;
+import com.beetech.module.code.CommonBase;
 import com.beetech.module.code.ResponseFactory;
 import com.beetech.module.code.response.DeleteHistoryDataResponse;
 import com.beetech.module.code.response.QueryConfigResponse;
 import com.beetech.module.code.response.ReadDataResponse;
 import com.beetech.module.code.response.SetDataBeginTimeResponse;
 import com.beetech.module.code.response.SetTimeResponse;
+import com.beetech.module.code.response.UpdateConfigResponse;
 import com.beetech.module.code.response.UpdateSSParamResponse;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.utils.ByteUtilities;
@@ -147,6 +149,12 @@ public class ThreadModuleReceive extends HandlerThread {
             Log.d(TAG, "packBuf="+ ByteUtilities.asHex(packBuf).toUpperCase());
 
             BaseResponse response = ResponseFactory.unpack(packBuf);
+            if(response != null) {
+                String gwid = response.getGwId();
+                if(!TextUtils.isEmpty(gwid) && !gwid.equals(myApp.gwId)) {
+                    myApp.gwId =gwid;
+                }
+            }
             if(response instanceof ReadDataResponse){
                 ReadDataResponse readDataResponse = (ReadDataResponse)response;
                 int readDataResponseError = readDataResponse.getError();
@@ -195,7 +203,47 @@ public class ThreadModuleReceive extends HandlerThread {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                toastSb.append("查询本地配置：").append(DateUtils.parseDateToString(queryConfigResponse.getCalendar(), DateUtils.C_YYYY_MM_DD_HH_MM_SS));
+                String timeStr = DateUtils.parseDateToString(queryConfigResponse.getCalendar(), DateUtils.C_YYYY_MM_DD_HH_MM_SS);
+                toastSb.append("查询本地配置：").append(timeStr).append("\n");
+                toastSb.append("客户码：").append(queryConfigResponse.getCustomer().toUpperCase()).append("\n");
+                toastSb.append("Debug：").append(queryConfigResponse.getDebug()).append("\n");
+                toastSb.append("分类码：").append(queryConfigResponse.getCategory()).append("\n");
+                toastSb.append("工作模式：").append(queryConfigResponse.getPattern()).append("\n");
+                toastSb.append("传输速率：").append(queryConfigResponse.getBps()).append("\n");
+                toastSb.append("频段：").append(queryConfigResponse.getChannel()).append("\n");
+                toastSb.append("发射功率：").append(queryConfigResponse.getTxPower()).append("\n");
+                toastSb.append("转发策略：").append(queryConfigResponse.getForwardFlag()).append("\n");
+            }
+
+            if(response instanceof UpdateConfigResponse){ // 更新完查询本地配置
+                Log.v(TAG, "UpdateConfigResponse");
+                UpdateConfigResponse updateConfigResponse = (UpdateConfigResponse)response;
+                toastSb.append("修改模块配置：").append("\n");
+                toastSb.append("客户码：").append(updateConfigResponse.getCustomer().toUpperCase()).append("\n");
+                toastSb.append("Debug：").append(updateConfigResponse.getDebug()).append("\n");
+                toastSb.append("分类码：").append(updateConfigResponse.getCategory()).append("\n");
+                toastSb.append("工作模式：").append(updateConfigResponse.getPattern()).append("\n");
+                toastSb.append("传输速率：").append(updateConfigResponse.getBps()).append("\n");
+                toastSb.append("频段：").append(updateConfigResponse.getChannel()).append("\n");
+                toastSb.append("发射功率：").append(updateConfigResponse.getTxPower()).append("\n");
+                toastSb.append("转发策略：").append(updateConfigResponse.getForwardFlag()).append("\n");
+
+                //查询本地配置
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.v(TAG, "查询本地配置");
+                        try {
+                            SystemClock.sleep(1*1000);
+                            Message msg = new Message();
+                            msg.what = CommonBase.CMD_QUERY_CONFIG;
+                            myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.e(TAG, "查询本地配置 异常", e);
+                        }
+                    }
+                }).start();
             }
 
             if(response instanceof DeleteHistoryDataResponse){

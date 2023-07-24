@@ -12,6 +12,9 @@ public abstract class CommonBase {
 	public int end; // 结束位
 	public byte[] buf;
 
+	public final static int CMD_QUERY_CONFIG = 0x0E;
+	public final static int CMD_UPDATE_CONFIG = (byte)0x84;
+
 	public CommonBase() {
 		super();
 		setGwId("00000000");

@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.beetech.module"
     android:versionCode="1"
-    android:versionName="1.0.34"
+    android:versionName="1.0.35"
     android:sharedUserId="android.uid.system">
 
     <uses-permission android:name="android.permission.GET_TASKS"/>
@@ -93,10 +93,9 @@
             android:launchMode="singleTask"/>
 
         <activity android:name=".activity.UpdateConfigActivity"
-            android:screenOrientation="landscape"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@android:style/Theme.Dialog"
-            android:launchMode="singleTask"/>
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape"/>
 
         <activity android:name=".activity.QueryDataAllActivity"
             android:screenOrientation="landscape"

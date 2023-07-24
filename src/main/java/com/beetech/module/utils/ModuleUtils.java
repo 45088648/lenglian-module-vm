@@ -8,6 +8,7 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 import com.beetech.module.application.MyApplication;
+import com.beetech.module.code.CommonBase;
 import com.beetech.module.code.request.SetTimeRequest;
 import com.beetech.module.constant.Constant;
 import com.beetech.module.dao.AppLogSDDao;
@@ -76,6 +77,25 @@ public class ModuleUtils {
                     moduleBufSDDao.save(buf, 0, setTimeRequest.getCmd(), sendResult);
                 }
                 resultMsg += ", 授时" + (sendResult ? "成功" : "失败");
+
+
+
+                //查询本地配置
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "查询本地配置");
+                        try {
+                            SystemClock.sleep(2*1000);
+                            Message msg = new Message();
+                            msg.what = CommonBase.CMD_QUERY_CONFIG;
+                            myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.e(TAG, "查询本地配置 异常", e);
+                        }
+                    }
+                }).start();
             }
 
         } catch (Exception e) {

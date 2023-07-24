@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.beetech.module.R;
 import com.beetech.module.application.MyApplication;
 import com.beetech.module.bean.QueryConfigRealtime;
+import com.beetech.module.code.CommonBase;
 import com.lidroid.xutils.ViewUtils;
 import com.lidroid.xutils.view.annotation.ViewInject;
 
@@ -30,6 +31,12 @@ public class UpdateConfigActivity extends Activity {
     @ViewInject(R.id.customer_et)
     private EditText customerEt;
 
+    @ViewInject(R.id.debug_et)
+    private EditText debugEt;
+
+    @ViewInject(R.id.category_et)
+    private EditText categoryEt;
+
     @ViewInject(R.id.pattern_et)
     private EditText patternEt;
 
@@ -39,11 +46,16 @@ public class UpdateConfigActivity extends Activity {
     @ViewInject(R.id.channel_et)
     private EditText channelEt;
 
+    @ViewInject(R.id.txPower_et)
+    private EditText txPowerEt;
+
     @ViewInject(R.id.update_btn)
     private Button updateBtn;
 
     private MyApplication myApp;
     private QueryConfigRealtime queryConfigRealtime;
+
+    private int forwardFlag = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,21 +71,27 @@ public class UpdateConfigActivity extends Activity {
 
             queryConfigRealtime = myApp.queryConfigRealtimeSDDao.queryLast();
             if (queryConfigRealtime != null) {
-                String customer = queryConfigRealtime.getCustomer();
+                String customer = queryConfigRealtime.getCustomer().toUpperCase();
                 int pattern = queryConfigRealtime.getPattern();
                 int bps = queryConfigRealtime.getBps();
                 int channel = queryConfigRealtime.getChannel();
+                int txPower = queryConfigRealtime.getTxPower();
+                forwardFlag = queryConfigRealtime.getForwardFlag();
+                int debug = queryConfigRealtime.getDebug();
+                int category = queryConfigRealtime.getCategory();
+                Log.d(TAG, "customer=" + customer + ", debug=" + debug+ ", category=" + category + ", pattern=" + pattern + ", bps=" + bps + ", channel=" + channel + ", txPower=" + txPower + ", forwardFlag=" + forwardFlag);
+
                 if (!TextUtils.isEmpty(customer)) {
                     customerEt.setText(customer);
                 }
-                if (pattern == 3 || pattern == 4) {
-                    patternEt.setText(String.valueOf(pattern));
-                }
-                if (bps == 1 || bps == 0) {
-                    bpsEt.setText(String.valueOf(bps));
-                }
+                debugEt.setText(String.valueOf(debug));
+                categoryEt.setText(String.valueOf(category));
 
+                patternEt.setText(String.valueOf(pattern));
+                bpsEt.setText(String.valueOf(bps));
                 channelEt.setText(String.valueOf(channel));
+
+                txPowerEt.setText(String.valueOf(txPower));
             }
 
             updateBtn.setOnClickListener(new UpdateBtnOnClickListener());
@@ -97,13 +115,28 @@ public class UpdateConfigActivity extends Activity {
                         @Override
                         public void run() {
                             try {
+                                String debugStr = debugEt.getText().toString();
+                                String categoryStr = categoryEt.getText().toString();
+
+                                String patternStr = patternEt.getText().toString();
+                                String bpsStr = bpsEt.getText().toString();
+                                String channelStr = channelEt.getText().toString();
+
+                                String txPowerStr = txPowerEt.getText().toString();
+
                                 myApp.customer = customerEt.getText().toString();
-                                myApp.pattern = Integer.valueOf(patternEt.getText().toString());
-                                myApp.bps = Integer.valueOf(bpsEt.getText().toString());
-                                myApp.channel = Integer.valueOf(channelEt.getText().toString());
+                                myApp.debug = Integer.valueOf(debugStr);
+                                myApp.category = Integer.valueOf(categoryStr);
+
+                                myApp.pattern = Integer.valueOf(patternStr);
+                                myApp.bps = Integer.valueOf(bpsStr);
+                                myApp.channel = Integer.valueOf(channelStr);
+
+                                myApp.txPower = Integer.valueOf(txPowerStr);
+                                myApp.forwardFlag = forwardFlag;
 
                                 Message msg = new Message();
-                                msg.what = 84;
+                                msg.what = CommonBase.CMD_UPDATE_CONFIG;
                                 myApp.moduleHandler.sendMessageAtFrontOfQueue(msg);
                             } catch (Exception e){
                                 e.printStackTrace();
